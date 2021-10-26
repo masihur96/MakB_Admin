@@ -35,7 +35,7 @@ class _AllProductPageState extends State<AllProductPage> {
       counter++;
     });
 
-    await firebaseProvider.getProducts();
+
 
     await firebaseProvider.getCategory().then((value) {
       setState(() {
@@ -345,6 +345,8 @@ class _AllProductPageState extends State<AllProductPage> {
                                 onTap: (){
                                   setState(() {
 
+
+
                                     if(selectedProduct.contains(index)){
                                       selectedProductID.remove(firebaseProvider.productList[index].id);
                                       selectedProduct.remove(index);
@@ -407,17 +409,13 @@ class _AllProductPageState extends State<AllProductPage> {
                                 children: [
                                   InkWell(
                                     onTap: () {
-                                      // print('Color: ${
-                                      //   firebaseProvider.productList[index].colors}');
-                                      //
-                                      // print('Size: ${
-                                      //     firebaseProvider.productList[index].size}');
 
-                                      // setState(() {
-                                      //   publicProvider.subCategory =
-                                      //   'ProductDetails';
-                                      //   publicProvider.category = '';
-                                      // });
+                                      setState(() {
+                                        firebaseProvider.productIndex = index;
+                                      });
+
+
+
                                         showDialog(context: context, builder: (_){
                                           return   AlertDialog(
                                             title: Text('Product Details'),
@@ -682,7 +680,7 @@ class _AllProductPageState extends State<AllProductPage> {
             child: TextButton(
                 onPressed: (){
 
-                  publicProvider.subCategory = 'Add Product';
+                  publicProvider.subCategory = 'Update Product';
                   publicProvider.category = '';
                   Navigator.pop(context);
                 }, child: Container(

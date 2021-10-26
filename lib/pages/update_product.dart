@@ -16,58 +16,20 @@ import 'package:makb_admin_pannel/widgets/fading_circle.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-
-
-class UploadProductPage extends StatefulWidget {
-
+class UpdateProduct extends StatefulWidget {
   @override
-  _UploadProductPageState createState() => _UploadProductPageState();
+  _UpdateProductState createState() => _UpdateProductState();
 }
 
-class _UploadProductPageState extends State<UploadProductPage>  {
-
+class _UpdateProductState extends State<UpdateProduct> {
 
 
   bool _isLoading = false;
-  bool _isS=false;
-  bool _isM=false;
-  bool _isL=false;
-  bool _isXL=false;
-  bool _isXXL=false;
-  bool _isXXXL=false;
+  //loading variable
 
-  late Color screenPickerColor;
-  // Color for the picker in a dialog using onChanged.
-  late Color dialogPickerColor;
-  // Color for picker using the color select dialog.
-  late Color dialogSelectColor;
-
-
-
-
-  int productId=1;
-
-
-  @override
-  void initState() {
-    super.initState();
-
-
-
-    screenPickerColor = Colors.blue;  // Material blue.
-    dialogPickerColor = Colors.red;   // Material red.
-    dialogSelectColor = const Color(0xFFA239CA); // A purple color.
-  }
-  String categorysValue='';
-  String subCategorysValue = '';
-
-  List sizes=[];
-
-
-
-  List <CategoryModel> caterorys = [];
-  List <SubCategoryModel> subCategorys = [];
+  //Text Field Controller
   var titleTextController = TextEditingController();
   var descriptionTextController = TextEditingController();
   var priceTextController = TextEditingController();
@@ -75,38 +37,65 @@ class _UploadProductPageState extends State<UploadProductPage>  {
   var categoryTextController = TextEditingController();
   var subCategoryTextController = TextEditingController();
 
+  //size variable
+  bool _isS=false;
+  bool _isM=false;
+  bool _isL=false;
+  bool _isXL=false;
+  bool _isXXL=false;
+  bool _isXXXL=false;
+  List sizes=[];
 
-
-      //color Variable
+  //Colors Variable
+  late Color screenPickerColor;
+  late Color dialogPickerColor;
+  late Color dialogSelectColor;
   List<String> colorList = [];
   List colors=[];
+  @override
+  void initState() {
+    super.initState();
+    screenPickerColor = Colors.blue;  // Material blue.
+    dialogPickerColor = Colors.red;   // Material red.
+    dialogSelectColor = const Color(0xFFA239CA); // A purple color.
+  }
+
+  //Category & SubCategory
+
+  String categorysValue='';
+  String subCategorysValue = '';
+  List <CategoryModel> caterorys = [];
+  List <SubCategoryModel> subCategorys = [];
+
+
 
   //Image Varialbe
   String? error;
   Uint8List? data;
   List <dynamic> convertedImages =[];
   List imageUrl =[];
-
-  var selectedfiles=[];
   var file;
   String name = '';
   int? imageIndex=0;
 
+// product Id from Product Page
+  String? selectedProductID;
+  List <dynamic> selectedProductColor =[];
   //custom init
   int counter=0;
-
   customInt(FirebaseProvider firebaseProvider) async {
 
+    await firebaseProvider.getProducts();
     setState(() {
       counter++;
     });
 
-      await firebaseProvider.getCategory().then((value) {
-        setState(() {
-          caterorys = firebaseProvider.categoryList;
-          categorysValue = caterorys[0].category!;
-        });
+    await firebaseProvider.getCategory().then((value) {
+      setState(() {
+        caterorys = firebaseProvider.categoryList;
+        categorysValue = caterorys[0].category!;
       });
+    });
 
     await firebaseProvider.getSubCategory().then((value) {
       setState(() {
@@ -114,6 +103,46 @@ class _UploadProductPageState extends State<UploadProductPage>  {
         subCategorysValue = subCategorys[0].subCategory!;
       });
     });
+
+  //selected Product Data for Update
+    setState(() {
+      titleTextController.text = firebaseProvider.productList[firebaseProvider.productIndex].title;
+      descriptionTextController.text = firebaseProvider.productList[firebaseProvider.productIndex].description;
+      priceTextController.text = firebaseProvider.productList[firebaseProvider.productIndex].price;
+      profitTextController.text = firebaseProvider.productList[firebaseProvider.productIndex].profitAmount;
+      categorysValue= firebaseProvider.productList[firebaseProvider.productIndex].category;
+      subCategorysValue= firebaseProvider.productList[firebaseProvider.productIndex].subCategory;
+      selectedProductID = firebaseProvider.productList[firebaseProvider.productIndex].id;
+      selectedProductColor = firebaseProvider.productList[firebaseProvider.productIndex].colors;
+
+      sizes = firebaseProvider.productList[firebaseProvider.productIndex].size ;
+
+
+      if( sizes.contains('XL')){
+        _isXL = true;
+      }  if(sizes.contains('S')){
+        _isS = true;
+      } if(sizes.contains('M')){
+        _isM =true;
+      } if(sizes.contains('L')){
+        _isL =true;
+      } if(sizes.contains('XL')){
+        _isXL =true;
+      } if(sizes.contains('XXL')){
+        _isXXL =true;
+      } if(sizes.contains('XXXL')){
+        _isXXXL =true;
+      }
+
+
+      print(sizes);
+
+    });
+
+    print('Selected ID: $selectedProductID');
+    print('Selected Color: $selectedProductColor');
+
+
   }
 
   @override
@@ -151,6 +180,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
     );
   }
 
+
   Widget productPickWidget(FirebaseProvider firebaseProvider,PublicProvider publicProvider,Size size){
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -167,9 +197,9 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       border: Border.all(width: 1,color: Colors.grey)
                   ),
-                  child:  convertedImages.isNotEmpty? Container(
+                  child: firebaseProvider.productIndex==null? convertedImages.isNotEmpty? Container(
                     child: Image.memory(convertedImages[imageIndex!],fit: BoxFit.cover,) ,
-                  ):Container(),
+                  ):Container():Image.network(firebaseProvider.productList[firebaseProvider.productIndex].image[imageIndex]),
 
 
                 ),
@@ -178,7 +208,6 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                     child: IconButton(onPressed: (){
 
                       convertedImages.clear();
-                      imageUrl.clear();
                       pickedImage();
 
                     }, icon: Icon(Icons.camera) ))]
@@ -190,7 +219,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
-                itemCount: convertedImages.isEmpty?3:convertedImages.length,
+                itemCount: firebaseProvider.productIndex==null? convertedImages.isEmpty?3:convertedImages.length:firebaseProvider.productList[firebaseProvider.productIndex].image.length,
                 itemBuilder: (BuildContext ctx, index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -208,7 +237,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                               border: Border.all(width: 1,color: Colors.grey)
                           ),
                           alignment: Alignment.center,
-                          child: Image.memory(convertedImages[index],fit: BoxFit.cover,)
+                          child: Image.memory(convertedImages[index],fit: BoxFit.cover,),
 
                       ):Container(
                         width:publicProvider.pageWidth(size)*.1,
@@ -217,6 +246,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                             border: Border.all(width: 1,color: Colors.grey)
                         ),
+                        child: Image.network(firebaseProvider.productList[firebaseProvider.productIndex].image[index]) ,
 
                         height: 200,),
                     ),
@@ -290,7 +320,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                       ),
                     ),
                   ),
-                Padding(
+                  Padding(
                     padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
                     child: TextField(
 
@@ -315,16 +345,17 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                       Row(children: [
                         Text('S'),
                         InkWell(
-                          onTap: (){
-                            setState(() {
-                              _isS = !_isS;
-                              if(_isS==true){
-                                sizes.add('S');
-                              }else{
-                                sizes.remove('S');
-                              }
-                            });
-                          },
+                            onTap: (){
+                              setState(() {
+                                _isS = !_isS;
+
+                                if(_isS==true){
+                                  sizes.add('S');
+                                }else{
+                                  sizes.remove('S');
+                                }
+                              });
+                            },
 
                             child: Icon( _isS?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
                       ],),
@@ -688,13 +719,13 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                                                         Text(firebaseProvider.subCategoryList[index].subCategory,style: TextStyle(fontSize: 15,color: Colors.black),),
 
                                                         InkWell(
-                                                          onTap: (){
+                                                            onTap: (){
 
 
-                                                            FirebaseFirestore.instance.collection('SubCategory').doc(firebaseProvider.subCategoryList[index].id).delete().then((value) => showToast('Success'));
+                                                              FirebaseFirestore.instance.collection('SubCategory').doc(firebaseProvider.subCategoryList[index].id).delete().then((value) => showToast('Success'));
 
 
-                                                          },
+                                                            },
                                                             child: Icon(Icons.cancel_outlined))
 
                                                       ],
@@ -743,7 +774,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                             child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 shrinkWrap: true,
-                                itemCount:colors.isEmpty?0:colors.length,
+                                itemCount: firebaseProvider.productIndex==null? colors.isEmpty?0:colors.length:selectedProductColor.length,
                                 itemBuilder: (BuildContext ctx, index) {
                                   return   Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -751,7 +782,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                                       height: 10,
                                       width: 10,
                                       decoration: BoxDecoration(
-                                         color: colors[index] ,
+                                          color:firebaseProvider.productIndex==null? colors[index] :Color(int.parse(selectedProductColor[index])),
                                           shape: BoxShape.circle
                                       ),
                                     ),
@@ -763,102 +794,110 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                       IconButton(
                         icon: Icon(Icons.color_lens_outlined,color: Colors.redAccent,),
 
-                          onPressed: (){
-                            colorList.clear();
-                            colors.clear();
-                            showDialog(context: context, builder: (_){
-                              return   AlertDialog(
-                                title: Text('Picked Color'),
-                                content: SingleChildScrollView(
-                                  child: Column(
-                                    children: <Widget>[
-                                      ListTile(
-                                        title: const Text('Select color below to change this color'),
-                                        subtitle:
-                                        Text('${ColorTools.colorCode(screenPickerColor)} '
-                                            'aka ${ColorTools.nameThatColor(screenPickerColor)}'),
-                                        trailing: ColorIndicator(
-                                          width: 44,
-                                          height: 44,
-                                          borderRadius: 22,
-                                          color: screenPickerColor,
-                                        ),
+                        onPressed: (){
+                          colorList.clear();
+                          colors.clear();
+                          showDialog(context: context, builder: (_){
+                            return   AlertDialog(
+                              title: Text('Picked Color'),
+                              content: SingleChildScrollView(
+                                child: Column(
+                                  children: <Widget>[
+                                    ListTile(
+                                      title: const Text('Select color below to change this color'),
+                                      subtitle:
+                                      Text('${ColorTools.colorCode(screenPickerColor)} '
+                                          'aka ${ColorTools.nameThatColor(screenPickerColor)}'),
+                                      trailing: ColorIndicator(
+                                        width: 44,
+                                        height: 44,
+                                        borderRadius: 22,
+                                        color: screenPickerColor,
                                       ),
+                                    ),
 
-                                      // Show the color picker in sized box in a raised card.
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(6),
-                                          child: Card(
-                                            elevation: 2,
-                                            child: ColorPicker(
-                                              // Use the screenPickerColor as start color.
-                                              color: screenPickerColor,
-                                              // Update the screenPickerColor using the callback.
-                                              onColorChanged: (Color color) {
-                                                setState(() {
-                                              screenPickerColor = color;
-                                                });
-                                                setState(() {
+                                    // Show the color picker in sized box in a raised card.
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(6),
+                                        child: Card(
+                                          elevation: 2,
+                                          child: ColorPicker(
+                                            // Use the screenPickerColor as start color.
+                                            color: screenPickerColor,
+                                            // Update the screenPickerColor using the callback.
+                                            onColorChanged: (Color color) {
+                                              setState(() {
+                                                screenPickerColor = color;
+                                              });
+                                              setState(() {
 
-                                                  if(colorList.contains(screenPickerColor)){
+                                                if(colorList.contains(screenPickerColor)){
 
-                                                  }else {
-                                                    colors.add(screenPickerColor);
-                                                    colorList.add('0x${ColorTools.colorCode(screenPickerColor)}');
-                                                  }
-                                                });
-                                              },
-                                              width: 44,
-                                              height: 44,
-                                              borderRadius: 22,
-                                              heading: Text(
-                                                'Select color',
-                                                style: Theme.of(context).textTheme.headline5,
-                                              ),
-                                              subheading: Text(
-                                                'Select color shade',
-                                                style: Theme.of(context).textTheme.subtitle1,
-                                              ),
+                                                }else {
+                                                  colors.add(screenPickerColor);
+                                                  colorList.add('0x${ColorTools.colorCode(screenPickerColor)}');
+                                                }
+                                              });
+                                            },
+                                            width: 44,
+                                            height: 44,
+                                            borderRadius: 22,
+                                            heading: Text(
+                                              'Select color',
+                                              style: Theme.of(context).textTheme.headline5,
+                                            ),
+                                            subheading: Text(
+                                              'Select color shade',
+                                              style: Theme.of(context).textTheme.subtitle1,
                                             ),
                                           ),
                                         ),
                                       ),
+                                    ),
 
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          ElevatedButton(onPressed: (){
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        ElevatedButton(onPressed: (){
 
-                                            for(var index in colorList){
-                                              colors.add(index.toString());
-                                            }
-                                            print(colorList);
-
-                                          }, child: Text('Add')),
-                                          ElevatedButton(onPressed: (){
-
-                                            Navigator.pop(context);
+                                          for(var index in colorList){
 
 
-                                          }, child: Text('Ok')),
-                                        ],
-                                      )
-                                    ],
-                                  ),
+                                            colors.add(index.toString());
+
+
+                                          }
+
+
+
+                                          print(colorList);
+
+
+                                        }, child: Text('Add')),
+                                        ElevatedButton(onPressed: (){
+
+                                          Navigator.pop(context);
+
+
+                                        }, child: Text('Ok')),
+                                      ],
+                                    )
+                                  ],
                                 ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: Text('Cancel'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            }) ;
-                          },
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: Text('Cancel'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          }) ;
+                        },
 
                       ),
 
@@ -874,21 +913,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
             padding: const EdgeInsets.all(8.0),
             child: _isLoading? fadingCircle: TextButton(
                 onPressed: () {
-
-                  String uuid = Uuid().v4();
-
-
-                  if(convertedImages.isNotEmpty){
-                    setState(() {
-                      _isLoading = true;
-                    });
-                  _submitData(firebaseProvider, uuid);
-
-                  }else {
-                    showToast('Product Photo is Required');
-                  }
-
-
+                  updateData(firebaseProvider,publicProvider);
                 }, child: Container(
                 decoration: BoxDecoration(
                     color: Colors.green,
@@ -898,7 +923,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 50.0,vertical: 5,),
-                  child: Text('Upload',style: TextStyle(color: Colors.white),),
+                  child: Text('Update',style: TextStyle(color: Colors.white),),
                 ))),
           )
         ],
@@ -906,20 +931,31 @@ class _UploadProductPageState extends State<UploadProductPage>  {
     );
   }
 
-  pickedImage() async {
+  Future<void> updateData(FirebaseProvider firebaseProvider,PublicProvider publicProvider) async {
+    if (convertedImages.isEmpty) {
+      setState(() {
+        imageUrl = firebaseProvider.productList[firebaseProvider.productIndex].image;
+      });
+      _submitData(firebaseProvider,publicProvider);
+    } else {
 
+      _submitData(firebaseProvider,publicProvider);
+    }
+  }
+
+  pickedImage() async {
     FileUploadInputElement input = FileUploadInputElement()..accept = 'image/*';
     FirebaseStorage fs = FirebaseStorage.instance;
     input.multiple = true;
     input.click();
-    
+
     input.onChange.listen((event) {
-      
+
       for(var image in input.files!){
         final reader = FileReader();
         reader.readAsDataUrl(image);
         reader.onLoadEnd.listen((event) async {
-          var snapshot = await fs.ref().child('ProductImage').child(image.name).putBlob(image);
+          var snapshot = await fs.ref().child('ProductImage').putBlob(image);
           String downloadUrl = await snapshot.ref.getDownloadURL();
           setState(() {
             imageUrl.add(downloadUrl);
@@ -941,50 +977,56 @@ class _UploadProductPageState extends State<UploadProductPage>  {
     });
   }
 
+
+
   Future<void> _submitData(
-      FirebaseProvider firebaseProvider,String id) async {
+      FirebaseProvider firebaseProvider,PublicProvider publicProvider) async {
 
     DateTime date = DateTime.now();
     String dateData = '${date.month}-${date.day}-${date.year}';
-      setState(() => _isLoading = true);
-      Map<String, dynamic> map = {
-        'title': titleTextController.text,
-        'description': descriptionTextController.text,
-        'price': priceTextController.text,
-        'profitAmount': profitTextController.text,
-        'size':sizes,
-        'category': categorysValue,
-        'subCategory': subCategorysValue,
-        'colors': FieldValue.arrayUnion(colorList),
-        'image': imageUrl,
-        'date': dateData,
-        'id': id,
+    setState(() => _isLoading = true);
+    Map<String, dynamic> map = {
+      'title': titleTextController.text,
+      'description': descriptionTextController.text,
+      'price': priceTextController.text,
+      'profitAmount': profitTextController.text,
+      'size':sizes,
+      'category': categorysValue,
+      'subCategory': subCategorysValue,
+      'colors': FieldValue.arrayUnion(colorList),
+      'image': imageUrl,
+      'date': dateData,
+    };
 
-      };
+    await firebaseProvider.updateProductData(map).then((value)async{
+      if (value) {
 
-
-
-    await firebaseProvider.addProductData(map).then((value)async{
-        if (value) {
-
-
-          showToast('Product Uploaded Successfully');
-          _emptyFildCreator();
+        await firebaseProvider.getProducts().then((value) {
           setState(() {
+            publicProvider.subCategory =
+            'All Product';
+            publicProvider.category = '';
+          });
+        });
+   
+
+        showToast('Product Uploaded Successfully');
+        _emptyFildCreator();
+        setState(() {
 
           _isLoading = false;
-            setState(() {
-              convertedImages.clear();
-              imageUrl.clear();
-              colorList.clear();
-              sizes.clear();
-            });
+          setState(() {
+            convertedImages.clear();
+            imageUrl.clear();
+            colorList.clear();
+            sizes.clear();
           });
-        } else {
-          setState(() => _isLoading = false);
-          showToast('Failed');
-        }
-      });
+        });
+      } else {
+        setState(() => _isLoading = false);
+        showToast('Failed');
+      }
+    });
 
   }
 
@@ -1001,31 +1043,31 @@ class _UploadProductPageState extends State<UploadProductPage>  {
       _isLoading = true;
     });
 
-      Map<String, String> map = {
-        'category': categoryTextController.text,
-        'id': uuid,
-      };
-      await firebaseProvider.addCategoryData(map).then((value) {
-        if (value) {
+    Map<String, String> map = {
+      'category': categoryTextController.text,
+      'id': uuid,
+    };
+    await firebaseProvider.addCategoryData(map).then((value) {
+      if (value) {
 
-          showToast('Success');
+        showToast('Success');
 
-          setState(() {
-            _isLoading = false;
-          });
-          Navigator.pop(context);
-          categoryTextController.clear();
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.pop(context);
+        categoryTextController.clear();
 
-        } else {
+      } else {
 
-          showToast('Failed');
+        showToast('Failed');
 
-          setState(() {
-            _isLoading = false;
-          });
+        setState(() {
+          _isLoading = false;
+        });
 
-        }
-      });
+      }
+    });
 
   }
 
@@ -1054,7 +1096,6 @@ class _UploadProductPageState extends State<UploadProductPage>  {
     });
 
   }
-
 
 
 }

@@ -17,6 +17,7 @@ import 'package:makb_admin_pannel/pages/settings_page.dart';
 import 'package:makb_admin_pannel/pages/dashboard_page.dart';
 import 'package:makb_admin_pannel/pages/deposite_page.dart';
 import 'package:makb_admin_pannel/pages/insurance_page.dart';
+import 'package:makb_admin_pannel/pages/update_product.dart';
 import 'package:makb_admin_pannel/pages/withdraw_details_page.dart';
 import 'package:makb_admin_pannel/pages/withdrow_page.dart';
 
@@ -55,6 +56,7 @@ class PublicProvider extends ChangeNotifier{
   Widget pageBody(){
     if(_subCategory=='Add Product') return UploadProductPage();
     else if(_subCategory=='All Product') return AllProductPage();
+    else if(_subCategory=='Update Product') return UpdateProduct();
     else if(_subCategory=='Regular Orders') return RegularOrderPage();
     else if(_subCategory=='Add Package') return UploadPackagePage();
     else if(_subCategory=='All Package') return AllPackagePage();

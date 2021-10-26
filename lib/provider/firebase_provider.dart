@@ -13,6 +13,7 @@ import 'package:makb_admin_pannel/data_model/dart/set_rate_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/sub_category_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/withdraw_history_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/withdraw_request_model.dart';
+import 'package:makb_admin_pannel/widgets/fading_circle.dart';
 
 
 class FirebaseProvider extends ChangeNotifier {
@@ -58,10 +59,13 @@ class FirebaseProvider extends ChangeNotifier {
   var month;
   var year;
 
+  int? productIndex;
   int? depositIndex;
   int? withdrawIndex;
 
   int? insuranceID;
+
+
 
 
   Future<void> getUser()async{
@@ -571,6 +575,21 @@ class FirebaseProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> updateProductData(Map<String, dynamic> map) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Products')
+          .doc(productList[productIndex].id)
+          .update(map);
+      notifyListeners();
+
+
+      return true;
+    } catch (error) {
+      showToast(error.toString());
+      return false;
+    }
+  }
 
 
 }

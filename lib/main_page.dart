@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:makb_admin_pannel/colors.dart';
 import 'package:makb_admin_pannel/pages/login_page.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
 import 'package:makb_admin_pannel/variables.dart';
@@ -64,8 +65,8 @@ class _MainPageState extends State<MainPage> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFF3E3F68),
-                    Color(0xFF3E3F68),
+                    ColorsVariables.themColor,
+                    ColorsVariables.themColor,
                   ]
               )
           ),
@@ -276,8 +277,8 @@ class SideBar extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF19B52B),
-            Color(0xFF19B52B)
+           ColorsVariables.themColor,
+            ColorsVariables.themColor,
           ]
         )
       ),
