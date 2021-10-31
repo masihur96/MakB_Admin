@@ -65,8 +65,8 @@ class _MainPageState extends State<MainPage> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    ColorsVariables.themColor,
-                    ColorsVariables.themColor,
+                    Colors.green,
+                    Colors.green,
                   ]
               )
           ),
@@ -106,47 +106,47 @@ class _MainPageState extends State<MainPage> {
 
                   Row(
                     children: [
-                      AnimatedContainer(
-                        width: searchWidth,
-
-                          duration: Duration(milliseconds: 100),
-                        child:  Padding(
-                          padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                          child: TextField(
-                            controller: searchTextController,
-                            decoration: textFieldFormDecoration(size).copyWith(
-                              fillColor: Colors.white,
-                              filled: true,
-
-                              hintText: 'Search Product',
-                              hintStyle: TextStyle(fontSize: publicProvider.deviceDetect=='windows'? size.height * .02:size.width*.02,),
-
-                            ),
-                          ),
-                        ),
-
-
-                      ),
-
-                      InkWell(
-                        onTap: (){
-                          setState(() {
-
-                            if(searchWidth==0){
-                              searchWidth =200;
-                            }else {
-                              searchWidth =0;
-                            }
-
-                          });
-                        },
-                        child: Icon(
-                          Icons.search_outlined,
-                          size: 20,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(width: size.height * .01),
+                      // AnimatedContainer(
+                      //   width: searchWidth,
+                      //
+                      //     duration: Duration(milliseconds: 100),
+                      //   child:  Padding(
+                      //     padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                      //     child: TextField(
+                      //       controller: searchTextController,
+                      //       decoration: textFieldFormDecoration(size).copyWith(
+                      //         fillColor: Colors.white,
+                      //         filled: true,
+                      //
+                      //         hintText: 'Search Product',
+                      //         hintStyle: TextStyle(fontSize: publicProvider.deviceDetect=='windows'? size.height * .02:size.width*.02,),
+                      //
+                      //       ),
+                      //     ),
+                      //   ),
+                      //
+                      //
+                      // ),
+                      //
+                      // InkWell(
+                      //   onTap: (){
+                      //     setState(() {
+                      //
+                      //       if(searchWidth==0){
+                      //         searchWidth =200;
+                      //       }else {
+                      //         searchWidth =0;
+                      //       }
+                      //
+                      //     });
+                      //   },
+                      //   child: Icon(
+                      //     Icons.search_outlined,
+                      //     size: 20,
+                      //     color: Colors.white,
+                      //   ),
+                      // ),
+                      // SizedBox(width: size.height * .01),
                       PopupMenuButton(
                         offset: Offset(0, kToolbarHeight),
                         itemBuilder: (BuildContext context) =>[

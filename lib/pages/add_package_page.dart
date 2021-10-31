@@ -325,7 +325,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
                                           });
                                         },
 
-                                        child: Icon( _isS?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                                        child: Icon( sizes.contains('S')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
                                   ],),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -335,7 +335,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
                                           onTap: (){
                                             setState(() {
                                               _isM = !_isM;
-                                              if(_isS==true){
+                                              if(_isM==true){
                                                 sizes.add('M');
                                               }else{
                                                 sizes.remove('M');
@@ -343,7 +343,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
                                             });
                                           },
 
-                                          child: Icon( _isM?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                                          child: Icon( sizes.contains('M')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
 
                                     ],),
                                   ),
@@ -353,7 +353,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
                                         onTap: (){
                                           setState(() {
                                             _isL = !_isL;
-                                            if(_isS==true){
+                                            if(_isL==true){
                                               sizes.add('L');
                                             }else{
                                               sizes.remove('L');
@@ -361,7 +361,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
                                           });
                                         },
 
-                                        child: Icon( _isL?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                                        child: Icon( sizes.contains('L')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
 
                                   ],),
                                   Padding(
@@ -380,7 +380,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
                                             });
                                           },
 
-                                          child: Icon( _isXL?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                                          child: Icon( sizes.contains('XL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
 
                                     ],),
                                   ),
@@ -390,7 +390,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
                                         onTap: (){
                                           setState(() {
                                             _isXXL = !_isXXL;
-                                            if(_isS==true){
+                                            if(_isXXL==true){
                                               sizes.add('XXL');
                                             }else{
                                               sizes.remove('XXL');
@@ -398,7 +398,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
                                           });
                                         },
 
-                                        child: Icon( _isXXL?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                                        child: Icon( sizes.contains('XXL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
 
                                   ],),
                                   Padding(
@@ -417,7 +417,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
                                             });
                                           },
 
-                                          child: Icon( _isXXXL?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                                          child: Icon( sizes.contains('XXXL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
 
                                     ],),
                                   ),
@@ -685,6 +685,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
             convertedImages.clear();
             imageUrl.clear();
             colorList.clear();
+            colors.clear();
             sizes.clear();
           });
         });

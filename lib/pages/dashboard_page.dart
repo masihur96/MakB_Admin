@@ -40,7 +40,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
     firebaseProvider.getAreaHub();
     firebaseProvider.getRate();
     firebaseProvider.getWithdrawRequest();
-    firebaseProvider.getWithdrawHistory();
+
     firebaseProvider.getVideo();
     firebaseProvider.getAdminData();
   }

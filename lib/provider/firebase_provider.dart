@@ -60,6 +60,7 @@ class FirebaseProvider extends ChangeNotifier {
   var year;
 
   int? productIndex;
+  int? packageIndex;
   int? depositIndex;
   int? withdrawIndex;
 
@@ -141,7 +142,7 @@ class FirebaseProvider extends ChangeNotifier {
         });
 
 
-        print(_categoryList.length);
+        print('Category List: ${_categoryList.length}');
       });
     }catch(error){
       print(error);
@@ -160,7 +161,7 @@ class FirebaseProvider extends ChangeNotifier {
           );
           _subCategoryList.add(subCategory);
         });
-        print(_subCategoryList.length);
+        print('SubCAtegory: ${_subCategoryList.length}');
       });
 
 
@@ -171,7 +172,7 @@ class FirebaseProvider extends ChangeNotifier {
 
   Future<void> getProducts()async{
     try{
-      await FirebaseFirestore.instance.collection('Products').get().then((snapShot){
+      await FirebaseFirestore.instance.collection('Products').orderBy('title').get().then((snapShot){
         _productList.clear();
         snapShot.docChanges.forEach((element) {
           ProductModel productModel=ProductModel(
@@ -199,7 +200,7 @@ class FirebaseProvider extends ChangeNotifier {
 
   Future<void> getPackage()async{
     try{
-      await FirebaseFirestore.instance.collection('Packages').get().then((snapShot){
+      await FirebaseFirestore.instance.collection('Packages').orderBy('title').get().then((snapShot){
         _packageList.clear();
         snapShot.docChanges.forEach((element) {
           PackageModel packageModel=PackageModel(
@@ -207,6 +208,7 @@ class FirebaseProvider extends ChangeNotifier {
             title: element.doc['title'],
             description: element.doc['description'],
             price: element.doc['price'],
+            quantity: element.doc['quantity'],
             size: element.doc['size'],
             colors: element.doc['colors'],
             image: element.doc['image'],
@@ -288,9 +290,9 @@ class FirebaseProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> getWithdrawHistory()async{
+  Future<void> getWithdrawHistory(int index)async{
     try{
-      await FirebaseFirestore.instance.collection('Users').doc(withdrawRequestList[withdrawIndex].id).collection('WithdrawHistory').get().then((snapShot){
+      await FirebaseFirestore.instance.collection('Users').doc(withdrawRequestList[index].id).collection('WithdrawHistory').get().then((snapShot){
         _withdrawHistoryList.clear();
         snapShot.docChanges.forEach((element) {
           WithdrawHistoryModel withdrawHistoryModel=WithdrawHistoryModel(
@@ -354,45 +356,45 @@ class FirebaseProvider extends ChangeNotifier {
       print(error);
     }
   }
+  //
+  // Future<bool> addCategoryData(Map<String, String> map) async {
+  //   try {
+  //     await FirebaseFirestore.instance
+  //         .collection("Category")
+  //         .doc(map['id'])
+  //         .set(map);
+  //
+  //   await  getCategory();
+  //     notifyListeners();
+  //     return true;
+  //   } catch (err) {
+  //
+  //     print(err);
+  //     // showToast(err.toString());
+  //     return false;
+  //   }
+  // }
+  //
 
-  Future<bool> addCategoryData(Map<String, String> map) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection("Category")
-          .doc(map['id'])
-          .set(map);
 
-    await  getCategory();
-      notifyListeners();
-      return true;
-    } catch (err) {
-
-      print(err);
-      // showToast(err.toString());
-      return false;
-    }
-  }
-
-
-
-  Future<bool> addSubCategoryData(Map<String, String> map) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection("SubCategory")
-          .doc(map['id'])
-          .set(map);
-
-      await getSubCategory();
-      notifyListeners();
-      return true;
-    } catch (err) {
-
-      print(err);
-      // showToast(err.toString());
-      return false;
-    }
-  }
-
+  // Future<bool> addSubCategoryData(Map<String, String> map) async {
+  //   try {
+  //     await FirebaseFirestore.instance
+  //         .collection("SubCategory")
+  //         .doc(map['id'])
+  //         .set(map);
+  //
+  //     await getSubCategory();
+  //     notifyListeners();
+  //     return true;
+  //   } catch (err) {
+  //
+  //     print(err);
+  //     // showToast(err.toString());
+  //     return false;
+  //   }
+  // }
+  //
 
 
   Future<bool> addProductData(Map<String, dynamic> map) async {
@@ -490,21 +492,7 @@ class FirebaseProvider extends ChangeNotifier {
     }
   }
 
-  // Future<bool> updateStatusData(Map<String, dynamic> map) async {
-  //   try {
-  //     await FirebaseFirestore.instance
-  //         .collection("WithdrawRequests")
-  //         .doc('MakB-Rate')
-  //         .set(map);
-  //     notifyListeners();
-  //     return true;
-  //   } catch (err) {
-  //
-  //     print(err);
-  //     // showToast(err.toString());
-  //     return false;
-  //   }
-  // }
+
 
   Future<bool> addHubData(Map<String, dynamic> map) async {
     try {
@@ -522,11 +510,91 @@ class FirebaseProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> addCategoryData(Map<String, dynamic> map) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("Category")
+          .doc(map['id'])
+          .set(map);
+      notifyListeners();
+      return true;
+    } catch (err) {
+
+      print(err);
+      // showToast(err.toString());
+      return false;
+    }
+  }
+
+  Future<bool> addSubCategoryData(Map<String, dynamic> map) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("SubCategory")
+          .doc(map['id'])
+          .set(map);
+      notifyListeners();
+      return true;
+    } catch (err) {
+
+      print(err);
+      // showToast(err.toString());
+      return false;
+    }
+  }
+
+
   Future<bool> updateHubData(Map<String, dynamic> map) async {
     try {
       await FirebaseFirestore.instance
           .collection("Area&Hub")
           .doc(map['id'])
+          .update(map);
+      notifyListeners();
+      return true;
+    } catch (err) {
+
+      print(err);
+      // showToast(err.toString());
+      return false;
+    }
+  }
+
+  Future<bool> updateCategoryData(Map<String, dynamic> map) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("Category")
+          .doc(map['id'])
+          .update(map);
+      notifyListeners();
+      return true;
+    } catch (err) {
+
+      print(err);
+      // showToast(err.toString());
+      return false;
+    }
+  }
+  Future<bool> updateSubCategoryData(Map<String, dynamic> map) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("SubCategory")
+          .doc(map['id'])
+          .update(map);
+      notifyListeners();
+      return true;
+    } catch (err) {
+
+      print(err);
+      // showToast(err.toString());
+      return false;
+    }
+  }
+
+  Future<bool> updateStatusData(Map<String, dynamic> map) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("WithdrawRequests")
+          .doc('1634788372491')
           .update(map);
       notifyListeners();
       return true;
@@ -590,6 +658,20 @@ class FirebaseProvider extends ChangeNotifier {
       return false;
     }
   }
+  Future<bool> updatePackageData(Map<String, dynamic> map) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Packages')
+          .doc(packageList[packageIndex].id)
+          .update(map);
+      notifyListeners();
 
+
+      return true;
+    } catch (error) {
+      showToast(error.toString());
+      return false;
+    }
+  }
 
 }

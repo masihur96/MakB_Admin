@@ -22,7 +22,7 @@ class _WithdrawDetailsState extends State<WithdrawDetails> {
     setState(() {
       counter++;
 
-     firebaseProvider.getWithdrawHistory();
+     // firebaseProvider.getWithdrawHistory();
 
     });
   }
@@ -32,9 +32,9 @@ class _WithdrawDetailsState extends State<WithdrawDetails> {
     final PublicProvider publicProvider = Provider.of<PublicProvider>(context);
     final FirebaseProvider firebaseProvider = Provider.of<FirebaseProvider>(context);
 
-    if(counter==0){
-      _customInit(firebaseProvider);
-    }
+    // if(counter==0){
+    //   _customInit(firebaseProvider);
+    // }
     return Container(
       width: publicProvider.pageWidth(size),
 
@@ -44,14 +44,16 @@ class _WithdrawDetailsState extends State<WithdrawDetails> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
 
                   Container(
                     height: 200,
                     width: 200,
                     decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
-                      // child: Center(child: Text('Photo')),
-                 //child: Image.network(firebaseProvider.userList[firebaseProvider.withdrawRequestList[firebaseProvider.withdrawIndex].phone].imageUrl,fit: BoxFit.fill,),
+
+                 child: Image.network(firebaseProvider.withdrawHistoryList[firebaseProvider.withdrawIndex].imageUrl,fit: BoxFit.fill,),
+
                   ),
                   SizedBox(width: 10,),
 
@@ -116,8 +118,6 @@ class _WithdrawDetailsState extends State<WithdrawDetails> {
                       onPressed: () {
 
                         _submitData(firebaseProvider,firebaseProvider.withdrawIndex);
-
-
 
                         // showDialog(context: context, builder: (_){
                         //   return   AlertDialog(
@@ -184,10 +184,10 @@ class _WithdrawDetailsState extends State<WithdrawDetails> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Date',style: TextStyle(fontSize: 14),),
-                  Text('Status',style: TextStyle(fontSize: 14),),
-                  Text('From',style: TextStyle(fontSize: 14),),
-                  Text('Withdraw Balance',style: TextStyle(fontSize: 14),),
+                  Expanded(child: Text('Date',textAlign: TextAlign.center,)),
+                  Expanded(child: Text('Status',textAlign: TextAlign.center,)),
+                  Expanded(child: Text('From',textAlign: TextAlign.center,)),
+                  Expanded(child: Text('Withdraw Balance',textAlign: TextAlign.center,)),
 
                 ],),
             ),
@@ -209,34 +209,46 @@ class _WithdrawDetailsState extends State<WithdrawDetails> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                '${firebaseProvider.withdrawHistoryList[index].date}',
-                                style: TextStyle(
-                                  fontSize: publicProvider.isWindows
-                                      ? size.height * .02
-                                      : size.width * .02,
+
+                              Expanded(
+                                child: Text('${firebaseProvider.withdrawHistoryList[index].id}',textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: publicProvider.isWindows
+                                        ? size.height * .02
+                                        : size.width * .02,
+                                  ),),
+                              ),
+
+                              Expanded(
+                                child: Text(
+                                  '${firebaseProvider.withdrawHistoryList[index].date}',textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: publicProvider.isWindows
+                                        ? size.height * .02
+                                        : size.width * .02,
+                                  ),
                                 ),
                               ),
-                              Text(
-                                '${firebaseProvider.withdrawHistoryList[index].status}',
-                                style: TextStyle(
-                                  fontSize: publicProvider.isWindows
-                                      ? size.height * .02
-                                      : size.width * .02,
+                              Expanded(
+                                child: Text(
+                                  '${firebaseProvider.withdrawHistoryList[index].status}',textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: publicProvider.isWindows
+                                        ? size.height * .02
+                                        : size.width * .02,
+                                  ),
                                 ),
                               ),
-                              Text('${firebaseProvider.withdrawHistoryList[index].amount}',
-                                style: TextStyle(
-                                  fontSize: publicProvider.isWindows
-                                      ? size.height * .02
-                                      : size.width * .02,
-                                ),),
-                              Text('${firebaseProvider.withdrawHistoryList[index].amount}',
-                                style: TextStyle(
-                                  fontSize: publicProvider.isWindows
-                                      ? size.height * .02
-                                      : size.width * .02,
-                                ),),
+                              Expanded(
+                                child: Text('${firebaseProvider.withdrawHistoryList[index].amount}',textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: publicProvider.isWindows
+                                        ? size.height * .02
+                                        : size.width * .02,
+                                  ),),
+                              ),
+
+
 
                             ],
                           ),
@@ -258,17 +270,17 @@ class _WithdrawDetailsState extends State<WithdrawDetails> {
     Map<String, dynamic> map = {
       'status': statusValue,
     };
-    // await firebaseProvider.updateStatusData(map).then((value) {
-    //   if (value) {
-    //     print('Success');
-    //     setState(() {
-    //       _isLoading = false;
-    //     });
-    //   } else {
-    //     setState(() => _isLoading = false);
-    //     print('Failed');
-    //   }
-    // });
+    await firebaseProvider.updateStatusData(map).then((value) {
+      if (value) {
+        print('Success');
+        setState(() {
+          _isLoading = false;
+        });
+      } else {
+        setState(() => _isLoading = false);
+        print('Failed');
+      }
+    });
 
   }
 }

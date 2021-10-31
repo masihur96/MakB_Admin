@@ -274,9 +274,7 @@ class _AdvertisementState extends State<Advertisement> {
 
                           Container(
                               child: IconButton(onPressed: () async{
-
                                 FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.video);
-
                                 if (result != null) {
                                   //   File files =  result.files as File;
                                   PlatformFile file = result.files.first;

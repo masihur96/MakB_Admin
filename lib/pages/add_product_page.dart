@@ -28,7 +28,7 @@ class UploadProductPage extends StatefulWidget {
 class _UploadProductPageState extends State<UploadProductPage>  {
 
 
-
+//size Variable
   bool _isLoading = false;
   bool _isS=false;
   bool _isM=false;
@@ -52,9 +52,6 @@ class _UploadProductPageState extends State<UploadProductPage>  {
   @override
   void initState() {
     super.initState();
-
-
-
     screenPickerColor = Colors.blue;  // Material blue.
     dialogPickerColor = Colors.red;   // Material red.
     dialogSelectColor = const Color(0xFFA239CA); // A purple color.
@@ -66,7 +63,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
 
 
 
-  List <CategoryModel> caterorys = [];
+  List <CategoryModel> categorys = [];
   List <SubCategoryModel> subCategorys = [];
   var titleTextController = TextEditingController();
   var descriptionTextController = TextEditingController();
@@ -95,6 +92,8 @@ class _UploadProductPageState extends State<UploadProductPage>  {
   //custom init
   int counter=0;
 
+
+
   customInt(FirebaseProvider firebaseProvider) async {
 
     setState(() {
@@ -103,17 +102,26 @@ class _UploadProductPageState extends State<UploadProductPage>  {
 
       await firebaseProvider.getCategory().then((value) {
         setState(() {
-          caterorys = firebaseProvider.categoryList;
-          categorysValue = caterorys[0].category!;
+          categorys = firebaseProvider.categoryList;
+          categorysValue = categorys[1].category!;
+
+          print('Category List From Add: $categorys');
+          print('Category of index 0 From Add: $categorysValue');
         });
       });
 
     await firebaseProvider.getSubCategory().then((value) {
       setState(() {
         subCategorys = firebaseProvider.subCategoryList;
-        subCategorysValue = subCategorys[0].subCategory!;
+        subCategorysValue = subCategorys[1].subCategory!;
+
+        print('SubCategory List From Add: $subCategorys');
+        print('SubCategory of index 0 From Add: $subCategorysValue');
+
       });
     });
+
+
   }
 
   @override
@@ -208,7 +216,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                               border: Border.all(width: 1,color: Colors.grey)
                           ),
                           alignment: Alignment.center,
-                          child: Image.memory(convertedImages[index],fit: BoxFit.cover,)
+                          child: Image.memory(convertedImages[index],fit: BoxFit.fill,)
 
                       ):Container(
                         width:publicProvider.pageWidth(size)*.1,
@@ -324,9 +332,10 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                                 sizes.remove('S');
                               }
                             });
+                            print(sizes);
                           },
 
-                            child: Icon( _isS?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                            child: Icon(sizes.contains('S')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
                       ],),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -336,15 +345,16 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                               onTap: (){
                                 setState(() {
                                   _isM = !_isM;
-                                  if(_isS==true){
+                                  if(_isM==true){
                                     sizes.add('M');
                                   }else{
                                     sizes.remove('M');
                                   }
                                 });
+                                print(sizes);
                               },
 
-                              child: Icon( _isM?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                              child: Icon(sizes.contains('M')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
 
                         ],),
                       ),
@@ -354,15 +364,16 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                             onTap: (){
                               setState(() {
                                 _isL = !_isL;
-                                if(_isS==true){
+                                if(_isL==true){
                                   sizes.add('L');
                                 }else{
                                   sizes.remove('L');
                                 }
                               });
+                              print(sizes);
                             },
 
-                            child: Icon( _isL?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                            child: Icon(sizes.contains('L')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
 
                       ],),
                       Padding(
@@ -379,9 +390,10 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                                     sizes.remove('XL');
                                   }
                                 });
+                                print(sizes);
                               },
 
-                              child: Icon( _isXL?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                              child: Icon( sizes.contains('XL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
 
                         ],),
                       ),
@@ -391,15 +403,16 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                             onTap: (){
                               setState(() {
                                 _isXXL = !_isXXL;
-                                if(_isS==true){
+                                if(_isXXL==true){
                                   sizes.add('XXL');
                                 }else{
                                   sizes.remove('XXL');
                                 }
                               });
+                              print(sizes);
                             },
 
-                            child: Icon( _isXXL?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                            child: Icon( sizes.contains('XXL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
 
                       ],),
                       Padding(
@@ -415,10 +428,11 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                                   }else{
                                     sizes.remove('XXXL');
                                   }
+                                  print(sizes);
                                 });
                               },
 
-                              child: Icon( _isXXXL?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                              child: Icon(sizes.contains('XXXL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
 
                         ],),
                       ),
@@ -442,7 +456,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                               elevation: 0,
                               dropdownColor: Colors.white,
                               style: TextStyle(color: Colors.black),
-                              items: caterorys.map((itemValue) {
+                              items: categorys.map((itemValue) {
                                 return DropdownMenuItem<String>(
                                   value: itemValue.category,
                                   child: Text(itemValue.category!),
@@ -466,95 +480,101 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                                   title: Text('Add Category'),
                                   content: Container(
                                     height: publicProvider.isWindows?size.height*.5:size.width*.5,
-                                    child: Column(
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                                            child: TextField(
+                                              controller: categoryTextController,
+                                              decoration: textFieldFormDecoration(size).copyWith(
+                                                labelText: 'Category Name',
+                                                hintText: 'Category Name',
+                                                hintStyle: TextStyle(fontSize: 15),
 
-
-                                      children: <Widget>[
-
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                          child: TextField(
-                                            controller: subCategoryTextController,
-                                            decoration: textFieldFormDecoration(size).copyWith(
-                                              labelText: 'Category Name',
-                                              hintText: 'Category Name',
-                                              hintStyle: TextStyle(fontSize: 15),
-
+                                              ),
                                             ),
                                           ),
-                                        ),
 
-                                        _isLoading
-                                            ? fadingCircle
-                                            :ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            primary: Colors.green,
-                                          ),
-                                          onPressed: () {
-                                            setState(() {
-                                              _isLoading=true;
-                                            });
-
-                                            final String uuid = Uuid().v1();
-                                            _submitCategoryData(firebaseProvider,uuid).then((value) {
-                                              setState(() {
-                                                _isLoading=false;
-                                              });
-                                            });
+                                          _isLoading
+                                              ? fadingCircle
+                                              :ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Colors.green,
+                                            ),
+                                            onPressed: () {
 
 
-                                          },
-                                          child: Text('Add Category',style: TextStyle(color: Colors.white),),
-                                        ),
+                                              if(firebaseProvider.categoryList.contains(categoryTextController.text))
+                                             {
+                                               showToast('This Category is Already Exist');
 
-                                        Container(
-                                          height: publicProvider.isWindows?size.height*.35:size.width*.35,
-                                          width: publicProvider.isWindows?size.height*.4:size.width*.4,
-                                          child: ListView.builder(
-                                              shrinkWrap: true,
-                                              padding: const EdgeInsets.all(8),
-                                              itemCount: firebaseProvider.categoryList.length,
-                                              itemBuilder: (BuildContext context, int index) {
-                                                return Column(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children:[
-
-                                                    Padding(
-                                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                                      child: Divider(
-                                                        height: 1,
-                                                        color: Colors.grey,
-                                                      ),
-                                                    ),
-
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                      children: [
-                                                        Text(firebaseProvider.categoryList[index].category,style: TextStyle(fontSize: 15,color: Colors.black),),
-
-                                                        InkWell(
-                                                            onTap: (){
-
-
-                                                              FirebaseFirestore.instance.collection('Category').doc(firebaseProvider.categoryList[index].id).delete().then((value) => showToast('Success'));
-
-
-                                                            },
-                                                            child: Icon(Icons.cancel_outlined))
-
-                                                      ],
-                                                    ),
-                                                  ],
-                                                );
+                                              } else {
+                                                setState(() {
+                                                  _isLoading=true;
+                                                });
+                                                _submitCategoryData(firebaseProvider).then((value) {
+                                                  setState(() {
+                                                    _isLoading=false;
+                                                  });
+                                                });
                                               }
+
+
+
+                                            },
+                                            child: Text('Add Category',style: TextStyle(color: Colors.white),),
                                           ),
-                                        ),
+
+                                          Container(
+                                            height: publicProvider.isWindows?size.height*.35:size.width*.35,
+                                            width: publicProvider.isWindows?size.height*.4:size.width*.4,
+                                            child: ListView.builder(
+                                                shrinkWrap: true,
+                                                padding: const EdgeInsets.all(8),
+                                                itemCount: firebaseProvider.categoryList.length,
+                                                itemBuilder: (BuildContext context, int index) {
+                                                  return Column(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children:[
+
+                                                      Padding(
+                                                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                                        child: Divider(
+                                                          height: 1,
+                                                          color: Colors.grey,
+                                                        ),
+                                                      ),
+
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Text(firebaseProvider.categoryList[index].category,style: TextStyle(fontSize: 15,color: Colors.black),),
+
+                                                          InkWell(
+                                                              onTap: (){
+                                                                FirebaseFirestore.instance.collection('Category').doc(firebaseProvider.categoryList[index].id).delete().then((value) {
+                                                                 showToast('Success');
+                                                                 customInt(firebaseProvider);
+                                                                 Navigator.pop(context);
+                                                                });
+                                                              },
+                                                              child: Icon(Icons.cancel_outlined))
+
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  );
+                                                }
+                                            ),
+                                          ),
 
 
 
 
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                   actions: <Widget>[
@@ -620,95 +640,103 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                                   title: Text('Add Subcategory'),
                                   content: Container(
                                     height: publicProvider.isWindows?size.height*.5:size.width*.5,
-                                    child: Column(
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: <Widget>[
 
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                                            child: TextField(
+                                              controller: subCategoryTextController,
+                                              decoration: textFieldFormDecoration(size).copyWith(
+                                                labelText: 'Subcategory Name',
+                                                hintText: 'Subcategory Name',
+                                                hintStyle: TextStyle(fontSize: 15),
 
-                                      children: <Widget>[
-
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                          child: TextField(
-                                            controller: subCategoryTextController,
-                                            decoration: textFieldFormDecoration(size).copyWith(
-                                              labelText: 'Subcategory Name',
-                                              hintText: 'Subcategory Name',
-                                              hintStyle: TextStyle(fontSize: 15),
-
+                                              ),
                                             ),
                                           ),
-                                        ),
 
-                                        _isLoading
-                                            ? fadingCircle
-                                            :ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            primary: Colors.green,
-                                          ),
-                                          onPressed: () {
-                                            setState(() {
-                                              _isLoading=true;
-                                            });
+                                          _isLoading
+                                              ? fadingCircle
+                                              :ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Colors.green,
+                                            ),
+                                            onPressed: () {
 
-                                            final String uuid = Uuid().v1();
-                                            _submitSubCategoryData(firebaseProvider,uuid).then((value) {
-                                              setState(() {
-                                                _isLoading=false;
-                                              });
-                                            });
+                                              if(firebaseProvider.subCategoryList.contains(subCategoryTextController.text)){
 
-
-                                          },
-                                          child: Text('Add Subcategory',style: TextStyle(color: Colors.white),),
-                                        ),
-
-                                        Container(
-                                          height: publicProvider.isWindows?size.height*.35:size.width*.35,
-                                          width: publicProvider.isWindows?size.height*.4:size.width*.4,
-                                          child: ListView.builder(
-                                              shrinkWrap: true,
-                                              padding: const EdgeInsets.all(8),
-                                              itemCount: firebaseProvider.subCategoryList.length,
-                                              itemBuilder: (BuildContext context, int index) {
-                                                return Column(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children:[
-
-                                                    Padding(
-                                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                                      child: Divider(
-                                                        height: 1,
-                                                        color: Colors.grey,
-                                                      ),
-                                                    ),
-
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                      children: [
-                                                        Text(firebaseProvider.subCategoryList[index].subCategory,style: TextStyle(fontSize: 15,color: Colors.black),),
-
-                                                        InkWell(
-                                                          onTap: (){
-
-
-                                                            FirebaseFirestore.instance.collection('SubCategory').doc(firebaseProvider.subCategoryList[index].id).delete().then((value) => showToast('Success'));
-
-
-                                                          },
-                                                            child: Icon(Icons.cancel_outlined))
-
-                                                      ],
-                                                    ),
-                                                  ],
-                                                );
+                                                showToast('This SubCategory is Already Exist');
+                                              }else {
+                                                setState(() {
+                                                  _isLoading=true;
+                                                });
+                                                _submitSubCategoryData(firebaseProvider).then((value) {
+                                                  setState(() {
+                                                    _isLoading=false;
+                                                  });
+                                                });
                                               }
+
+
+                                            },
+                                            child: Text('Add Subcategory',style: TextStyle(color: Colors.white),),
                                           ),
-                                        ),
+
+                                          Container(
+                                            height: publicProvider.isWindows?size.height*.35:size.width*.35,
+                                            width: publicProvider.isWindows?size.height*.4:size.width*.4,
+                                            child: ListView.builder(
+                                                shrinkWrap: true,
+                                                padding: const EdgeInsets.all(8),
+                                                itemCount: firebaseProvider.subCategoryList.length,
+                                                itemBuilder: (BuildContext context, int index) {
+                                                  return Column(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children:[
+
+                                                      Padding(
+                                                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                                        child: Divider(
+                                                          height: 1,
+                                                          color: Colors.grey,
+                                                        ),
+                                                      ),
+
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Text(firebaseProvider.subCategoryList[index].subCategory,style: TextStyle(fontSize: 15,color: Colors.black),),
+
+                                                          InkWell(
+                                                            onTap: (){
+
+
+                                                              FirebaseFirestore.instance.collection('SubCategory').doc(firebaseProvider.subCategoryList[index].id).delete().then((value) {
+                                                               showToast('Success');
+                                                               customInt(firebaseProvider);
+                                                               Navigator.pop(context);
+                                                              });
+
+
+                                                            },
+                                                              child: Icon(Icons.cancel_outlined))
+
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  );
+                                                }
+                                            ),
+                                          ),
 
 
 
 
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                   actions: <Widget>[
@@ -881,8 +909,9 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                   if(convertedImages.isNotEmpty){
                     setState(() {
                       _isLoading = true;
+
                     });
-                  _submitData(firebaseProvider, uuid);
+                  _submitData(publicProvider,firebaseProvider, uuid);
 
                   }else {
                     showToast('Product Photo is Required');
@@ -941,8 +970,9 @@ class _UploadProductPageState extends State<UploadProductPage>  {
     });
   }
 
-  Future<void> _submitData(
+  Future<void> _submitData( PublicProvider publicProvider,
       FirebaseProvider firebaseProvider,String id) async {
+
 
     DateTime date = DateTime.now();
     String dateData = '${date.month}-${date.day}-${date.year}';
@@ -971,15 +1001,17 @@ class _UploadProductPageState extends State<UploadProductPage>  {
           showToast('Product Uploaded Successfully');
           _emptyFildCreator();
           setState(() {
-
-          _isLoading = false;
             setState(() {
               convertedImages.clear();
               imageUrl.clear();
               colorList.clear();
+              colors.clear();
               sizes.clear();
+
             });
           });
+
+          _isLoading = false;
         } else {
           setState(() => _isLoading = false);
           showToast('Failed');
@@ -995,65 +1027,178 @@ class _UploadProductPageState extends State<UploadProductPage>  {
     profitTextController.clear();
   }
 
-  Future<void> _submitCategoryData(FirebaseProvider firebaseProvider, String uuid) async {
 
-    setState(() {
-      _isLoading = true;
-    });
+  Future<void> _submitCategoryData(
+      FirebaseProvider firebaseProvider) async {
 
-      Map<String, String> map = {
+    final snapshot1 = await FirebaseFirestore.instance.collection('Category').doc(categoryTextController.text).get();
+
+    if(snapshot1.exists){
+      Map<String, dynamic> map = {
+
+        'id': categoryTextController.text,
         'category': categoryTextController.text,
-        'id': uuid,
       };
-      await firebaseProvider.addCategoryData(map).then((value) {
+      await firebaseProvider.updateCategoryData(map).then((value) {
         if (value) {
-
-          showToast('Success');
-
+           showToast('Successfully Updated');
+           customInt(firebaseProvider);
+          _emptyFildCreator();
           setState(() {
             _isLoading = false;
           });
-          Navigator.pop(context);
-          categoryTextController.clear();
-
         } else {
-
-          showToast('Failed');
-
-          setState(() {
-            _isLoading = false;
-          });
-
+          setState(() => _isLoading = false);
+          showToast('Failed to Update');
         }
       });
 
+    }else{
+
+      Map<String, dynamic> map = {
+
+        'id': categoryTextController.text,
+        'category': categoryTextController.text,
+      };
+      await firebaseProvider.addCategoryData(map).then((value) {
+        if (value) {
+          showToast('Successfully Added');
+          _emptyFildCreator();
+          customInt(firebaseProvider);
+
+          setState(() {
+            _isLoading = false;
+            setState(() {
+
+            });
+
+          });
+        } else {
+          setState(() => _isLoading = false);
+          showToast('Failed to Added');
+        }
+      });
+
+    }
+
   }
 
-  Future<void> _submitSubCategoryData(FirebaseProvider firebaseProvider, String uuid) async {
 
-    setState(() {
-      _isLoading = true;
-    });
+  Future<void> _submitSubCategoryData(
+      FirebaseProvider firebaseProvider) async {
 
-    Map<String, String> map = {
-      'subCategory': subCategoryTextController.text,
-      'id': uuid,
-    };
-    await firebaseProvider.addSubCategoryData(map).then((value) {
-      if (value) {
-        showToast('Success');
+    final snapshot1 = await FirebaseFirestore.instance.collection('SubCategory').doc(subCategoryTextController.text).get();
 
-        subCategoryTextController.clear();
-        setState(() => _isLoading = false);
+    if(snapshot1.exists){
+      Map<String, dynamic> map = {
 
-        Navigator.pop(context);
-      } else {
-        setState(() => _isLoading = false);
-        showToast('Failed');
-      }
-    });
+        'id': subCategoryTextController.text,
+        'subCategory': subCategoryTextController.text,
+      };
+      await firebaseProvider.updateSubCategoryData(map).then((value) {
+        if (value) {
+          showToast('Successfully Updated');
+          customInt(firebaseProvider);
+          _emptyFildCreator();
+          setState(() {
+            _isLoading = false;
+          });
+        } else {
+          setState(() => _isLoading = false);
+          showToast('Failed to Update');
+        }
+      });
+
+    }else{
+
+      Map<String, dynamic> map = {
+
+        'id': subCategoryTextController.text,
+        'subCategory': subCategoryTextController.text,
+      };
+      await firebaseProvider.addSubCategoryData(map).then((value) {
+        if (value) {
+          showToast('Successfully Added');
+          customInt(firebaseProvider);
+          _emptyFildCreator();
+
+          setState(() {
+            _isLoading = false;
+            setState(() {
+
+            });
+
+          });
+        } else {
+          setState(() => _isLoading = false);
+          showToast('Failed to Added');
+        }
+      });
+
+    }
 
   }
+
+
+  // Future<void> _submitCategoryData(FirebaseProvider firebaseProvider, String uuid) async {
+  //
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+  //
+  //     Map<String, String> map = {
+  //       'category': categoryTextController.text,
+  //       'id': categoryTextController.text,
+  //     };
+  //     await firebaseProvider.addCategoryData(map).then((value) {
+  //       if (value) {
+  //
+  //         showToast('Success');
+  //
+  //         setState(() {
+  //           _isLoading = false;
+  //         });
+  //         Navigator.pop(context);
+  //         categoryTextController.clear();
+  //
+  //       } else {
+  //
+  //         showToast('Failed');
+  //
+  //         setState(() {
+  //           _isLoading = false;
+  //         });
+  //
+  //       }
+  //     });
+  //
+  // }
+
+  // Future<void> _submitSubCategoryData(FirebaseProvider firebaseProvider, String uuid) async {
+  //
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+  //
+  //   Map<String, String> map = {
+  //     'subCategory': subCategoryTextController.text,
+  //     'id': subCategoryTextController.text,
+  //   };
+  //   await firebaseProvider.addSubCategoryData(map).then((value) {
+  //     if (value) {
+  //       showToast('Success');
+  //
+  //       subCategoryTextController.clear();
+  //       setState(() => _isLoading = false);
+  //
+  //       Navigator.pop(context);
+  //     } else {
+  //       setState(() => _isLoading = false);
+  //       showToast('Failed');
+  //     }
+  //   });
+  //
+  // }
 
 
 

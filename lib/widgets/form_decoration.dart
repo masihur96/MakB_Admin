@@ -31,12 +31,13 @@ InputDecoration formDecoration(Size size) => InputDecoration(
 
 InputDecoration textFieldFormDecoration(Size size) => InputDecoration(
 
+
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(width: 1, color: Color(0xFF3E3F68)),
+            borderSide: BorderSide(width: 1, color: Color(0xFF4caf50)),
             borderRadius: BorderRadius.circular(5),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(width: 1, color: Color(0xFF3E3F68)),
+            borderSide: BorderSide(width: 1, color: Color(0xFF4caf50)),
             borderRadius: BorderRadius.circular(10),
           ),
 

@@ -17,7 +17,7 @@ class UserModel{
   String? depositBalance;
   //String? depositHistory;
   //String? withdrawHistory;
-  int? insuranceBalance;
+  String? insuranceBalance;
   String? lastInsurancePaymentDate;
   String? level;
   String? mainBalance;

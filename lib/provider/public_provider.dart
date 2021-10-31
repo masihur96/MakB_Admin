@@ -17,6 +17,7 @@ import 'package:makb_admin_pannel/pages/settings_page.dart';
 import 'package:makb_admin_pannel/pages/dashboard_page.dart';
 import 'package:makb_admin_pannel/pages/deposite_page.dart';
 import 'package:makb_admin_pannel/pages/insurance_page.dart';
+import 'package:makb_admin_pannel/pages/update_package.dart';
 import 'package:makb_admin_pannel/pages/update_product.dart';
 import 'package:makb_admin_pannel/pages/withdraw_details_page.dart';
 import 'package:makb_admin_pannel/pages/withdrow_page.dart';
@@ -60,6 +61,7 @@ class PublicProvider extends ChangeNotifier{
     else if(_subCategory=='Regular Orders') return RegularOrderPage();
     else if(_subCategory=='Add Package') return UploadPackagePage();
     else if(_subCategory=='All Package') return AllPackagePage();
+    else if(_subCategory=='Update Package') return UpdatePackage();
     else if(_subCategory=='Area') return AreaHub();
     else if(_subCategory=='Hub') return AreaHub();
     else if(_subCategory=='Deposit') return DepositePage();

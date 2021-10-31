@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:makb_admin_pannel/data_model/dart/withdraw_request_model.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
@@ -10,11 +11,44 @@ class WithdrowPage extends StatefulWidget {
 }
 
 class _WithdrowPageState extends State<WithdrowPage> {
+  var searchTextController = TextEditingController();
+
+  int counter=0;
+
+  List<WithdrawRequestModel> _subList = [];
+  List<WithdrawRequestModel> _filteredList = [];
+
+  customInit(FirebaseProvider firebaseProvider)async{
+    setState(() {
+      counter++;
+    });
+
+    await firebaseProvider.getWithdrawRequest().then((value) {
+      setState(() {
+        _subList = firebaseProvider.withdrawRequestList;
+        _filteredList = _subList;
+      });
+    });
+
+  }
+
+  _filterList(String searchItem) {
+    setState(() {
+      _filteredList = _subList
+          .where((element) =>
+      (element.id!.toLowerCase().contains(searchItem.toLowerCase())))
+          .toList();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final PublicProvider publicProvider = Provider.of<PublicProvider>(context);
     final FirebaseProvider firebaseProvider = Provider.of<FirebaseProvider>(context);
+
+    if(counter==0){
+      customInit(firebaseProvider);
+    }
     return Container(
       width: publicProvider.pageWidth(size),
 
@@ -31,22 +65,21 @@ class _WithdrowPageState extends State<WithdrowPage> {
                     )),
               ),
             ),
-            Container(
-              width: publicProvider.isWindows
-                  ? size.height * .5
-                  : size.width * .5,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: size.height*.4,
                 child: TextField(
-
+                  controller: searchTextController,
                   decoration: textFieldFormDecoration(size).copyWith(
-                    hintText: 'Search By ID',
+                    hintText: 'Search Customer By ID',
                     hintStyle: TextStyle(
                       fontSize: publicProvider.isWindows
                           ? size.height * .02
                           : size.width * .02,
                     ),
                   ),
+                  onChanged: _filterList,
                 ),
               ),
             ),
@@ -55,27 +88,41 @@ class _WithdrowPageState extends State<WithdrowPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'ID',
+                  Expanded(
+                    child: Text(
+                      'ID',textAlign: TextAlign.center,
+                    ),
                   ),
-                  Text(
-                    'Name',
+                  Expanded(
+                    child: Text(
+                      'Name',textAlign: TextAlign.center,
+                    ),
                   ),
-                  Text(
-                    'Phone',
+                  Expanded(
+                    child: Text(
+                      'Phone',textAlign: TextAlign.center,
+                    ),
                   ),
-                  Text(
-                    'Amount',
+                  Expanded(
+                    child: Text(
+                      'Amount',textAlign: TextAlign.center,
+                    ),
                   ),
-                  Text(
-                    'Request Date',
+                  Expanded(
+                    child: Text(
+                      'Request Date',textAlign: TextAlign.center,
+                    ),
                   ),
 
-                  Text(
-                    'Status',
+                  Expanded(
+                    child: Text(
+                      'Status',textAlign: TextAlign.center,
+                    ),
                   ),
-                  Text(
-                    'View',
+                  Expanded(
+                    child: Text(
+                      'View',textAlign: TextAlign.center,
+                    ),
                   ),
 
                 ],
@@ -85,7 +132,7 @@ class _WithdrowPageState extends State<WithdrowPage> {
               child: ListView.builder(
                   shrinkWrap: true,
                   padding: const EdgeInsets.all(8),
-                  itemCount: firebaseProvider.withdrawRequestList.length,
+                  itemCount: _filteredList.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Column(
                       children: [
@@ -98,29 +145,41 @@ class _WithdrowPageState extends State<WithdrowPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                firebaseProvider.withdrawRequestList[index].id,
+                              Expanded(
+                                child: Text(
+                                  '${_filteredList[index].id}',textAlign: TextAlign.center,
+                                ),
                               ),
-                              Text(
-                                firebaseProvider.withdrawRequestList[index].name,
+                              Expanded(
+                                child: Text(
+                                 '${_filteredList[index].name}',textAlign: TextAlign.center,
+                                ),
                               ),
-                              Text(
-                                firebaseProvider.withdrawRequestList[index].phone,
+                              Expanded(
+                                child: Text(
+                                  '${_filteredList[index].phone}',textAlign: TextAlign.center,
+                                ),
                               ),
-                              Text(
-                                firebaseProvider.withdrawRequestList[index].amount,
+                              Expanded(
+                                child: Text(
+                                  '${_filteredList[index].amount}',textAlign: TextAlign.center,
+                                ),
                               ),
-                              Text(
-                                firebaseProvider.withdrawRequestList[index].date,
+                              Expanded(
+                                child: Text(
+                                  '${_filteredList[index].date}',textAlign: TextAlign.center,
+                                ),
                               ),
-                              Text(firebaseProvider.withdrawRequestList[index].status,
+                              Expanded(
+                                child: Text('${_filteredList[index].status}',textAlign: TextAlign.center,
+                                ),
                               ),
 
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () {
+
+                                    firebaseProvider.getWithdrawHistory(index).then((value) {
                                       setState(() {
                                         publicProvider.subCategory =
                                         'Withdraw Details';
@@ -129,38 +188,16 @@ class _WithdrowPageState extends State<WithdrowPage> {
                                           firebaseProvider.withdrawIndex = index;
                                         });
                                       });
-                                      // Navigator.push(context, MaterialPageRoute(builder: (_)=>ProductDetails()));
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        padding: const EdgeInsets.all(5.0),
-                                        decoration: BoxDecoration(
-                                            color: Colors.green,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(5))),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.visibility,
-                                              size: publicProvider.isWindows
-                                                  ? size.height * .02
-                                                  : size.width * .02,
-                                              color: Colors.white,
-                                            ),
-                                            Text(
-                                              'View Details',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
+                                    });
+                                  },
+                                  child: Icon(
+                                    Icons.visibility,
+                                    size: publicProvider.isWindows
+                                        ? size.height * .02
+                                        : size.width * .02,
+                                    color: Colors.green,
                                   ),
-
-                                ],
+                                ),
                               ),
 
                             ],
@@ -172,7 +209,6 @@ class _WithdrowPageState extends State<WithdrowPage> {
             )
           ],
         )
-
     );
   }
 }

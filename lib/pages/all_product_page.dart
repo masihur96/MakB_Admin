@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:makb_admin_pannel/data_model/dart/category_model.dart';
+import 'package:makb_admin_pannel/data_model/dart/product_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/sub_category_model.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
-import 'package:makb_admin_pannel/widgets/fading_circle.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
 import 'package:provider/provider.dart';
 
@@ -16,26 +17,28 @@ class AllProductPage extends StatefulWidget {
 class _AllProductPageState extends State<AllProductPage> {
 
   var searchTextController = TextEditingController();
+
+  //Category Variable
   String categorysValue='';
   String subCategorysValue = '';
   List <CategoryModel> caterorys = [];
   List <SubCategoryModel> subCategorys = [];
 
- List selectedProduct=[];
- List selectedProductID=[];
+
+ List selectedProduct=[]; //selected product for check
+ List selectedProductID=[]; //selected product ID for Delete
 
   final List<String> imgList = [];
 
   int _currentIndex = 0;
 
   int counter = 0;
-
+  List<ProductModel> _subList = [];
+  List<ProductModel> _filteredList = [];
   _customInit(FirebaseProvider firebaseProvider) async{
     setState(() {
       counter++;
     });
-
-
 
     await firebaseProvider.getCategory().then((value) {
       setState(() {
@@ -50,8 +53,24 @@ class _AllProductPageState extends State<AllProductPage> {
         subCategorysValue = subCategorys[0].subCategory!;
       });
     });
+    await firebaseProvider.getProducts().then((value) {
+      setState(() {
+        _subList = firebaseProvider.productList;
+        _filteredList = _subList;
+      });
+    });
+
   }
 
+
+  _filterList(String searchItem) {
+    setState(() {
+      _filteredList = _subList
+          .where((element) =>
+      (element.title!.toLowerCase().contains(searchItem.toLowerCase())))
+          .toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,100 +85,23 @@ class _AllProductPageState extends State<AllProductPage> {
       width: publicProvider.pageWidth(size),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Container(
-                width: publicProvider.isWindows
-                    ? size.height * .2
-                    : size.width * .2,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                  child: TextField(
-                    controller: searchTextController,
-                    decoration: textFieldFormDecoration(size).copyWith(
-                      hintText: 'Search Product',
-                      hintStyle: TextStyle(
-                        fontSize: publicProvider.isWindows
-                            ? size.height * .02
-                            : size.width * .02,
-                      ),
-                    ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              width: size.height*.4,
+              child: TextField(
+                controller: searchTextController,
+                decoration: textFieldFormDecoration(size).copyWith(
+                  hintText: 'Search Product By Title',
+                  hintStyle: TextStyle(
+                    fontSize: publicProvider.isWindows
+                        ? size.height * .02
+                        : size.width * .02,
                   ),
                 ),
+                onChanged: _filterList,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text('Category: ',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontStyle: FontStyle.normal,
-                        fontSize: publicProvider.isWindows
-                            ? size.height * .02
-                            : size.width * .02,
-                      )),
-                  DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: categorysValue,
-                      elevation: 0,
-                      dropdownColor: Colors.white,
-                      style: TextStyle(color: Colors.black),
-                      items: caterorys.map((itemValue) {
-                        return DropdownMenuItem<String>(
-                          value: itemValue.category,
-                          child: Text(itemValue.category!),
-                        );
-                      }).toList(),
-                      onChanged: (newValue) {
-                        setState(() {
-                          categorysValue = newValue!;
-                        });
-
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text('Subcategory: ',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontStyle: FontStyle.normal,
-                        fontSize: publicProvider.isWindows
-                            ? size.height * .02
-                            : size.width * .02,
-                      )),
-                  DropdownButtonHideUnderline(
-                    child: Row(
-                      children: [
-                        DropdownButton<String>(
-
-                          value: subCategorysValue,
-                          elevation: 0,
-                          dropdownColor: Colors.white,
-                          style: TextStyle(color: Colors.black),
-                          items: subCategorys.map((itemValue) {
-                            return DropdownMenuItem<String>(
-
-                              value: itemValue.subCategory,
-                              child: Text(itemValue.subCategory!),
-                            );
-                          }).toList(),
-                          onChanged: (newValue) {
-                            setState(() {
-                              subCategorysValue = newValue!;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -208,14 +150,13 @@ class _AllProductPageState extends State<AllProductPage> {
                                 batch.commit().then((value) {
                                   firebaseProvider.getProducts();
                                   selectedProduct.clear();
-                                  selectedProductID.clear();
                                   Navigator.of(context).pop();
                                 });
 
+                                selectedProductID.forEach((element) {
 
-
-
-
+                                  deleteSinglePhoto(firebaseProvider.productList[element].image);
+                                });
 
                                 Navigator.of(context).pop();
                               },
@@ -293,6 +234,16 @@ class _AllProductPageState extends State<AllProductPage> {
                 ),
                 Expanded(
                   child: Text(
+                    'Price',textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: publicProvider.isWindows
+                          ? size.height * .02
+                          : size.width * .02,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
                     'Profit',textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: publicProvider.isWindows
@@ -329,14 +280,17 @@ class _AllProductPageState extends State<AllProductPage> {
             child: ListView.builder(
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(8),
-                itemCount: firebaseProvider.productList.length,
+                itemCount:_filteredList.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
                     child: Column(
                       children: [
-                        Divider(
-                          height: 1,
-                          color: Colors.grey,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Divider(
+                            height: 1,
+                            color: Colors.grey,
+                          ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -348,11 +302,11 @@ class _AllProductPageState extends State<AllProductPage> {
 
 
                                     if(selectedProduct.contains(index)){
-                                      selectedProductID.remove(firebaseProvider.productList[index].id);
+                                      selectedProductID.remove(_filteredList[index].id);
                                       selectedProduct.remove(index);
                                     }else {
 
-                                      selectedProductID.add(firebaseProvider.productList[index].id);
+                                      selectedProductID.add(_filteredList[index].id);
                                       selectedProduct.add(index);
 
                                       print(selectedProductID);
@@ -372,14 +326,14 @@ class _AllProductPageState extends State<AllProductPage> {
                                       ? size.height * .03
                                       : size.width * .03,
                                   child: Image.network(
-                                    firebaseProvider.productList[index].image[0],
+                                    _filteredList[index].image![0],
                                     fit: BoxFit.fill,
                                   )),
                             ),
 
                             Expanded(
                               child: Text(
-                                firebaseProvider.productList[index].title,textAlign: TextAlign.center,
+                                '${_filteredList[index].title}',textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: publicProvider.isWindows
                                       ? size.height * .02
@@ -388,7 +342,7 @@ class _AllProductPageState extends State<AllProductPage> {
                               ),
                             ),
                             Expanded(
-                              child: Text(firebaseProvider.productList[index].profitAmount,textAlign: TextAlign.center,
+                              child: Text('${_filteredList[index].price}',textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: publicProvider.isWindows
                                       ? size.height * .02
@@ -396,7 +350,15 @@ class _AllProductPageState extends State<AllProductPage> {
                                 ),),
                             ),
                             Expanded(
-                              child: Text(firebaseProvider.productList[index].category,textAlign: TextAlign.center,
+                              child: Text('${_filteredList[index].profitAmount}',textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: publicProvider.isWindows
+                                      ? size.height * .02
+                                      : size.width * .02,
+                                ),),
+                            ),
+                            Expanded(
+                              child: Text('${_filteredList[index].category}',textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: publicProvider.isWindows
                                       ? size.height * .02
@@ -413,8 +375,6 @@ class _AllProductPageState extends State<AllProductPage> {
                                       setState(() {
                                         firebaseProvider.productIndex = index;
                                       });
-
-
 
                                         showDialog(context: context, builder: (_){
                                           return   AlertDialog(
@@ -511,7 +471,7 @@ class _AllProductPageState extends State<AllProductPage> {
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       border: Border.all(width: 1,color: Colors.grey)
                   ),
-                  child:imgList.isNotEmpty? Container(
+                  child:firebaseProvider.productList[index].image.isNotEmpty? Container(
                     child: Image.network(firebaseProvider.productList[index].image[_currentIndex],fit: BoxFit.cover,) ,
                   ):Container(),
                 ),
@@ -698,4 +658,89 @@ class _AllProductPageState extends State<AllProductPage> {
       ),
     );
   }
+
+
+  Future deleteSinglePhoto(List<dynamic> photos) async {
+    try {
+      if (photos.isNotEmpty) {
+        for (var photo in photos) {
+          print('deleting $photo');
+          await FirebaseStorage.instance.refFromURL(photo).delete();
+        }
+      }
+    } catch (error) {
+      print('deleting single photo error: $error');
+    }
+  }
 }
+// Row(
+//   mainAxisAlignment: MainAxisAlignment.start,
+//   children: [
+//     Text('Category: ',
+//         style: TextStyle(
+//           color: Colors.black,
+//           fontStyle: FontStyle.normal,
+//           fontSize: publicProvider.isWindows
+//               ? size.height * .02
+//               : size.width * .02,
+//         )),
+//     DropdownButtonHideUnderline(
+//       child: DropdownButton<String>(
+//         value: categorysValue,
+//         elevation: 0,
+//         dropdownColor: Colors.white,
+//         style: TextStyle(color: Colors.black),
+//         items: caterorys.map((itemValue) {
+//           return DropdownMenuItem<String>(
+//             value: itemValue.category,
+//             child: Text(itemValue.category!),
+//           );
+//         }).toList(),
+//         onChanged: (newValue) {
+//           setState(() {
+//             categorysValue = newValue!;
+//           });
+//
+//         },
+//       ),
+//     ),
+//   ],
+// ),
+// Row(
+//   mainAxisAlignment: MainAxisAlignment.start,
+//   children: [
+//     Text('Subcategory: ',
+//         style: TextStyle(
+//           color: Colors.black,
+//           fontStyle: FontStyle.normal,
+//           fontSize: publicProvider.isWindows
+//               ? size.height * .02
+//               : size.width * .02,
+//         )),
+//     DropdownButtonHideUnderline(
+//       child: Row(
+//         children: [
+//           DropdownButton<String>(
+//
+//             value: subCategorysValue,
+//             elevation: 0,
+//             dropdownColor: Colors.white,
+//             style: TextStyle(color: Colors.black),
+//             items: subCategorys.map((itemValue) {
+//               return DropdownMenuItem<String>(
+//
+//                 value: itemValue.subCategory,
+//                 child: Text(itemValue.subCategory!),
+//               );
+//             }).toList(),
+//             onChanged: (newValue) {
+//               setState(() {
+//                 subCategorysValue = newValue!;
+//               });
+//             },
+//           ),
+//         ],
+//       ),
+//     ),
+//   ],
+// ),

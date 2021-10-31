@@ -1,15 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
 import 'package:provider/provider.dart';
+
 class DepositeDetails extends StatefulWidget {
   @override
   _DepositeDetailsState createState() => _DepositeDetailsState();
 }
 
 class _DepositeDetailsState extends State<DepositeDetails> {
+
   var addDepositTextController = TextEditingController();
   var updateDepositTextController = TextEditingController();
   var oTPTextController = TextEditingController();
@@ -62,8 +66,7 @@ class _DepositeDetailsState extends State<DepositeDetails> {
                   style: ElevatedButton.styleFrom(
                     primary: Colors.green,
                   ),
-                  onPressed: () {
-
+                  onPressed: () async{
                     showDialog(context: context, builder: (_){
                       return   AlertDialog(
                         title: Text('Add Balance'),
@@ -135,8 +138,6 @@ class _DepositeDetailsState extends State<DepositeDetails> {
                       );
                     }) ;
 
-
-
                   },
                   child: Text('Add Balance',style: TextStyle(fontSize: 15,color: Colors.white),)),
 
@@ -166,7 +167,6 @@ class _DepositeDetailsState extends State<DepositeDetails> {
                                       labelText: 'OTP',
                                       hintText: 'OTP',
                                       hintStyle: TextStyle(fontSize: 15),
-
                                     ),
                                   ),
                                 ),
@@ -178,7 +178,6 @@ class _DepositeDetailsState extends State<DepositeDetails> {
                                       labelText: 'Amount',
                                       hintText: 'Amount',
                                       hintStyle: TextStyle(fontSize: 15),
-
                                     ),
                                   ),
                                 ),
@@ -316,11 +315,7 @@ class _DepositeDetailsState extends State<DepositeDetails> {
   //  setState(() => _isLoading = true);
     Map<String, dynamic> map = {
     //  'depositPreBalance': addDepositTextController.text,
-
       'depositBalance': int.parse(firebaseProvider.userList[firebaseProvider.depositIndex].depositBalance)+int.parse(addDepositTextController.text),
-
-
-
     };
     await firebaseProvider.addDepositData(map,firebaseProvider.userList[firebaseProvider.depositIndex].id).then((value) {
       if (value) {

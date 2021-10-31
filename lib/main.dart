@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:makb_admin_pannel/main_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
@@ -9,6 +10,8 @@ import 'package:provider/provider.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   //await firebase_core.Firebase.initializeApp();
+ await Firebase.initializeApp();
+
   runApp( MyApp(),);
 }
 

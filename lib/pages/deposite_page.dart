@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:makb_admin_pannel/data_model/dart/customer_data_model.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
@@ -16,11 +17,45 @@ class _DepositePageState extends State<DepositePage> {
   bool _isLoading=false;
   var searchTextController = TextEditingController();
 
+  List<UserModel> _subList = [];
+  List<UserModel> _filteredList = [];
+
+  int counter=0;
+  customInit(FirebaseProvider firebaseProvider)async{
+    setState(() {
+      counter++;
+    });
+
+    await firebaseProvider.getUser().then((value) {
+      setState(() {
+        _subList = firebaseProvider.userList;
+        _filteredList = _subList;
+      });
+    });
+
+  }
+
+
+  _filterList(String searchItem) {
+    setState(() {
+      _filteredList = _subList
+          .where((element) =>
+      (element.id!.toLowerCase().contains(searchItem.toLowerCase())))
+          .toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final PublicProvider publicProvider = Provider.of<PublicProvider>(context);
     final FirebaseProvider firebaseProvider = Provider.of<FirebaseProvider>(context);
+
+
+    if(counter==0){
+      customInit(firebaseProvider);
+    }
+
     return Container(
       width: publicProvider.pageWidth(size),
       child: Column(
@@ -36,22 +71,21 @@ class _DepositePageState extends State<DepositePage> {
                   )),
             ),
           ),
-          Container(
-            width: publicProvider.isWindows
-                ? size.height * .5
-                : size.width * .5,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              width: size.height*.4,
               child: TextField(
                 controller: searchTextController,
                 decoration: textFieldFormDecoration(size).copyWith(
-                  hintText: 'Search Depositor',
+                  hintText: 'Search Depositor By ID',
                   hintStyle: TextStyle(
                     fontSize: publicProvider.isWindows
                         ? size.height * .02
                         : size.width * .02,
                   ),
                 ),
+                onChanged: _filterList,
               ),
             ),
           ),
@@ -62,25 +96,35 @@ class _DepositePageState extends State<DepositePage> {
               children: [
 
                 Text(
-                  'Photo',
+                  'Photo',textAlign: TextAlign.center,
 
                 ),
-                Text(
-                  'Name',
+                Expanded(
+                  child: Text(
+                    'Name',textAlign: TextAlign.center,
 
+                  ),
                 ),
-                Text(
-                  'ID',
+                Expanded(
+                  child: Text(
+                    'Customer ID',textAlign: TextAlign.center,
+                  ),
                 ),
-                Text(
-                  'Info',
+                Expanded(
+                  child: Text(
+                    'Info',textAlign: TextAlign.center,
+                  ),
                 ),
-                Text(
-                  'Deposit Amount',
+                Expanded(
+                  child: Text(
+                    'Deposit Amount',textAlign: TextAlign.center,
+                  ),
                 ),
 
-                Text(
-                  'View',
+                Expanded(
+                  child: Text(
+                    'View',textAlign: TextAlign.center,
+                  ),
                 ),
 
               ],
@@ -90,7 +134,7 @@ class _DepositePageState extends State<DepositePage> {
             child: ListView.builder(
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(8),
-                itemCount: firebaseProvider.userList.length,
+                itemCount: _filteredList.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Column(
                       children: [
@@ -108,67 +152,56 @@ class _DepositePageState extends State<DepositePage> {
                                       ? size.height * .1
                                       : size.width * .1,
                                   width: publicProvider.isWindows
-                                      ? size.height * .1
-                                      : size.width * .1,
-                                  child: Image.asset(
-                                    firebaseProvider.userList[index].imageUrl,
+                                      ? size.height * .05
+                                      : size.width * .05,
+                                  child: Image.network(
+                                    _filteredList[index].imageUrl!,
                                     fit: BoxFit.fill,
                                   )),
-                              Text(
-                                firebaseProvider.userList[index].name,
+                              Expanded(
+                                child: Text(
+                                  '${_filteredList[index].name}',textAlign: TextAlign.center,
+                                ),
                               ),
-                              Text(
-                                firebaseProvider.userList[index].id,
+                              Expanded(
+                                child: Text(
+                                  '${_filteredList[index].id}',textAlign: TextAlign.center,
+                                ),
                               ),
-                              Text(firebaseProvider.userList[index].address,
+                              Expanded(
+                                child: Text('${_filteredList[index].address}',textAlign: TextAlign.center,
+                                ),
                               ),
-                              Text(firebaseProvider.userList[index].depositBalance,
+                              Expanded(
+                                child: Text('${_filteredList[index].depositBalance}',textAlign: TextAlign.center,
+                                ),
                               ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        publicProvider.subCategory =
-                                        'DepositDetails';
-                                        publicProvider.category = '';
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
                                         setState(() {
-                                          firebaseProvider.depositIndex = index;
+                                          publicProvider.subCategory =
+                                          'DepositDetails';
+                                          publicProvider.category = '';
+                                          setState(() {
+                                            firebaseProvider.depositIndex = index;
+                                          });
                                         });
-                                      });
-                                      // Navigator.push(context, MaterialPageRoute(builder: (_)=>ProductDetails()));
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        padding: const EdgeInsets.all(5.0),
-                                        decoration: BoxDecoration(
-                                            color: Colors.green,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(5))),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.visibility,
-                                              size: publicProvider.isWindows
-                                                  ? size.height * .02
-                                                  : size.width * .02,
-                                              color: Colors.white,
-                                            ),
-                                            Text(
-                                              'View Details',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                      },
+                                      child: Icon(
+                                        Icons.visibility,
+                                        size: publicProvider.isWindows
+                                            ? size.height * .02
+                                            : size.width * .02,
+                                        color: Colors.green,
                                       ),
                                     ),
-                                  ),
 
-                                ],
+                                  ],
+                                ),
                               ),
 
                             ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:makb_admin_pannel/data_model/dart/customer_data_model.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
@@ -17,16 +18,30 @@ class _CustomerPageState extends State<CustomerPage> {
 
   int counter=0;
 
-  customInit(FirebaseProvider firebaseProvider){
+  List<UserModel> _subList = [];
+  List<UserModel> _filteredList = [];
+
+  customInit(FirebaseProvider firebaseProvider)async{
     setState(() {
       counter++;
     });
-    //
-    // level = firebaseProvider.userList.level;
-    // print('level $level');
 
+    await firebaseProvider.getUser().then((value) {
+      setState(() {
+        _subList = firebaseProvider.userList;
+        _filteredList = _subList;
+      });
+    });
 
+  }
 
+  _filterList(String searchItem) {
+    setState(() {
+      _filteredList = _subList
+          .where((element) =>
+      (element.id!.toLowerCase().contains(searchItem.toLowerCase())))
+          .toList();
+    });
   }
 
   List deleteList =[];
@@ -54,21 +69,21 @@ class _CustomerPageState extends State<CustomerPage> {
                         : size.width * .05,
                   )),
             ),
-            Container(
-              width:
-              publicProvider.isWindows ? size.height * .5 : size.width * .5,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: size.height*.4,
                 child: TextField(
                   controller: searchTextController,
                   decoration: textFieldFormDecoration(size).copyWith(
-                    hintText: 'Search Customer',
+                    hintText: 'Search Customer By ID',
                     hintStyle: TextStyle(
                       fontSize: publicProvider.isWindows
                           ? size.height * .02
                           : size.width * .02,
                     ),
                   ),
+                  onChanged: _filterList,
                 ),
               ),
             ),
@@ -243,7 +258,7 @@ class _CustomerPageState extends State<CustomerPage> {
               child: ListView.builder(
                   shrinkWrap: true,
                   padding: const EdgeInsets.all(8),
-                  itemCount: firebaseProvider.userList.length,
+                  itemCount: _filteredList.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Column(
                       children: [
@@ -272,7 +287,7 @@ class _CustomerPageState extends State<CustomerPage> {
                                 child: deleteList. contains(index)?Icon(Icons.check_box_outlined,size: 15,):Icon(Icons.check_box_outline_blank_outlined,size: 15,)),
                             Expanded(
                               child: Text(
-                                firebaseProvider.userList[index].id,textAlign: TextAlign.center,
+                                '${_filteredList[index].id}',textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: publicProvider.isWindows
                                       ? size.height * .02
@@ -284,8 +299,8 @@ class _CustomerPageState extends State<CustomerPage> {
                               padding: const EdgeInsets.symmetric(horizontal: 18.0),
                               child: Container(
                                 width: 30,
-                                child:firebaseProvider.userList[index].imageUrl != null? Image.network(
-                                  firebaseProvider.userList[index].imageUrl,height: publicProvider.isWindows
+                                child:_filteredList[index].imageUrl != null? Image.network(
+                                  _filteredList[index].imageUrl!,height: publicProvider.isWindows
                                     ? size.height * .1
                                     : size.width * .1,
                                   width: publicProvider.isWindows
@@ -297,7 +312,7 @@ class _CustomerPageState extends State<CustomerPage> {
                             ),
                             Expanded(
                               child: Text(
-                                firebaseProvider.userList[index].name,textAlign: TextAlign.center,
+                                '${_filteredList[index].name}',textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: publicProvider.isWindows
                                       ? size.height * .02
@@ -308,9 +323,9 @@ class _CustomerPageState extends State<CustomerPage> {
                             Expanded(
                               child: Column(
                                 children: [
-                                  Text(firebaseProvider.userList[index].address,textAlign: TextAlign.center,),
-                                  firebaseProvider.userList[index].email !=''? Text(firebaseProvider.userList[index].email,textAlign: TextAlign.center,):Container(),
-                                  Text(firebaseProvider.userList[index].phone,textAlign: TextAlign.center,),
+                                  Text('${_filteredList[index].address}',textAlign: TextAlign.center,),
+                                  _filteredList[index].email !=''? Text('${_filteredList[index].email}',textAlign: TextAlign.center,):Container(),
+                                  Text('${_filteredList[index].phone}',textAlign: TextAlign.center,),
                                 ],
                               ),
                             ),
@@ -336,18 +351,18 @@ class _CustomerPageState extends State<CustomerPage> {
                                                     children: [
 
 
-                                                      Text( firebaseProvider.userList[index].name,style: TextStyle(fontSize: 20,color: Colors.black),),
+                                                      Text( '${_filteredList[index].name}',style: TextStyle(fontSize: 20,color: Colors.black),),
                                                       Padding(
                                                         padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                                        child: Text( 'Refer Code: ${firebaseProvider.userList[index].referCode}',style: TextStyle(fontSize: 14,color: Colors.black),),
+                                                        child: Text( 'Refer Code: ${_filteredList[index].referCode}',style: TextStyle(fontSize: 14,color: Colors.black),),
                                                       ),
 
-                                                      Text('Refer Date: ${firebaseProvider.userList[index].referDate}',style: TextStyle(fontSize: 14,color: Colors.black),),
+                                                      Text('Refer Date: ${_filteredList[index].referDate}',style: TextStyle(fontSize: 14,color: Colors.black),),
 
-                                                      Text('Refer Limit: ${firebaseProvider.userList[index].referLimit}',),
+                                                      Text('Refer Limit: ${_filteredList[index].referLimit}',),
                                                       Padding(
                                                         padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                                        child: Text('Total Referee: ${firebaseProvider.userList[index].numberOfReferred}',style: TextStyle(fontSize: 14,color: Colors.black),),
+                                                        child: Text('Total Referee: ${_filteredList[index].numberOfReferred}',style: TextStyle(fontSize: 14,color: Colors.black),),
                                                       ),
                                                     ],),
 
@@ -356,9 +371,70 @@ class _CustomerPageState extends State<CustomerPage> {
                                                     width: 100,
                                                     decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
 
-                                                    child: Image.network(firebaseProvider.userList[index].imageUrl,fit: BoxFit.fill,),),
+                                                    child: Image.network(_filteredList[index].imageUrl!,fit: BoxFit.fill,),),
 
                                                 ],),
+                                            ),
+
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+
+                                                  Expanded(
+                                                    child: Text(
+                                                      'ID',textAlign: TextAlign.center,
+                                                      style: TextStyle(
+                                                        fontSize: publicProvider.isWindows
+                                                            ? size.height * .02
+                                                            : size.width * .02,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Text(
+                                                      'Name',textAlign: TextAlign.center,
+                                                      style: TextStyle(
+                                                        fontSize: publicProvider.isWindows
+                                                            ? size.height * .02
+                                                            : size.width * .02,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Text(
+                                                      'Refer Code',textAlign: TextAlign.center,
+                                                      style: TextStyle(
+                                                        fontSize: publicProvider.isWindows
+                                                            ? size.height * .02
+                                                            : size.width * .02,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Text(
+                                                      'Refer Date',textAlign: TextAlign.center,
+                                                      style: TextStyle(
+                                                        fontSize: publicProvider.isWindows
+                                                            ? size.height * .02
+                                                            : size.width * .02,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Text(
+                                                      'Refer Income',textAlign: TextAlign.center,
+                                                      style: TextStyle(
+                                                        fontSize: publicProvider.isWindows
+                                                            ? size.height * .02
+                                                            : size.width * .02,
+                                                      ),
+                                                    ),
+                                                  ),
+
+                                                ],
+                                              ),
                                             ),
 
                                                 // Expanded(
@@ -455,7 +531,6 @@ class _CustomerPageState extends State<CustomerPage> {
                                                               child: Text('Main Balance: ${firebaseProvider.userList[index].mainBalance}',style: TextStyle(fontSize: 14,color: Colors.black),),
                                                             ),
                                                           ],),
-
                                                         Container(
                                                           decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
 
@@ -464,92 +539,25 @@ class _CustomerPageState extends State<CustomerPage> {
                                                           child: Padding(
                                                             padding: const EdgeInsets.all(8.0),
                                                             child: Column(
-
                                                               children: [
                                                                 Container(
                                                                   height: 100,
                                                                   width: 100,
                                                                   decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
-
                                                                   child: Image.asset( 'assets/images/splash_3.png',fit: BoxFit.fill,),),
                                                                 Padding(
                                                                   padding: const EdgeInsets.symmetric(vertical: 18.0),
                                                                   child: Text('Silver',style: TextStyle(fontSize: 14,color: Colors.black),),
                                                                 ),
-
                                                               ],
                                                             ),
                                                           ),
                                                         ),
-
-
                                                       ],),
                                                   ),
-
-                                                  Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                      children: [
-                                                      ElevatedButton(
-                                                          style: ElevatedButton.styleFrom(
-                                                              primary: Colors.green,
-                                                       ),
-                                                          onPressed: (){
-
-
-                                                          },
-                                                          child: Padding(
-                                                            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                                                            child: Text('Insurance',style: TextStyle(
-                                                                fontSize: 15,
-                                                                color: Colors.white,
-                                                                fontWeight: FontWeight.normal
-
-                                                            ),),
-                                                          )),
-                                                      ElevatedButton(
-                                                          style: ElevatedButton.styleFrom(
-                                                          primary: Colors.green,
-                                                          textStyle: TextStyle(
-                                                              fontSize: 15,
-                                                              color: Colors.white,
-                                                              fontWeight: FontWeight.normal)),
-                                                          onPressed: (){}, child: Padding(
-                                                            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                                                            child: Text('Deposit',style: TextStyle(
-                                                            fontSize: 15,
-                                                            color: Colors.white,
-                                                            fontWeight: FontWeight.normal
-
-                                                      ),),
-                                                          )),
-                                                      ElevatedButton(
-                                                          style: ElevatedButton.styleFrom(
-                                                              primary: Colors.green,),
-                                                          onPressed: (){
-
-                                                            publicProvider.subCategory = 'Refer';
-                                                            publicProvider.category = '';
-
-                                                            Navigator.pop(context);
-
-
-                                                          }, child: Padding(
-                                                            padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                                                            child: Text('Refer',style: TextStyle(
-                                                            fontSize: 15,
-                                                            color: Colors.white,
-                                                            fontWeight: FontWeight.normal
-                                                      ),),
-                                                          )),
-                                                    ],),
-                                                  )
-
                                                 ],
                                               ),
                                             ),
-
                                           ),
                                           actions: <Widget>[
                                             TextButton(
