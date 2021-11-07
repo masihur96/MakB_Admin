@@ -6,9 +6,14 @@ import 'package:makb_admin_pannel/data_model/dart/advertisement_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/area_hub_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/category_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/customer_data_model.dart';
+import 'package:makb_admin_pannel/data_model/dart/depositeRequestModel.dart';
+import 'package:makb_admin_pannel/data_model/dart/insurance_request_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/package_model.dart';
+import 'package:makb_admin_pannel/data_model/dart/package_order_request_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/product_id_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/product_model.dart';
+import 'package:makb_admin_pannel/data_model/dart/product_order_model.dart';
+import 'package:makb_admin_pannel/data_model/dart/refer_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/set_rate_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/sub_category_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/withdraw_history_model.dart';
@@ -31,8 +36,20 @@ class FirebaseProvider extends ChangeNotifier {
   List<ProductModel> _productList = [];
   get productList => _productList;
 
+  List<ProductOrderModel> _productOrderList = [];
+  get productOrderList => _productOrderList;
+
   List<PackageModel> _packageList = [];
   get packageList => _packageList;
+
+  List<PackageOrderModel> _packageOrderList = [];
+  get packageOrderList => _packageOrderList;
+
+  List<ReferModel> _referList = [];
+  get referList => _referList;
+
+  List<PackageModel> _soldPackageList = [];
+  get soldPackageList => _soldPackageList;
 
   List<AreaHubModel> _areaHubList = [];
   get areaHubList => _areaHubList;
@@ -40,11 +57,27 @@ class FirebaseProvider extends ChangeNotifier {
   List<RateModel> _rateDataList = [];
   get rateDataList => _rateDataList;
 
+
+
   List<WithdrawRequestModel> _withdrawRequestList = [];
   get withdrawRequestList => _withdrawRequestList;
 
+  List<DepositRequestModel> _depositRequestList = [];
+  get depositRequestList => _depositRequestList;
+
   List<WithdrawHistoryModel> _withdrawHistoryList = [];
   get withdrawHistoryList => _withdrawHistoryList;
+
+
+  List<DepositRequestModel> _depositHistoryList = [];
+  get depositHistoryList => _depositHistoryList;
+
+  List<InsuranceModel> _insuranceRequestList = [];
+  get insuranceRequestList => _insuranceRequestList;
+
+  List<InsuranceModel> _insuranceTransferredRequestList = [];
+  get insuranceTransferredRequestList => _insuranceTransferredRequestList;
+
 
   List<AdvertisementModel> _advertisementList = [];
   get advertisementList => _advertisementList;
@@ -58,7 +91,7 @@ class FirebaseProvider extends ChangeNotifier {
   var day;
   var month;
   var year;
-
+  int? customerIndex;
   int? productIndex;
   int? packageIndex;
   int? depositIndex;
@@ -70,7 +103,6 @@ class FirebaseProvider extends ChangeNotifier {
 
 
   Future<void> getUser()async{
-
     try{
       await FirebaseFirestore.instance.collection('Users').get().then((snapShot){
         _userList.clear();
@@ -107,7 +139,7 @@ class FirebaseProvider extends ChangeNotifier {
             referLimit: element.doc['referLimit'],
           );
 
-          final  date = new DateTime.fromMicrosecondsSinceEpoch(element.doc['timeStamp']*1000);
+         final  date = new DateTime.fromMillisecondsSinceEpoch(int.parse(element.doc['timeStamp']));
 
           day = date.day;
           month = date.month;
@@ -122,7 +154,26 @@ class FirebaseProvider extends ChangeNotifier {
         print(year);
       });
     }catch(error){
-      print(error);
+      print('get User: $error');
+    }
+  }
+
+  String userMainBalance='';
+  String userDepositBalance='';
+  Future<void> getSingleUserData(String id)async{
+    try {
+
+      var document = await FirebaseFirestore.instance.collection('Users').doc(id).get();
+
+      // ignore: unnecessary_statements
+
+      userMainBalance = document['mainBalance'];
+      userDepositBalance = document['depositBalance'];
+      print('Single User MainBalance: ${document['mainBalance']}');
+      print('Single User DepositBalance: ${document['depositBalance']}');
+
+    }catch(error){
+      print('get Single User Name: $error');
     }
   }
 
@@ -226,6 +277,117 @@ class FirebaseProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> getPackageRequest()async{
+    try{
+      await FirebaseFirestore.instance.collection('PackageCollectionRequest').get().then((snapShot){
+        _packageOrderList.clear();
+        snapShot.docChanges.forEach((element) {
+          PackageOrderModel packageOrderModel=PackageOrderModel(
+              colors: element.doc['colors'],
+              date: element.doc['date'],
+              discount: element.doc['discount'],
+              id: element.doc['id'],
+              imageUrl: element.doc['imageUrl'],
+              packageId: element.doc['packageId'],
+              productName: element.doc['productName'],
+              productPrice: element.doc['productPrice'],
+              quantity: element.doc['quantity'],
+              sizes: element.doc['sizes'],
+              status: element.doc['status'],
+              userName: element.doc['userName'],
+              userAddress: element.doc['userAddress'],
+              userPhone: element.doc['userPhone'],
+          );
+          _packageOrderList.add(packageOrderModel) ;
+        });
+        print('Package Order List: ${_packageOrderList.length}');
+        notifyListeners();
+      });
+    }catch(error){
+      print(error);
+    }
+  }
+  Future<void> getReferCode(String userId)async{
+    try{
+      await FirebaseFirestore.instance.collection('Users').doc(userId).collection('referredList').get().then((snapShot){
+        _referList.clear();
+        snapShot.docChanges.forEach((element) {
+          ReferModel referModel=ReferModel(
+            date: element.doc['date'],
+            id: element.doc['id'],
+            name: element.doc['name'],
+            phone: element.doc['phone'],
+            profit: element.doc['profit'],
+            referCode: element.doc['referCode'],
+          );
+          _referList.add(referModel);
+        });
+
+
+        print('Refer List: ${_referList.length}');
+      });
+    }catch(error){
+      print(error);
+    }
+  }
+
+  Future<void> getSoldPackage()async{
+    try{
+      await FirebaseFirestore.instance.collection('SoldPackages').get().then((snapShot){
+        _soldPackageList.clear();
+        snapShot.docChanges.forEach((element) {
+          PackageModel packageModel=PackageModel(
+              id: element.doc['id'],
+              title: element.doc['productName'],
+              description: element.doc['description'],
+              price: element.doc['productPrice'],
+              quantity: element.doc['quantity'],
+              size: element.doc['sizes'],
+              colors: element.doc['colors'],
+              image: element.doc['imageUrl'],
+              date: element.doc['date'],
+              discountAmount: element.doc['discount']
+
+          );
+          _soldPackageList.add(packageModel) ;
+        });
+        print('Sold Package List: ${_soldPackageList.length}');
+        notifyListeners();
+      });
+    }catch(error){
+      print(error);
+    }
+  }
+
+  Future<void> getProductOrder()async{
+    try{
+      await FirebaseFirestore.instance.collection('Orders').get().then((snapShot){
+        _productOrderList.clear();
+        snapShot.docChanges.forEach((element) {
+          ProductOrderModel productOrderModel =ProductOrderModel(
+              Area: element.doc['Area'],
+              hub: element.doc['hub'],
+              name: element.doc['name'],
+              orderDate: element.doc['orderDate'],
+              orderNumber: element.doc['orderNumber'],
+              phone: element.doc['phone'],
+              products: element.doc['products'],
+              quantity: element.doc['quantity'],
+              state: element.doc['state'],
+              totalAmount: element.doc['totalAmount'],
+              id: element.doc['id']
+          );
+          _productOrderList.add(productOrderModel) ;
+        });
+        print('Product Order  List: ${_productOrderList.length}');
+        notifyListeners();
+      });
+    }catch(error){
+      print(error);
+    }
+  }
+
+
   Future<void> getAreaHub()async{
     try{
       await FirebaseFirestore.instance.collection('Area&Hub').get().then((snapShot){
@@ -251,7 +413,6 @@ class FirebaseProvider extends ChangeNotifier {
         snapShot.docChanges.forEach((element) {
           RateModel rateModel=RateModel(
             serviceCharge: element.doc['serviceCharge'],
-            referAmount: element.doc['referAmount'],
             videoRate: element.doc['videoRate'],
             date: element.doc['date'],
           );
@@ -266,9 +427,60 @@ class FirebaseProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> getDepositRequest()async{
+    try{
+      await FirebaseFirestore.instance.collection('DepositRequests').where('status',isEqualTo:'pending').get().then((snapShot){
+        _depositRequestList.clear();
+        snapShot.docChanges.forEach((element) {
+          DepositRequestModel depositRequestModel=DepositRequestModel(
+            amount: element.doc['amount'],
+            date: element.doc['date'],
+            name: element.doc['name'],
+            phone: element.doc['phone'],
+            status: element.doc['status'],
+            depositId: element.doc['depositId'],
+            userId: element.doc['userId'],
+          );
+          _depositRequestList.add(depositRequestModel) ;
+        });
+        print('Deposit Request: ${_depositRequestList.length}');
+        notifyListeners();
+      });
+    }catch(error){
+      print(error);
+    }
+  }
+
+  Future<void> getDepositHistory(String userID)async{
+    try{
+      await FirebaseFirestore.instance.collection('Users').doc(userID).collection('DepositHistory').get().then((snapShot){
+        _depositHistoryList.clear();
+        snapShot.docChanges.forEach((element) {
+          DepositRequestModel depositRequestModel=DepositRequestModel(
+            amount: element.doc['amount'],
+            date: element.doc['date'],
+            name: element.doc['name'],
+            phone: element.doc['phone'],
+            status: element.doc['status'],
+            depositId: element.doc['depositId'],
+            userId: element.doc['userId'],
+
+          );
+          _depositHistoryList.add(depositRequestModel) ;
+        });
+        print('Deposit History: ${_depositHistoryList.length}');
+        notifyListeners();
+      });
+    }catch(error){
+      print(error);
+    }
+  }
+
+
+
   Future<void> getWithdrawRequest()async{
     try{
-      await FirebaseFirestore.instance.collection('WithdrawRequests').get().then((snapShot){
+      await FirebaseFirestore.instance.collection('WithdrawRequests').where('status',isEqualTo:'pending').get().then((snapShot){
         _withdrawRequestList.clear();
         snapShot.docChanges.forEach((element) {
           WithdrawRequestModel withdrawRequestModel=WithdrawRequestModel(
@@ -278,6 +490,9 @@ class FirebaseProvider extends ChangeNotifier {
             name: element.doc['name'],
             phone: element.doc['phone'],
             status: element.doc['status'],
+            withdrawId: element.doc['withdrawId'],
+            transactionMobileNo: element.doc['transactionMobileNo'],
+            transactionSystem: element.doc['transactionSystem'],
 
           );
           _withdrawRequestList.add(withdrawRequestModel) ;
@@ -290,9 +505,9 @@ class FirebaseProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> getWithdrawHistory(int index)async{
+  Future<void> getWithdrawHistory(String userID)async{
     try{
-      await FirebaseFirestore.instance.collection('Users').doc(withdrawRequestList[index].id).collection('WithdrawHistory').get().then((snapShot){
+      await FirebaseFirestore.instance.collection('Users').doc(userID).collection('WithdrawHistory').get().then((snapShot){
         _withdrawHistoryList.clear();
         snapShot.docChanges.forEach((element) {
           WithdrawHistoryModel withdrawHistoryModel=WithdrawHistoryModel(
@@ -303,6 +518,9 @@ class FirebaseProvider extends ChangeNotifier {
             name: element.doc['name'],
             phone: element.doc['phone'],
             status: element.doc['status'],
+            withdrawId: element.doc['withdrawId'],
+            transactionMobileNo: element.doc['transactionMobileNo'],
+            transactionSystem: element.doc['transactionSystem'],
 
           );
           _withdrawHistoryList.add(withdrawHistoryModel) ;
@@ -314,6 +532,57 @@ class FirebaseProvider extends ChangeNotifier {
       print(error);
     }
   }
+
+  Future<void> getInsurancePendingRequest()async{
+    try{
+      await FirebaseFirestore.instance.collection('InsuranceWithDrawRequest').where('status',isEqualTo:'pending').get().then((snapShot){
+        _insuranceRequestList.clear();
+        snapShot.docChanges.forEach((element) {
+          InsuranceModel insuranceModel=InsuranceModel(
+              amount: element.doc['amount'],
+              date: element.doc['date'],
+              insuranceId: element.doc['insuranceId'],
+              name: element.doc['name'],
+              phone: element.doc['phone'],
+              status: element.doc['status'],
+              userId: element.doc['userId'],
+
+          );
+          _insuranceRequestList.add(insuranceModel) ;
+        });
+        print('Insurance List: ${_insuranceRequestList.length}');
+        notifyListeners();
+      });
+    }catch(error){
+      print(error);
+    }
+  }
+
+  Future<void> getInsuranceTransferredRequest()async{
+    try{
+      await FirebaseFirestore.instance.collection('InsuranceWithDrawRequest').where('status',isEqualTo:'transferred').get().then((snapShot){
+        _insuranceTransferredRequestList.clear();
+        snapShot.docChanges.forEach((element) {
+          InsuranceModel insuranceModel=InsuranceModel(
+            amount: element.doc['amount'],
+            date: element.doc['date'],
+            insuranceId: element.doc['insuranceId'],
+            name: element.doc['name'],
+            phone: element.doc['phone'],
+            status: element.doc['status'],
+            userId: element.doc['userId'],
+
+          );
+          _insuranceTransferredRequestList.add(insuranceModel) ;
+        });
+        print('Insurance Transferred List: ${_insuranceTransferredRequestList.length}');
+        notifyListeners();
+      });
+    }catch(error){
+      print(error);
+    }
+  }
+
 
   Future<void> getVideo()async{
     try{
@@ -396,7 +665,6 @@ class FirebaseProvider extends ChangeNotifier {
   // }
   //
 
-
   Future<bool> addProductData(Map<String, dynamic> map) async {
     try {
       await FirebaseFirestore.instance
@@ -466,6 +734,84 @@ class FirebaseProvider extends ChangeNotifier {
           .collection("Users")
           .doc(id)
           .update(map);
+      notifyListeners();
+      return true;
+    } catch (err) {
+
+      print(err);
+      // showToast(err.toString());
+      return false;
+    }
+  }
+
+  Future<bool> addInsuranceData(Map<String, dynamic> map,int index) async {
+    String id = insuranceRequestList[index].userId;
+    try {
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(id)
+          .update(map);
+      notifyListeners();
+      return true;
+    } catch (err) {
+
+      print(err);
+      // showToast(err.toString());
+      return false;
+    }
+  }
+
+  Future<bool> updateOrderStatus(Map<String, dynamic> map,int index) async {
+    String id = productOrderList[index].id;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection("Orders")
+          .doc(id)
+          .update(map).then((value) {
+          getProductOrder();
+          });
+      notifyListeners();
+      return true;
+    } catch (err) {
+
+      print(err);
+       showToast(err.toString());
+      return false;
+    }
+  }
+
+  Future<bool> updatePackageOrderStatus(Map<String, dynamic> map,int index) async {
+    String id = packageOrderList[index].id;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection("PackageCollectionRequest")
+          .doc(id)
+          .update(map).then((value) {
+        getProductOrder();
+      });
+      notifyListeners();
+      return true;
+    } catch (err) {
+
+      print(err);
+      showToast(err.toString());
+      return false;
+    }
+  }
+
+
+
+  Future<bool> updateInsuranceStatusData(Map<String, dynamic> map,int index) async {
+    String id = insuranceRequestList[index].insuranceId;
+    try {
+      await FirebaseFirestore.instance
+          .collection("InsuranceWithDrawRequest")
+          .doc(id)
+          .update(map).then((value) {
+            getInsurancePendingRequest().then((value) => getInsuranceTransferredRequest());
+          });
       notifyListeners();
       return true;
     } catch (err) {
@@ -590,22 +936,108 @@ class FirebaseProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> updateStatusData(Map<String, dynamic> map) async {
+
+
+
+  Future<bool> updateStatusData(Map<String, dynamic> map,int index) async {
+
+ //   print('WithDrow ID : ${withdrawRequestList[withdrawIndex].withdrawId}');
     try {
       await FirebaseFirestore.instance
           .collection("WithdrawRequests")
-          .doc('1634788372491')
-          .update(map);
+          .doc(withdrawRequestList[index].withdrawId)
+          .update(map).then((value) async{
+              await FirebaseFirestore.instance
+                  .collection("Users")
+                  .doc(withdrawRequestList[index].id).collection('WithdrawHistory').doc(withdrawRequestList[index].withdrawId)
+                  .update(map).then((value) => getWithdrawRequest());
+              notifyListeners();
+          });
       notifyListeners();
       return true;
     } catch (err) {
-
       print(err);
       // showToast(err.toString());
       return false;
     }
   }
 
+
+  Future<bool> refundWithdrawAmount(Map<String, dynamic> map,int index) async {
+
+    //   print('WithDrow ID : ${withdrawRequestList[withdrawIndex].withdrawId}');
+    try {
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(withdrawRequestList[index].id)
+          .update(map).then((value) async{
+
+              await FirebaseFirestore.instance
+                  .collection("WithdrawRequests")
+                  .doc(withdrawRequestList[index].withdrawId).delete()
+                  .then((value) async{
+                        await FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc(withdrawRequestList[index].id).collection('WithdrawHistory').doc(withdrawRequestList[index].withdrawId).delete()
+                            .then((value) => getWithdrawRequest());
+               notifyListeners();
+        });
+          });
+
+
+
+      notifyListeners();
+      return true;
+    } catch (err) {
+      print(err);
+      // showToast(err.toString());
+      return false;
+    }
+  }
+
+
+  Future<bool> addDepositRequestAmount(Map<String, dynamic> map,int index) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(depositRequestList[index].userId)
+          .update(map);
+
+
+      notifyListeners();
+      return true;
+    } catch (err) {
+      print(err);
+      showToast(err.toString());
+      return false;
+    }
+  }
+
+  Future<bool> updateDepositStatus(Map<String, dynamic> map,int index) async {
+
+
+    try {
+      await FirebaseFirestore.instance
+          .collection("DepositRequests")
+          .doc(depositRequestList[index].depositId)
+          .update(map).then((value) async{
+
+        await FirebaseFirestore.instance
+                .collection("Users")
+                .doc(depositRequestList[index].userId).collection('DepositHistory').doc(depositRequestList[index].depositId)
+                .update(map).then((value) => getDepositRequest());
+            notifyListeners();
+
+
+      });
+      notifyListeners();
+      return true;
+    } catch (err) {
+      print(err);
+      showToast(err.toString());
+      return false;
+    }
+  }
 
   Future<bool> deleteSubCategoryData(Map<String, String> map) async {
     try {
@@ -641,6 +1073,14 @@ class FirebaseProvider extends ChangeNotifier {
       // showToast(err.toString());
       return false;
     }
+  }
+
+  Future<void> deleteProductOrder(
+      FirebaseProvider firebaseProvider, int? index) async {
+    await  FirebaseFirestore.instance
+        .collection("Orders")
+        .doc(productOrderList[index].id).delete().then((value) => getProductOrder());
+
   }
 
   Future<bool> updateProductData(Map<String, dynamic> map) async {

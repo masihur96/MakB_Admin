@@ -24,12 +24,19 @@ class _AddBalanceState extends State<AddBalance> {
       counter++;
     });
 
-    setState(() {
+    firebaseProvider.getRate().then((value) {
+      if(firebaseProvider.rateDataList.isNotEmpty){
+        setState(() {
 
-     _serviceCharge = TextEditingController(text: firebaseProvider.rateDataList[0].serviceCharge);
-     _videoRate = TextEditingController(text: firebaseProvider.rateDataList[0].videoRate);
+          _serviceCharge = TextEditingController(text: firebaseProvider.rateDataList[0].serviceCharge);
+          _videoRate = TextEditingController(text: firebaseProvider.rateDataList[0].videoRate);
+
+        });
+      }
 
     });
+
+
 
   }
 
@@ -49,16 +56,9 @@ class _AddBalanceState extends State<AddBalance> {
 
       child: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+     mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Text( '',
-                // error,
-                style: TextStyle(
-                    color: Colors.green, fontSize: size.height * .04),
-              ),
-            ),
+
             Container(
 
               width: size.width * .35,

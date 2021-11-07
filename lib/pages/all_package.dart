@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:makb_admin_pannel/data_model/dart/package_model.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
+import 'package:makb_admin_pannel/widgets/fading_circle.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
 import 'package:provider/provider.dart';
 
@@ -23,9 +24,15 @@ class _AllPackagePageState extends State<AllPackagePage> {
 
   List<PackageModel> _filteredList = [];
 
+ bool _isLoading = false;
+
   _customInit(FirebaseProvider firebaseProvider) async {
     setState(() {
       counter++;
+    });
+
+    setState(() {
+      _isLoading = true;
     });
 
     await firebaseProvider.getPackage().then((value) {
@@ -34,6 +41,9 @@ class _AllPackagePageState extends State<AllPackagePage> {
         _subList = firebaseProvider.packageList;
 
         _filteredList = _subList;
+
+          _isLoading = false;
+
       });
     });
   }
@@ -59,12 +69,12 @@ class _AllPackagePageState extends State<AllPackagePage> {
     }
     return Container(
       width: publicProvider.pageWidth(size),
-      child: Column(
+      child: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
-              width: size.height * .4,
+              width: 50,
               child: TextField(
                 controller: searchTextController,
                 decoration: textFieldFormDecoration(size).copyWith(
@@ -246,6 +256,10 @@ class _AllPackagePageState extends State<AllPackagePage> {
               ],
             ),
           ),
+          _isLoading?Padding(
+            padding: const EdgeInsets.only(top: 200.0),
+            child: fadingCircle,
+          ):
           Expanded(
             child: ListView.builder(
                 shrinkWrap: true,

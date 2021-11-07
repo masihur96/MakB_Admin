@@ -7,6 +7,9 @@ class WithdrawRequestModel{
   String? imageUrl;
   String? name;
   String? phone;
+  String? withdrawId;
+  String? transactionMobileNo;
+  String? transactionSystem;
   WithdrawRequestModel({
     this.id,
     this.amount,
@@ -15,6 +18,9 @@ class WithdrawRequestModel{
     this.imageUrl,
     this.name,
     this.phone,
+    this.withdrawId,
+    this.transactionMobileNo,
+    this.transactionSystem,
   });
 
 }

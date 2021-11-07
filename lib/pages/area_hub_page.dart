@@ -74,17 +74,19 @@ class _AreaHubState extends State<AreaHub> {
                                                   content: Container(
                                                     height: publicProvider.isWindows?size.height*.2:size.width*.2,
 
-                                                    child:Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                                      children: [
-                                                        Icon(Icons.warning_amber_outlined,color: Colors.yellow,size: 40,),
+                                                    child:SingleChildScrollView(
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                                        children: [
+                                                          Icon(Icons.warning_amber_outlined,color: Colors.yellow,size: 40,),
 
-                                                        Padding(
-                                                          padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                                          child: Text('Are you confirm to delete this Product ?',style: TextStyle(fontSize: 14,color: Colors.black),),
-                                                        ),
-                                                      ],),
+                                                          Padding(
+                                                            padding: const EdgeInsets.symmetric(vertical: 5.0),
+                                                            child: Text('Are you confirm to delete this Area ?',style: TextStyle(fontSize: 14,color: Colors.black),),
+                                                          ),
+                                                        ],),
+                                                    ),
 
                                                   ),
                                                   actions: <Widget>[
@@ -130,65 +132,68 @@ class _AreaHubState extends State<AreaHub> {
                                                   content: Container(
 
                                                     height: publicProvider.isWindows?size.height*.3:size.width*.3,
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: <Widget>[
-                                                        Padding(
-                                                          padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                                          child: TextField(
-                                                            controller: areaTextController,
-                                                            decoration: textFieldFormDecoration(size).copyWith(
-                                                              labelText: 'Area Name',
-                                                              hintText: 'Area Name',
-                                                              hintStyle: TextStyle(fontSize: 15),
+                                                    child: SingleChildScrollView(
+                                                      scrollDirection: Axis.vertical,
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: <Widget>[
+                                                          Padding(
+                                                            padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                                                            child: TextField(
+                                                              controller: areaTextController,
+                                                              decoration: textFieldFormDecoration(size).copyWith(
+                                                                labelText: 'Area Name',
+                                                                hintText: 'Area Name',
+                                                                hintStyle: TextStyle(fontSize: 15),
+
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Padding(
+                                                            padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                                                            child: TextField(
+                                                              controller: hubTextController,
+                                                              decoration: textFieldFormDecoration(size).copyWith(
+                                                                labelText: 'Hub Name',
+                                                                hintText: 'Hub Name',
+                                                                hintStyle: TextStyle(fontSize: 15),
+
+
+                                                              ),
 
                                                             ),
                                                           ),
-                                                        ),
-                                                        Padding(
-                                                          padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                                          child: TextField(
-                                                            controller: hubTextController,
-                                                            decoration: textFieldFormDecoration(size).copyWith(
-                                                              labelText: 'Hub Name',
-                                                              hintText: 'Hub Name',
-                                                              hintStyle: TextStyle(fontSize: 15),
 
 
-                                                            ),
+                                                          SizedBox(height: 20,),
+                                                          ElevatedButton(
 
+                                                              style: ElevatedButton.styleFrom(
+
+                                                                primary: Colors.green,
+                                                              ),
+                                                              onPressed: (){
+
+                                                                setState(() {
+                                                                  hubValue.add(hubTextController.text);
+                                                                });
+
+
+                                                              _submitData(firebaseProvider);
+
+
+                                                              }, child: Padding(
+                                                                padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                                                                child: Text('Add',
+                                                            style: TextStyle(
+                                                                  fontSize: 15,
+                                                                  color: Colors.white,
+                                                                  fontWeight: FontWeight.normal),
                                                           ),
-                                                        ),
+                                                              ))
 
-
-                                                        SizedBox(height: 20,),
-                                                        ElevatedButton(
-
-                                                            style: ElevatedButton.styleFrom(
-
-                                                              primary: Colors.green,
-                                                            ),
-                                                            onPressed: (){
-
-                                                              setState(() {
-                                                                hubValue.add(hubTextController.text);
-                                                              });
-
-
-                                                            _submitData(firebaseProvider);
-
-
-                                                            }, child: Padding(
-                                                              padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                                                              child: Text('Add',
-                                                          style: TextStyle(
-                                                                fontSize: 15,
-                                                                color: Colors.white,
-                                                                fontWeight: FontWeight.normal),
-                                                        ),
-                                                            ))
-
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                   actions: <Widget>[

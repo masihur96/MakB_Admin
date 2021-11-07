@@ -49,7 +49,7 @@ class _SettingsPageState extends State<SettingsPage> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Column(children: <Widget>[
-                  SizedBox(height: size.height * .04),
+                  SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(

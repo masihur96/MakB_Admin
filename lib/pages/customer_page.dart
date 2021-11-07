@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:makb_admin_pannel/data_model/dart/customer_data_model.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
+import 'package:makb_admin_pannel/widgets/fading_circle.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
 import 'package:provider/provider.dart';
 
@@ -15,6 +17,7 @@ class _CustomerPageState extends State<CustomerPage> {
   var searchTextController = TextEditingController();
   int? level;
 
+  bool _isLoading = false;
 
   int counter=0;
 
@@ -25,11 +28,15 @@ class _CustomerPageState extends State<CustomerPage> {
     setState(() {
       counter++;
     });
+    setState(() {
+      _isLoading = true;
+    });
 
     await firebaseProvider.getUser().then((value) {
       setState(() {
         _subList = firebaseProvider.userList;
         _filteredList = _subList;
+        _isLoading = false;
       });
     });
 
@@ -45,6 +52,7 @@ class _CustomerPageState extends State<CustomerPage> {
   }
 
   List deleteList =[];
+  List selectedCustomerID = [];
 
 
   @override
@@ -122,6 +130,18 @@ class _CustomerPageState extends State<CustomerPage> {
                               TextButton(
                                 child: Text('Ok'),
                                 onPressed: () {
+                                  var db = FirebaseFirestore.instance;
+                                  WriteBatch batch = db.batch();
+                                  for (String id in selectedCustomerID) {
+                                    DocumentReference ref =
+                                    db.collection("Users").doc(id);
+                                    batch.delete(ref);
+                                  }
+                                  batch.commit().then((value) {
+                                    firebaseProvider.getUser();
+                                    deleteList.clear();
+                                    selectedCustomerID.clear();
+                                  });
                                   Navigator.of(context).pop();
                                 },
                               ),
@@ -254,6 +274,10 @@ class _CustomerPageState extends State<CustomerPage> {
                 ],
               ),
             ),
+            _isLoading?Padding(
+              padding: const EdgeInsets.only(top: 200.0),
+              child: fadingCircle,
+            ):
             Expanded(
               child: ListView.builder(
                   shrinkWrap: true,
@@ -272,13 +296,15 @@ class _CustomerPageState extends State<CustomerPage> {
 
                             InkWell(
                               onTap: (){
+
                                 setState(() {
 
                                   if(deleteList.contains(index)){
-
+                                    selectedCustomerID.remove(_filteredList[index].id);
                                     deleteList.remove(index);
                                   }else {
                                     deleteList.add(index);
+                                    selectedCustomerID.add(_filteredList[index].id);
                                   }
 
 
@@ -296,16 +322,20 @@ class _CustomerPageState extends State<CustomerPage> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                              padding: const EdgeInsets.symmetric(vertical: 10),
                               child: Container(
                                 width: 30,
+                                height: 30,
+
+
                                 child:_filteredList[index].imageUrl != null? Image.network(
-                                  _filteredList[index].imageUrl!,height: publicProvider.isWindows
-                                    ? size.height * .1
-                                    : size.width * .1,
-                                  width: publicProvider.isWindows
-                                      ? size.height * .07
-                                      : size.width * .07,
+                                  _filteredList[index].imageUrl!,fit:BoxFit.fill,
+                                  // height: publicProvider.isWindows
+                                  //   ? size.height * .2
+                                  //   : size.width * .2,
+                                  // width: publicProvider.isWindows
+                                  //     ? size.height * .1
+                                  //     : size.width * .1,
 
                                 ):Container(),
                               ),
@@ -331,14 +361,16 @@ class _CustomerPageState extends State<CustomerPage> {
                             ),
                             Expanded(
                               child: TextButton(onPressed: (){
-                                showDialog(context: context, builder: (_){
-                                  return   AlertDialog(
-                                    title: Text('Refer Details'),
-                                    content: Container(
-                                      height: publicProvider.isWindows?size.height*.6:size.width*.6,
-                                      width: publicProvider.isWindows?size.height*.7:size.width*.7,
-                                      child:SingleChildScrollView(
-                                        child: Column(
+
+                                firebaseProvider.getReferCode(_filteredList[index].id!).then((value) {
+
+                                  showDialog(context: context, builder: (_){
+                                    return   AlertDialog(
+                                      title: Text('Refer Details'),
+                                      content: Container(
+                                        height: publicProvider.isWindows?size.height*.6:size.width*.6,
+                                        width: publicProvider.isWindows?size.height*.9:size.width*.9,
+                                        child:ListView(
                                           children: [
                                             Padding(
                                               padding: const EdgeInsets.all(8.0),
@@ -404,6 +436,16 @@ class _CustomerPageState extends State<CustomerPage> {
                                                   ),
                                                   Expanded(
                                                     child: Text(
+                                                      'Phone',textAlign: TextAlign.center,
+                                                      style: TextStyle(
+                                                        fontSize: publicProvider.isWindows
+                                                            ? size.height * .02
+                                                            : size.width * .02,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Text(
                                                       'Refer Code',textAlign: TextAlign.center,
                                                       style: TextStyle(
                                                         fontSize: publicProvider.isWindows
@@ -412,6 +454,7 @@ class _CustomerPageState extends State<CustomerPage> {
                                                       ),
                                                     ),
                                                   ),
+
                                                   Expanded(
                                                     child: Text(
                                                       'Refer Date',textAlign: TextAlign.center,
@@ -424,7 +467,7 @@ class _CustomerPageState extends State<CustomerPage> {
                                                   ),
                                                   Expanded(
                                                     child: Text(
-                                                      'Refer Income',textAlign: TextAlign.center,
+                                                      'Profit',textAlign: TextAlign.center,
                                                       style: TextStyle(
                                                         fontSize: publicProvider.isWindows
                                                             ? size.height * .02
@@ -437,32 +480,71 @@ class _CustomerPageState extends State<CustomerPage> {
                                               ),
                                             ),
 
-                                                // Expanded(
-                                                //   child: ListView.builder(
-                                                //   shrinkWrap: true,
-                                                //   padding: const EdgeInsets.all(8),
-                                                //   itemCount: 1,
-                                                //   itemBuilder: (BuildContext context, int index) {
-                                                //     return Container();
-                                                //   }
-                                                //   ),
-                                                // ),
+                                            Expanded(
+                                              child: ListView.builder(
+                                              shrinkWrap: true,
+                                              padding: const EdgeInsets.all(8),
+                                              itemCount: firebaseProvider.referList.length,
+                                              itemBuilder: (BuildContext context, int index) {
+                                                return Container(
+                                                  child: Row(
+                                                    children: [
+
+                                                      Expanded(child: Text(firebaseProvider.referList[index].id,textAlign: TextAlign.center,style: TextStyle(
+                                                        fontSize: publicProvider.isWindows
+                                                            ? size.height * .02
+                                                            : size.width * .02,
+                                                      ),)),
+                                                      Expanded(child: Text(firebaseProvider.referList[index].name,textAlign: TextAlign.center,style: TextStyle(
+                                                        fontSize: publicProvider.isWindows
+                                                            ? size.height * .02
+                                                            : size.width * .02,
+                                                      ),)),
+                                                      Expanded(child: Text(firebaseProvider.referList[index].phone,textAlign: TextAlign.center,style: TextStyle(
+                                                        fontSize: publicProvider.isWindows
+                                                            ? size.height * .02
+                                                            : size.width * .02,
+                                                      ),)),
+                                                      Expanded(child: Text(firebaseProvider.referList[index].referCode,textAlign: TextAlign.center,style: TextStyle(
+                                                        fontSize: publicProvider.isWindows
+                                                            ? size.height * .02
+                                                            : size.width * .02,
+                                                      ),)),
+                                                      Expanded(child: Text(firebaseProvider.referList[index].date,textAlign: TextAlign.center,style: TextStyle(
+                                                        fontSize: publicProvider.isWindows
+                                                            ? size.height * .02
+                                                            : size.width * .02,
+                                                      ),)),
+                                                      Expanded(child: Text(firebaseProvider.referList[index].profit,textAlign: TextAlign.center,style: TextStyle(
+                                                        fontSize: publicProvider.isWindows
+                                                            ? size.height * .02
+                                                            : size.width * .02,
+                                                      ),)),
+
+                                                  ],),
+                                                );
+                                              }
+                                              ),
+                                            ),
 
                                           ],
                                         ),
-                                      ),
 
-                                    ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: Text('Cancel'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
                                       ),
-                                    ],
-                                  );
-                                }) ;
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text('Cancel'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  }) ;
+
+                                });
+
+
 
                               }, child:  Text(firebaseProvider.userList[index].numberOfReferred,textAlign: TextAlign.center,style: TextStyle(color: Colors.green),)),
                             ),
@@ -476,99 +558,140 @@ class _CustomerPageState extends State<CustomerPage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   InkWell(
+
                                     onTap: () {
-                                      showDialog(context: context, builder: (_){
-                                        return   AlertDialog(
-                                          title: Text('Customer Details'),
-                                          content: Container(
-                                           height: publicProvider.isWindows?size.height*.6:size.width*.6,
-                                           width: publicProvider.isWindows?size.height*.7:size.width*.7,
-                                            child:SingleChildScrollView(
-                                              child: Column(
-                                                children: [
-                                                  Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                                      firebaseProvider.getWithdrawHistory(firebaseProvider.userList[index].id).then((value) {
+                                        showDialog(context: context, builder: (_){
+                                          return   AlertDialog(
+                                            title: Text('Customer Details'),
+                                            content: Container(
+                                              height: publicProvider.isWindows?size.height*.6:size.width*.6,
+                                              width: publicProvider.isWindows?size.height*.7:size.width*.7,
+                                              child:SingleChildScrollView(
+                                                child: Column(
+                                                  children: [
+                                                    Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                        children: [
+                                                          Column(
+                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+
+                                                              Container(
+                                                                height: 100,
+                                                                width: 100,
+                                                                decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
+
+                                                                child: Image.network(firebaseProvider.userList[index].imageUrl,fit: BoxFit.fill,),),
+                                                              Text( firebaseProvider.userList[index].name,style: TextStyle(fontSize: 20,color: Colors.black),),
+                                                              Padding(
+                                                                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                                                                child: Text( firebaseProvider.userList[index].id,style: TextStyle(fontSize: 14,color: Colors.black),),
+                                                              ),
+                                                              Text(firebaseProvider.userList[index].nbp,style: TextStyle(fontSize: 14,color: Colors.black),),
+                                                              firebaseProvider.userList[index].email != ''? Padding(
+                                                                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                                                                child: Text(firebaseProvider.userList[index].email,style: TextStyle(fontSize: 14,color: Colors.black),),
+                                                              ):Container(),
+                                                              Text(firebaseProvider.userList[index].phone,),
+                                                              Padding(
+                                                                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                                                                child: Text('Start from: ${firebaseProvider.userList[index].lastInsurancePaymentDate}',style: TextStyle(fontSize: 14,color: Colors.black),),
+                                                              ),
+                                                              Padding(
+                                                                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                                                                child: Text('Deposit Balance: ${firebaseProvider.userList[index].depositBalance}',style: TextStyle(fontSize: 14,color: Colors.black),),
+                                                              ),
+                                                              Padding(
+                                                                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                                                                child: Text('Insurance Balance: ${firebaseProvider.userList[index].insuranceBalance}',style: TextStyle(fontSize: 14,color: Colors.black),),
+                                                              ),
+                                                              Padding(
+                                                                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                                                                child: Text('Main Balance: ${firebaseProvider.userList[index].mainBalance}',style: TextStyle(fontSize: 14,color: Colors.black),),
+                                                              ),
+                                                            ],),
+                                                          Container(
+                                                            decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
+
+                                                                border: Border.all(width: 1,color: Colors.grey)
+                                                            ),
+                                                            child: Padding(
+                                                              padding: const EdgeInsets.all(8.0),
+                                                              child: Column(
+                                                                children: [
+                                                                  Container(
+                                                                    height: 100,
+                                                                    width: 100,
+                                                                    decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
+                                                                    child: Image.asset( 'assets/images/splash_3.png',fit: BoxFit.fill,),),
+                                                                  Padding(
+                                                                    padding: const EdgeInsets.symmetric(vertical: 18.0),
+                                                                    child: Text('Silver',style: TextStyle(fontSize: 14,color: Colors.black),),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],),
+                                                    ),
+                                                    Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: [
-                                                        Column(
-                                                          mainAxisAlignment: MainAxisAlignment.start,
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
+                                                        TextButton(onPressed: (){
+                                                          setState(() {
+                                                            publicProvider.subCategory =
+                                                            'DepositDetails';
+                                                            publicProvider.category = '';
+                                                            setState(() {
+                                                              firebaseProvider.depositIndex = index;
+                                                            });
+                                                          });
+                                                          Navigator.pop(context);
+                                                        }, child: Text('Deposit')),
 
-                                                            Container(
-                                                              height: 100,
-                                                              width: 100,
-                                                              decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
-
-                                                              child: Image.network(firebaseProvider.userList[index].imageUrl,fit: BoxFit.fill,),),
-                                                            Text( firebaseProvider.userList[index].name,style: TextStyle(fontSize: 20,color: Colors.black),),
-                                                            Padding(
-                                                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                                              child: Text( firebaseProvider.userList[index].id,style: TextStyle(fontSize: 14,color: Colors.black),),
-                                                            ),
-
-                                                            Text(firebaseProvider.userList[index].nbp,style: TextStyle(fontSize: 14,color: Colors.black),),
-                                                            firebaseProvider.userList[index].email != ''? Padding(
-                                                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                                              child: Text(firebaseProvider.userList[index].email,style: TextStyle(fontSize: 14,color: Colors.black),),
-                                                            ):Container(),
-                                                            Text(firebaseProvider.userList[index].phone,),
-                                                            Padding(
-                                                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                                              child: Text('Start from: ${firebaseProvider.userList[index].lastInsurancePaymentDate}',style: TextStyle(fontSize: 14,color: Colors.black),),
-                                                            ),
-                                                            Padding(
-                                                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                                              child: Text('Deposit Balance: ${firebaseProvider.userList[index].depositBalance}',style: TextStyle(fontSize: 14,color: Colors.black),),
-                                                            ),
-                                                            Padding(
-                                                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                                              child: Text('Insurance Balance: ${firebaseProvider.userList[index].insuranceBalance}',style: TextStyle(fontSize: 14,color: Colors.black),),
-                                                            ),
-                                                            Padding(
-                                                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                                              child: Text('Main Balance: ${firebaseProvider.userList[index].mainBalance}',style: TextStyle(fontSize: 14,color: Colors.black),),
-                                                            ),
-                                                          ],),
-                                                        Container(
-                                                          decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10)),
-
-                                                            border: Border.all(width: 1,color: Colors.grey)
-                                                          ),
-                                                          child: Padding(
-                                                            padding: const EdgeInsets.all(8.0),
-                                                            child: Column(
-                                                              children: [
-                                                                Container(
-                                                                  height: 100,
-                                                                  width: 100,
-                                                                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
-                                                                  child: Image.asset( 'assets/images/splash_3.png',fit: BoxFit.fill,),),
-                                                                Padding(
-                                                                  padding: const EdgeInsets.symmetric(vertical: 18.0),
-                                                                  child: Text('Silver',style: TextStyle(fontSize: 14,color: Colors.black),),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],),
-                                                  ),
-                                                ],
+                                                        TextButton(onPressed: (){
+                                                          setState(() {
+                                                            publicProvider.subCategory =
+                                                            'Withdraw Details';
+                                                            publicProvider.category = '';
+                                                            firebaseProvider.withdrawIndex = index;
+                                                          });
+                                                          Navigator.pop(context);
+                                                        }, child: Text('Withdraw')),
+                                                        // TextButton(onPressed: (){
+                                                        //   setState(() {
+                                                        //     firebaseProvider.insuranceID = index;
+                                                        //     publicProvider.subCategory =
+                                                        //     'InsuranceDetails';
+                                                        //     publicProvider.category = '';
+                                                        //   });
+                                                        //   Navigator.pop(context);
+                                                        // }, child: Text('Insurance')),
+                                                      ],)
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              child: Text('Cancel'),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                            ),
-                                          ],
-                                        );
-                                      }) ;
+                                            actions: <Widget>[
+                                              TextButton(
+                                                child: Text('Cancel'),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        }) ;
+                                      });
+
+
+
+
                                     },
                                     child: Icon(
                                       Icons.visibility,

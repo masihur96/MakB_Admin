@@ -46,6 +46,7 @@ dependencies:
   firebase_auth_web:
   uuid:
   flutter_spinkit:
+  intl:
 
 
 

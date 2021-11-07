@@ -6,6 +6,9 @@ class WithdrawHistoryModel{
   String? imageUrl;
   String? name;
   String? phone;
+  String? withdrawId;
+  String? transactionMobileNo;
+  String? transactionSystem;
   WithdrawHistoryModel({
     this.id,
     this.amount,
@@ -14,6 +17,9 @@ class WithdrawHistoryModel{
     this.imageUrl,
     this.name,
     this.phone,
+    this.withdrawId,
+    this.transactionMobileNo,
+    this.transactionSystem,
   });
 
 }

@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
-
 import 'package:provider/provider.dart';
 
 class DashBoardPage extends StatefulWidget {
@@ -28,11 +27,10 @@ class _DashBoardPageState extends State<DashBoardPage> {
   int counter=0;
 
   Future <void>_customInt (FirebaseProvider firebaseProvider) async{
-
     setState(() {
       counter++;
     });
-   firebaseProvider.getUser();
+     firebaseProvider.getUser();
     firebaseProvider.getCategory();
     firebaseProvider.getSubCategory();
     firebaseProvider.getProducts();
@@ -40,7 +38,14 @@ class _DashBoardPageState extends State<DashBoardPage> {
     firebaseProvider.getAreaHub();
     firebaseProvider.getRate();
     firebaseProvider.getWithdrawRequest();
-
+    firebaseProvider.getDepositRequest();
+    firebaseProvider.getInsurancePendingRequest();
+    firebaseProvider.getInsuranceTransferredRequest();
+    firebaseProvider.getSoldPackage();
+    firebaseProvider.getProductOrder();
+    firebaseProvider.getPackageRequest();
+    // firebaseProvider.getDepositHistory('01929444532');
+    
     firebaseProvider.getVideo();
     firebaseProvider.getAdminData();
   }
@@ -74,20 +79,21 @@ class _DashBoardPageState extends State<DashBoardPage> {
                   ),
                   children: [
                     _gridViewTile(size,'Product',Color(0xff9D7CFD),
-                        'Total Product','Items ','10','50'),
+                        'Total Product','Items ','${firebaseProvider.productList.length}','50'),
+
                     _gridViewTile(size,'Package',Color(0xff00B5C9),
-                        'Total Package','Items', '150','13'),
+                        'Total Package','Soled Package', '${firebaseProvider.packageList.length}','13'),
 
                     _gridViewTile(size,'Order',Color(0xffFF8C00),
                         'Total Order','Today','110','10'),
                     _gridViewTile(size,'Customer',Color(0xffFF8C00),
-                        'Total Customer','New Customer','110','10'),
-                    _gridViewTile(size,'Insurance',Color(0xffFF8C00),
-                        'New','Total','20','110'),
-                    _gridViewTile(size,'Deposit',Color(0xff00A958),
-                        'New ','Total','50','200'),
-                    _gridViewTile(size,'Advertisement',Color(0xff00C4FE),
-                        'Total Video','Today Watch','15','10'),
+                        'Total Customer','New Customer','${firebaseProvider.userList.length}','10'),
+                    _gridViewTile(size,'Insurance\nRequest',Color(0xffFF8C00),
+                        'New','Total','${firebaseProvider.productList.length}','110'),
+                    _gridViewTile(size,'Deposit\nRequest',Color(0xff00A958),
+                        'New ','Total','${firebaseProvider.depositRequestList.length}','200'),
+                    _gridViewTile(size,'Video',Color(0xff00C4FE),
+                        'Total Video','Today Watch','${firebaseProvider.advertisementList.length}','10'),
 
 
 
@@ -133,7 +139,6 @@ class _DashBoardPageState extends State<DashBoardPage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-
                                   Text('Daily Sales',style: TextStyle(fontSize: 20),),
                                   Text('10 Sales in Today',style: TextStyle(fontSize: 15),),
                                   Divider(
@@ -524,15 +529,17 @@ class _DashBoardPageState extends State<DashBoardPage> {
                     fontSize: size.height*.022,
                     fontWeight: FontWeight.w400,
                     fontFamily: 'OpenSans')),
-                SizedBox(height: size.height*.01),
-                Text(heading2,style: TextStyle(color: Colors.grey,
-                    fontSize: size.height*.016,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'OpenSans'),),
-                Text(h2Data,style: TextStyle(color: Colors.grey[900],
-                    fontSize: size.height*.022,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'OpenSans')),
+                SizedBox(height: size.height*.05),
+
+                // Text(heading2,style: TextStyle(color: Colors.grey,
+                //     fontSize: size.height*.016,
+                //     fontWeight: FontWeight.w400,
+                //     fontFamily: 'OpenSans'),),
+                // Text(h2Data,style: TextStyle(color: Colors.grey[900],
+                //     fontSize: size.height*.022,
+                //     fontWeight: FontWeight.w400,
+                //     fontFamily: 'OpenSans')),
+
                 Divider(height: 3,thickness: 0.2,color: Colors.grey),
 
                 Align(
@@ -540,7 +547,6 @@ class _DashBoardPageState extends State<DashBoardPage> {
                   child: TextButton(
 
                       onPressed: (){
-
                         if (title == 'Product') {
                           publicProvider.subCategory = 'All Product';
                           publicProvider.category = '';
@@ -556,16 +562,13 @@ class _DashBoardPageState extends State<DashBoardPage> {
                         } else if (title == 'Insurance') {
                           publicProvider.subCategory = 'Insurance';
                           publicProvider.category = '';
-                        } else if (title ==
-                            'Deposit') {
+                        } else if (title == 'Deposit') {
                           publicProvider.subCategory = 'Deposit';
                           publicProvider.category = '';
                         } else if (title == 'Advertisement') {
                           publicProvider.subCategory = 'Advertisement';
                           publicProvider.category = '';
                         }
-
-
                       },
 
                       child: Text('View All',

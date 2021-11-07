@@ -6,6 +6,7 @@ import 'package:makb_admin_pannel/data_model/dart/product_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/sub_category_model.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
+import 'package:makb_admin_pannel/widgets/fading_circle.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +18,7 @@ class AllProductPage extends StatefulWidget {
 class _AllProductPageState extends State<AllProductPage> {
 
   var searchTextController = TextEditingController();
-
+  bool _isLoading = false;
   //Category Variable
   String categorysValue='';
   String subCategorysValue = '';
@@ -38,12 +39,18 @@ class _AllProductPageState extends State<AllProductPage> {
   _customInit(FirebaseProvider firebaseProvider) async{
     setState(() {
       counter++;
+
+    });
+    setState(() {
+      _isLoading =true;
     });
 
     await firebaseProvider.getCategory().then((value) {
       setState(() {
         caterorys = firebaseProvider.categoryList;
         categorysValue = caterorys[0].category!;
+
+        _isLoading =false;
       });
     });
 
@@ -51,12 +58,14 @@ class _AllProductPageState extends State<AllProductPage> {
       setState(() {
         subCategorys = firebaseProvider.subCategoryList;
         subCategorysValue = subCategorys[0].subCategory!;
+        _isLoading =false;
       });
     });
     await firebaseProvider.getProducts().then((value) {
       setState(() {
         _subList = firebaseProvider.productList;
         _filteredList = _subList;
+        _isLoading =false;
       });
     });
 
@@ -83,7 +92,7 @@ class _AllProductPageState extends State<AllProductPage> {
     }
     return Container(
       width: publicProvider.pageWidth(size),
-      child: Column(
+      child: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -276,6 +285,11 @@ class _AllProductPageState extends State<AllProductPage> {
               ],
             ),
           ),
+
+          _isLoading?Padding(
+            padding: const EdgeInsets.only(top: 200.0),
+            child: fadingCircle,
+          ):
           Expanded(
             child: ListView.builder(
                 shrinkWrap: true,

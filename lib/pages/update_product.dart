@@ -208,6 +208,8 @@ class _UpdateProductState extends State<UpdateProduct> {
                     child: IconButton(onPressed: (){
 
                       convertedImages.clear();
+
+
                       pickedImage();
 
                     }, icon: Icon(Icons.camera) ))]

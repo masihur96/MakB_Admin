@@ -102,6 +102,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
     return Container(
       width: publicProvider.pageWidth(size),
       child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
         child:publicProvider.isWindows?  Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,8 +132,8 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
   Widget productPickWidget(PublicProvider publicProvider,Size size){
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: ListView(
+
         children: [
           SizedBox(height: 20,),
           Stack(
@@ -208,411 +209,405 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
 
     return  Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
 
-          SingleChildScrollView(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-
-                      SizedBox(height: 15,),
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text('Package Details',style: TextStyle(fontSize: 20),),
-                      ),
+            SizedBox(height: 15,),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text('Package Details',style: TextStyle(fontSize: 20),),
+            ),
 
 
-                      Container(
-                        width:publicProvider.pageWidth(size)*.45,
+            Container(
+              width:publicProvider.pageWidth(size)*.45,
 
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            border: Border.all(width: 1,color: Colors.grey)
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(width: 1,color: Colors.grey)
+
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                      child: TextField(
+                        controller: titleTextController,
+                        decoration: textFieldFormDecoration(size).copyWith(
+                          labelText: 'Title',
+                          hintText: 'Product Name',
+                          hintStyle: TextStyle(fontSize: 15),
 
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
+                      ),
+                    ),
 
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                child: TextField(
-                                  controller: titleTextController,
-                                  decoration: textFieldFormDecoration(size).copyWith(
-                                    labelText: 'Title',
-                                    hintText: 'Product Name',
-                                    hintStyle: TextStyle(fontSize: 15),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                      child: TextField(
+                        controller: priceTextController,
+                        decoration: textFieldFormDecoration(size).copyWith(
+                          labelText: 'Price',
+                          hintText: 'Price',
+                          hintStyle: TextStyle(fontSize: 15),
 
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                child: TextField(
-                                  controller: descriptionTextController,
-                                  decoration: textFieldFormDecoration(size).copyWith(
-                                    labelText: 'Description',
-                                    hintText: 'Description',
-                                    hintStyle: TextStyle(fontSize: 15),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                      child: TextField(
+                        controller: discountTextController,
+                        decoration: textFieldFormDecoration(size).copyWith(
+                          labelText: 'Discount Amount In Percentage',
+                          hintText: 'Discount Amount In Percentage',
+                          hintStyle: TextStyle(fontSize: 15),
 
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                child: TextField(
-                                  controller: priceTextController,
-                                  decoration: textFieldFormDecoration(size).copyWith(
-                                    labelText: 'Price',
-                                    hintText: 'Price',
-                                    hintStyle: TextStyle(fontSize: 15),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                      child: TextField(
+                        controller: quantityTextController,
+                        decoration: textFieldFormDecoration(size).copyWith(
+                          labelText: 'Quantity',
+                          hintText: 'Quantity',
+                          hintStyle: TextStyle(fontSize: 15),
 
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                child: TextField(
-                                  controller: discountTextController,
-                                  decoration: textFieldFormDecoration(size).copyWith(
-                                    labelText: 'Discount Amount In Percentage',
-                                    hintText: 'Discount Amount In Percentage',
-                                    hintStyle: TextStyle(fontSize: 15),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                      child: TextField(
+                        controller: descriptionTextController,
+                        decoration: textFieldFormDecoration(size).copyWith(
+                          labelText: 'Description',
+                          hintText: 'Description',
+                          hintStyle: TextStyle(fontSize: 15),
 
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                child: TextField(
-                                  controller: quantityTextController,
-                                  decoration: textFieldFormDecoration(size).copyWith(
-                                    labelText: 'Quantity',
-                                    hintText: 'Quantity',
-                                    hintStyle: TextStyle(fontSize: 15),
+                        ),
+                        maxLines: 5,
+                      ),
+                    ),
 
-                                  ),
-                                ),
-                              ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Size: ',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontStyle: FontStyle.normal,
+                                    fontSize: 15)),
+                            Row(children: [
+                              Text('S'),
+                              InkWell(
+                                  onTap: (){
+                                    setState(() {
+                                      _isS = !_isS;
+                                      if(_isS==true){
+                                        sizes.add('S');
+                                      }else{
+                                        sizes.remove('S');
+                                      }
+                                    });
+                                  },
 
-                              Row(
-                                children: [
-                                  Text('Size: ',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontStyle: FontStyle.normal,
-                                          fontSize: 15)),
-                                  Row(children: [
-                                    Text('S'),
-                                    InkWell(
-                                        onTap: (){
-                                          setState(() {
-                                            _isS = !_isS;
-                                            if(_isS==true){
-                                              sizes.add('S');
-                                            }else{
-                                              sizes.remove('S');
-                                            }
-                                          });
-                                        },
+                                  child: Icon( sizes.contains('S')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                            ],),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Row(children: [
+                                Text('M'),
+                                InkWell(
+                                    onTap: (){
+                                      setState(() {
+                                        _isM = !_isM;
+                                        if(_isM==true){
+                                          sizes.add('M');
+                                        }else{
+                                          sizes.remove('M');
+                                        }
+                                      });
+                                    },
 
-                                        child: Icon( sizes.contains('S')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
-                                  ],),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: Row(children: [
-                                      Text('M'),
-                                      InkWell(
-                                          onTap: (){
-                                            setState(() {
-                                              _isM = !_isM;
-                                              if(_isM==true){
-                                                sizes.add('M');
-                                              }else{
-                                                sizes.remove('M');
-                                              }
-                                            });
-                                          },
+                                    child: Icon( sizes.contains('M')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
 
-                                          child: Icon( sizes.contains('M')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                              ],),
+                            ),
+                            Row(children: [
+                              Text('L'),
+                              InkWell(
+                                  onTap: (){
+                                    setState(() {
+                                      _isL = !_isL;
+                                      if(_isL==true){
+                                        sizes.add('L');
+                                      }else{
+                                        sizes.remove('L');
+                                      }
+                                    });
+                                  },
 
-                                    ],),
-                                  ),
-                                  Row(children: [
-                                    Text('L'),
-                                    InkWell(
-                                        onTap: (){
-                                          setState(() {
-                                            _isL = !_isL;
-                                            if(_isL==true){
-                                              sizes.add('L');
-                                            }else{
-                                              sizes.remove('L');
-                                            }
-                                          });
-                                        },
-
-                                        child: Icon( sizes.contains('L')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
-
-                                  ],),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: Row(children: [
-                                      Text('XL'),
-                                      InkWell(
-                                          onTap: (){
-                                            setState(() {
-                                              _isXL = !_isXL;
-                                              if(_isXL==true){
-                                                sizes.add('XL');
-                                              }else{
-                                                sizes.remove('XL');
-                                              }
-                                            });
-                                          },
-
-                                          child: Icon( sizes.contains('XL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
-
-                                    ],),
-                                  ),
-                                  Row(children: [
-                                    Text('XXL'),
-                                    InkWell(
-                                        onTap: (){
-                                          setState(() {
-                                            _isXXL = !_isXXL;
-                                            if(_isXXL==true){
-                                              sizes.add('XXL');
-                                            }else{
-                                              sizes.remove('XXL');
-                                            }
-                                          });
-                                        },
-
-                                        child: Icon( sizes.contains('XXL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
-
-                                  ],),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: Row(children: [
-                                      Text('XXXL'),
-                                      InkWell(
-                                          onTap: (){
-                                            setState(() {
-                                              _isXXXL = !_isXXXL;
-                                              if(_isXXXL==true){
-                                                sizes.add('XXXL');
-                                              }else{
-                                                sizes.remove('XXXL');
-                                              }
-                                            });
-                                          },
-
-                                          child: Icon( sizes.contains('XXXL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
-
-                                    ],),
-                                  ),
-
-                                ],
-                              ),
-
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text('Selected Color :',style: TextStyle(color: Colors.black),),
-
-                                      Container(
-
-                                        height: size.height*.05,
-                                        child: ListView.builder(
-                                            scrollDirection: Axis.horizontal,
-                                            shrinkWrap: true,
-                                            itemCount: colors.length,
-                                            itemBuilder: (BuildContext ctx, index) {
-                                              return   Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child: Container(
-                                                  height: 10,
-                                                  width: 10,
-                                                  decoration: BoxDecoration(
-                                                      color: colors[index] ,
-                                                      shape: BoxShape.circle
-                                                  ),
-                                                ),
-                                              );
-                                            }),
-                                      ),
-                                    ],
-                                  ),
-                                  IconButton(
-                                        icon: Icon(Icons.color_lens_outlined,color: Colors.redAccent,),
-                                      onPressed: (){
-                                        colorList.clear();
-                                        colors.clear();
-                                        showDialog(context: context, builder: (_){
-                                          return   AlertDialog(
-                                            title: Text('Picked Color'),
-                                            content: SingleChildScrollView(
-                                              child: Column(
-                                                children: <Widget>[
-                                                  ListTile(
-                                                    title: const Text('Select color below to change this color'),
-                                                    subtitle:
-                                                    Text('${ColorTools.colorCode(screenPickerColor)} '
-                                                        'aka ${ColorTools.nameThatColor(screenPickerColor)}'),
-                                                    trailing: ColorIndicator(
-                                                      width: 44,
-                                                      height: 44,
-                                                      borderRadius: 22,
-                                                      color: screenPickerColor,
-                                                    ),
-                                                  ),
-
-                                                  // Show the color picker in sized box in a raised card.
-                                                  SizedBox(
-                                                    width: double.infinity,
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.all(6),
-                                                      child: Card(
-                                                        elevation: 2,
-                                                        child: ColorPicker(
-                                                          // Use the screenPickerColor as start color.
-                                                          color: screenPickerColor,
-                                                          // Update the screenPickerColor using the callback.
-                                                          onColorChanged: (Color color) {
-                                                            setState(() {
-                                                              screenPickerColor = color;
-                                                            });
-                                                            setState(() {
-
-                                                              if(colorList.contains(screenPickerColor)){
-
-                                                              }else {
-                                                                colors.add(screenPickerColor);
-                                                                colorList.add('0x${ColorTools.colorCode(screenPickerColor)}');
-                                                              }
-                                                            });
-                                                          },
-                                                          width: 44,
-                                                          height: 44,
-                                                          borderRadius: 22,
-                                                          heading: Text(
-                                                            'Select color',
-                                                            style: Theme.of(context).textTheme.headline5,
-                                                          ),
-                                                          subheading: Text(
-                                                            'Select color shade',
-                                                            style: Theme.of(context).textTheme.subtitle1,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-
-                                                  Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                    children: [
-                                                      ElevatedButton(onPressed: (){
-
-                                                        for(var index in colorList){
-
-
-                                                          colors.add(index.toString());
-
-
-                                                        }
-
-
-
-                                                        print(colorList);
-
-
-                                                      }, child: Text('Add')),
-                                                      ElevatedButton(onPressed: (){
-
-                                                        Navigator.pop(context);
-
-
-                                                      }, child: Text('Ok')),
-                                                    ],
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                child: Text('Cancel'),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        }) ;
-                                      },
-
-                                  ),
-
-                                ],
-                              ),
+                                  child: Icon( sizes.contains('L')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
 
                             ],),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Row(children: [
+                                Text('XL'),
+                                InkWell(
+                                    onTap: (){
+                                      setState(() {
+                                        _isXL = !_isXL;
+                                        if(_isXL==true){
+                                          sizes.add('XL');
+                                        }else{
+                                          sizes.remove('XL');
+                                        }
+                                      });
+                                    },
+
+                                    child: Icon( sizes.contains('XL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+
+                              ],),
+                            ),
+                            Row(children: [
+                              Text('XXL'),
+                              InkWell(
+                                  onTap: (){
+                                    setState(() {
+                                      _isXXL = !_isXXL;
+                                      if(_isXXL==true){
+                                        sizes.add('XXL');
+                                      }else{
+                                        sizes.remove('XXL');
+                                      }
+                                    });
+                                  },
+
+                                  child: Icon( sizes.contains('XXL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+
+                            ],),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Row(children: [
+                                Text('XXXL'),
+                                InkWell(
+                                    onTap: (){
+                                      setState(() {
+                                        _isXXXL = !_isXXXL;
+                                        if(_isXXXL==true){
+                                          sizes.add('XXXL');
+                                        }else{
+                                          sizes.remove('XXXL');
+                                        }
+                                      });
+                                    },
+
+                                    child: Icon( sizes.contains('XXXL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+
+                              ],),
+                            ),
+
+                          ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: _isLoading? fadingCircle: TextButton(
-                            onPressed: () {
+                    ),
 
-                              String uuid = Uuid().v4();
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text('Selected Color :',style: TextStyle(color: Colors.black),),
 
-                              if(convertedImages.isNotEmpty){
-                                setState(() {
-                                  _isLoading = true;
-                                });
+                            Container(
 
-                                _submitData(firebaseProvider, uuid);
-
-                              }else {
-
-                                showToast('Product Photo is Required');
-
-
-                              }
-
-
-                            }, child: Container(
-                            decoration: BoxDecoration(
-                                color: Colors.green,
-                                borderRadius: BorderRadius.all(Radius.circular(5)),
-                                border: Border.all(width: 1,color: Colors.green)
-
+                              height: size.height*.05,
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  shrinkWrap: true,
+                                  itemCount: colors.length,
+                                  itemBuilder: (BuildContext ctx, index) {
+                                    return   Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        height: 10,
+                                        width: 10,
+                                        decoration: BoxDecoration(
+                                            color: colors[index] ,
+                                            shape: BoxShape.circle
+                                        ),
+                                      ),
+                                    );
+                                  }),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 50.0,vertical: 5,),
-                              child: Text('Upload',style: TextStyle(color: Colors.white),),
-                            ))),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+                          ],
+                        ),
+                        IconButton(
+                              icon: Icon(Icons.color_lens_outlined,color: Colors.redAccent,),
+                            onPressed: (){
+                              colorList.clear();
+                              colors.clear();
+                              showDialog(context: context, builder: (_){
+                                return   AlertDialog(
+                                  title: Text('Picked Color'),
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      children: <Widget>[
+                                        ListTile(
+                                          title: const Text('Select color below to change this color'),
+                                          subtitle:
+                                          Text('${ColorTools.colorCode(screenPickerColor)} '
+                                              'aka ${ColorTools.nameThatColor(screenPickerColor)}'),
+                                          trailing: ColorIndicator(
+                                            width: 44,
+                                            height: 44,
+                                            borderRadius: 22,
+                                            color: screenPickerColor,
+                                          ),
+                                        ),
 
-        ],
+                                        // Show the color picker in sized box in a raised card.
+                                        SizedBox(
+                                          width: double.infinity,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(6),
+                                            child: Card(
+                                              elevation: 2,
+                                              child: ColorPicker(
+                                                // Use the screenPickerColor as start color.
+                                                color: screenPickerColor,
+                                                // Update the screenPickerColor using the callback.
+                                                onColorChanged: (Color color) {
+                                                  setState(() {
+                                                    screenPickerColor = color;
+                                                  });
+                                                  setState(() {
+
+                                                    if(colorList.contains(screenPickerColor)){
+
+                                                    }else {
+                                                      colors.add(screenPickerColor);
+                                                      colorList.add('0x${ColorTools.colorCode(screenPickerColor)}');
+                                                    }
+                                                  });
+                                                },
+                                                width: 44,
+                                                height: 44,
+                                                borderRadius: 22,
+                                                heading: Text(
+                                                  'Select color',
+                                                  style: Theme.of(context).textTheme.headline5,
+                                                ),
+                                                subheading: Text(
+                                                  'Select color shade',
+                                                  style: Theme.of(context).textTheme.subtitle1,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            ElevatedButton(onPressed: (){
+
+                                              for(var index in colorList){
+
+
+                                                colors.add(index.toString());
+
+
+                                              }
+
+
+
+                                              print(colorList);
+
+
+                                            }, child: Text('Add')),
+                                            ElevatedButton(onPressed: (){
+
+                                              Navigator.pop(context);
+
+
+                                            }, child: Text('Ok')),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text('Cancel'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              }) ;
+                            },
+
+                        ),
+
+                      ],
+                    ),
+
+                  ],),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _isLoading? fadingCircle: TextButton(
+                  onPressed: () {
+
+                    String uuid = Uuid().v4();
+
+                    if(convertedImages.isNotEmpty){
+                      setState(() {
+                        _isLoading = true;
+                      });
+
+                      _submitData(firebaseProvider, uuid);
+
+                    }else {
+
+                      showToast('Product Photo is Required');
+
+
+                    }
+
+
+                  }, child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      border: Border.all(width: 1,color: Colors.green)
+
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 50.0,vertical: 5,),
+                    child: Text('Upload',style: TextStyle(color: Colors.white),),
+                  ))),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -695,6 +690,8 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
       }
     });
   }
+
+
   _emptyFildCreator() {
     titleTextController.clear();
     descriptionTextController.clear();

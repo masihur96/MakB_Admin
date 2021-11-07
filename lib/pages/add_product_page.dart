@@ -274,18 +274,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                    child: TextField(
-                      controller: descriptionTextController,
-                      decoration: textFieldFormDecoration(size).copyWith(
-                        labelText: 'Description',
-                        hintText: 'Description',
-                        hintStyle: TextStyle(fontSize: 15),
 
-                      ),
-                    ),
-                  ),
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
                     child: TextField(
@@ -311,450 +300,471 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                       ),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                    child: TextField(
+                      controller: descriptionTextController,
+                      decoration: textFieldFormDecoration(size).copyWith(
+                        labelText: 'Description',
+                        hintText: 'Description',
+                        hintStyle: TextStyle(fontSize: 15),
 
-
-                  Row(
-                    children: [
-                      Text('Size: ',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontStyle: FontStyle.normal,
-                              fontSize: 15)),
-                      Row(children: [
-                        Text('S'),
-                        InkWell(
-                          onTap: (){
-                            setState(() {
-                              _isS = !_isS;
-                              if(_isS==true){
-                                sizes.add('S');
-                              }else{
-                                sizes.remove('S');
-                              }
-                            });
-                            print(sizes);
-                          },
-
-                            child: Icon(sizes.contains('S')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
-                      ],),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Row(children: [
-                          Text('M'),
-                          InkWell(
-                              onTap: (){
-                                setState(() {
-                                  _isM = !_isM;
-                                  if(_isM==true){
-                                    sizes.add('M');
-                                  }else{
-                                    sizes.remove('M');
-                                  }
-                                });
-                                print(sizes);
-                              },
-
-                              child: Icon(sizes.contains('M')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
-
-                        ],),
                       ),
-                      Row(children: [
-                        Text('L'),
-                        InkWell(
-                            onTap: (){
-                              setState(() {
-                                _isL = !_isL;
-                                if(_isL==true){
-                                  sizes.add('L');
-                                }else{
-                                  sizes.remove('L');
-                                }
-                              });
-                              print(sizes);
-                            },
-
-                            child: Icon(sizes.contains('L')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
-
-                      ],),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Row(children: [
-                          Text('XL'),
-                          InkWell(
-                              onTap: (){
-                                setState(() {
-                                  _isXL = !_isXL;
-                                  if(_isXL==true){
-                                    sizes.add('XL');
-                                  }else{
-                                    sizes.remove('XL');
-                                  }
-                                });
-                                print(sizes);
-                              },
-
-                              child: Icon( sizes.contains('XL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
-
-                        ],),
-                      ),
-                      Row(children: [
-                        Text('XXL'),
-                        InkWell(
-                            onTap: (){
-                              setState(() {
-                                _isXXL = !_isXXL;
-                                if(_isXXL==true){
-                                  sizes.add('XXL');
-                                }else{
-                                  sizes.remove('XXL');
-                                }
-                              });
-                              print(sizes);
-                            },
-
-                            child: Icon( sizes.contains('XXL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
-
-                      ],),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Row(children: [
-                          Text('XXXL'),
-                          InkWell(
-                              onTap: (){
-                                setState(() {
-                                  _isXXXL = !_isXXXL;
-                                  if(_isXXXL==true){
-                                    sizes.add('XXXL');
-                                  }else{
-                                    sizes.remove('XXXL');
-                                  }
-                                  print(sizes);
-                                });
-                              },
-
-                              child: Icon(sizes.contains('XXXL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
-
-                        ],),
-                      ),
-
-                    ],
+                      maxLines: 5,
+                    ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text('Category: ',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontStyle: FontStyle.normal,
-                                  fontSize: 15)),
-                          DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: categorysValue,
-                              elevation: 0,
-                              dropdownColor: Colors.white,
-                              style: TextStyle(color: Colors.black),
-                              items: categorys.map((itemValue) {
-                                return DropdownMenuItem<String>(
-                                  value: itemValue.category,
-                                  child: Text(itemValue.category!),
-                                );
-                              }).toList(),
-                              onChanged: (newValue) {
+
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        Text('Size: ',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontStyle: FontStyle.normal,
+                                fontSize: 15)),
+                        Row(children: [
+                          Text('S'),
+                          InkWell(
+                            onTap: (){
+                              setState(() {
+                                _isS = !_isS;
+                                if(_isS==true){
+                                  sizes.add('S');
+                                }else{
+                                  sizes.remove('S');
+                                }
+                              });
+                              print(sizes);
+                            },
+
+                              child: Icon(sizes.contains('S')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+                        ],),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Row(children: [
+                            Text('M'),
+                            InkWell(
+                                onTap: (){
+                                  setState(() {
+                                    _isM = !_isM;
+                                    if(_isM==true){
+                                      sizes.add('M');
+                                    }else{
+                                      sizes.remove('M');
+                                    }
+                                  });
+                                  print(sizes);
+                                },
+
+                                child: Icon(sizes.contains('M')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+
+                          ],),
+                        ),
+                        Row(children: [
+                          Text('L'),
+                          InkWell(
+                              onTap: (){
                                 setState(() {
-                                  categorysValue = newValue!;
+                                  _isL = !_isL;
+                                  if(_isL==true){
+                                    sizes.add('L');
+                                  }else{
+                                    sizes.remove('L');
+                                  }
                                 });
-
+                                print(sizes);
                               },
-                            ),
-                          ),
-                        ],
-                      ),
-                      InkWell(
-                          onTap: (){
-                            showDialog(context: context, builder: (_){
-                              return  StatefulBuilder(builder: (BuildContext context, StateSetter setState){
-                                return  AlertDialog(
-                                  title: Text('Add Category'),
-                                  content: Container(
-                                    height: publicProvider.isWindows?size.height*.5:size.width*.5,
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                            child: TextField(
-                                              controller: categoryTextController,
-                                              decoration: textFieldFormDecoration(size).copyWith(
-                                                labelText: 'Category Name',
-                                                hintText: 'Category Name',
-                                                hintStyle: TextStyle(fontSize: 15),
 
+                              child: Icon(sizes.contains('L')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+
+                        ],),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Row(children: [
+                            Text('XL'),
+                            InkWell(
+                                onTap: (){
+                                  setState(() {
+                                    _isXL = !_isXL;
+                                    if(_isXL==true){
+                                      sizes.add('XL');
+                                    }else{
+                                      sizes.remove('XL');
+                                    }
+                                  });
+                                  print(sizes);
+                                },
+
+                                child: Icon( sizes.contains('XL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+
+                          ],),
+                        ),
+                        Row(children: [
+                          Text('XXL'),
+                          InkWell(
+                              onTap: (){
+                                setState(() {
+                                  _isXXL = !_isXXL;
+                                  if(_isXXL==true){
+                                    sizes.add('XXL');
+                                  }else{
+                                    sizes.remove('XXL');
+                                  }
+                                });
+                                print(sizes);
+                              },
+
+                              child: Icon( sizes.contains('XXL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+
+                        ],),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Row(children: [
+                            Text('XXXL'),
+                            InkWell(
+                                onTap: (){
+                                  setState(() {
+                                    _isXXXL = !_isXXXL;
+                                    if(_isXXXL==true){
+                                      sizes.add('XXXL');
+                                    }else{
+                                      sizes.remove('XXXL');
+                                    }
+                                    print(sizes);
+                                  });
+                                },
+
+                                child: Icon(sizes.contains('XXXL')?Icons.check_box_outlined:Icons.check_box_outline_blank_outlined))
+
+                          ],),
+                        ),
+
+                      ],
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text('Category: ',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontStyle: FontStyle.normal,
+                                    fontSize: 15)),
+                            DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                value: categorysValue,
+                                elevation: 0,
+                                dropdownColor: Colors.white,
+                                style: TextStyle(color: Colors.black),
+                                items: categorys.map((itemValue) {
+                                  return DropdownMenuItem<String>(
+                                    value: itemValue.category,
+                                    child: Text(itemValue.category!),
+                                  );
+                                }).toList(),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    categorysValue = newValue!;
+                                  });
+
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        InkWell(
+                            onTap: (){
+                              showDialog(context: context, builder: (_){
+                                return  StatefulBuilder(builder: (BuildContext context, StateSetter setState){
+                                  return  AlertDialog(
+                                    title: Text('Add Category'),
+                                    content: Container(
+                                      height: publicProvider.isWindows?size.height*.5:size.width*.5,
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                                              child: TextField(
+                                                controller: categoryTextController,
+                                                decoration: textFieldFormDecoration(size).copyWith(
+                                                  labelText: 'Category Name',
+                                                  hintText: 'Category Name',
+                                                  hintStyle: TextStyle(fontSize: 15),
+
+                                                ),
                                               ),
                                             ),
-                                          ),
 
-                                          _isLoading
-                                              ? fadingCircle
-                                              :ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              primary: Colors.green,
-                                            ),
-                                            onPressed: () {
+                                            _isLoading
+                                                ? fadingCircle
+                                                :ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                primary: Colors.green,
+                                              ),
+                                              onPressed: () {
 
 
-                                              if(firebaseProvider.categoryList.contains(categoryTextController.text))
-                                             {
-                                               showToast('This Category is Already Exist');
+                                                if(firebaseProvider.categoryList.contains(categoryTextController.text))
+                                               {
+                                                 showToast('This Category is Already Exist');
 
-                                              } else {
-                                                setState(() {
-                                                  _isLoading=true;
-                                                });
-                                                _submitCategoryData(firebaseProvider).then((value) {
+                                                } else {
                                                   setState(() {
-                                                    _isLoading=false;
+                                                    _isLoading=true;
                                                   });
-                                                });
-                                              }
+                                                  _submitCategoryData(firebaseProvider).then((value) {
+                                                    setState(() {
+                                                      _isLoading=false;
+                                                    });
+                                                  });
+                                                }
 
 
 
-                                            },
-                                            child: Text('Add Category',style: TextStyle(color: Colors.white),),
-                                          ),
+                                              },
+                                              child: Text('Add Category',style: TextStyle(color: Colors.white),),
+                                            ),
 
-                                          Container(
-                                            height: publicProvider.isWindows?size.height*.35:size.width*.35,
-                                            width: publicProvider.isWindows?size.height*.4:size.width*.4,
-                                            child: ListView.builder(
-                                                shrinkWrap: true,
-                                                padding: const EdgeInsets.all(8),
-                                                itemCount: firebaseProvider.categoryList.length,
-                                                itemBuilder: (BuildContext context, int index) {
-                                                  return Column(
-                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children:[
+                                            Container(
+                                              height: publicProvider.isWindows?size.height*.35:size.width*.35,
+                                              width: publicProvider.isWindows?size.height*.4:size.width*.4,
+                                              child: ListView.builder(
+                                                  shrinkWrap: true,
+                                                  padding: const EdgeInsets.all(8),
+                                                  itemCount: firebaseProvider.categoryList.length,
+                                                  itemBuilder: (BuildContext context, int index) {
+                                                    return Column(
+                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children:[
 
-                                                      Padding(
-                                                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                                        child: Divider(
-                                                          height: 1,
-                                                          color: Colors.grey,
+                                                        Padding(
+                                                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                                          child: Divider(
+                                                            height: 1,
+                                                            color: Colors.grey,
+                                                          ),
                                                         ),
-                                                      ),
 
-                                                      Row(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                        children: [
-                                                          Text(firebaseProvider.categoryList[index].category,style: TextStyle(fontSize: 15,color: Colors.black),),
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Text(firebaseProvider.categoryList[index].category,style: TextStyle(fontSize: 15,color: Colors.black),),
 
-                                                          InkWell(
+                                                            InkWell(
+                                                                onTap: (){
+                                                                  FirebaseFirestore.instance.collection('Category').doc(firebaseProvider.categoryList[index].id).delete().then((value) {
+                                                                   showToast('Success');
+                                                                   customInt(firebaseProvider);
+                                                                   Navigator.pop(context);
+                                                                  });
+                                                                },
+                                                                child: Icon(Icons.cancel_outlined))
+
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    );
+                                                  }
+                                              ),
+                                            ),
+
+
+
+
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: Text('Cancel'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                });
+                              }) ;
+
+                            },
+                            child: Text('Add Category',style: TextStyle(color: Colors.green,fontSize: 14),))
+                      ],
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+
+                          children: [
+                            Text('Subcategory: ',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontStyle: FontStyle.normal,
+                                    fontSize: 15)),
+                            DropdownButtonHideUnderline(
+                              child: Row(
+                                children: [
+                                  DropdownButton<String>(
+
+                                    value: subCategorysValue,
+                                    elevation: 0,
+                                    dropdownColor: Colors.white,
+                                    style: TextStyle(color: Colors.black),
+                                    items: subCategorys.map((itemValue) {
+                                      return DropdownMenuItem<String>(
+
+                                        value: itemValue.subCategory,
+                                        child: Text(itemValue.subCategory!),
+                                      );
+                                    }).toList(),
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        subCategorysValue = newValue!;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        InkWell(
+                            onTap: (){
+                              showDialog(context: context, builder: (_){
+                                return  StatefulBuilder(builder: (BuildContext context, StateSetter setState){
+                                  return  AlertDialog(
+                                    title: Text('Add Subcategory'),
+                                    content: Container(
+                                      height: publicProvider.isWindows?size.height*.5:size.width*.5,
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          children: <Widget>[
+
+                                            Padding(
+                                              padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                                              child: TextField(
+                                                controller: subCategoryTextController,
+                                                decoration: textFieldFormDecoration(size).copyWith(
+                                                  labelText: 'Subcategory Name',
+                                                  hintText: 'Subcategory Name',
+                                                  hintStyle: TextStyle(fontSize: 15),
+
+                                                ),
+                                              ),
+                                            ),
+
+                                            _isLoading
+                                                ? fadingCircle
+                                                :ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                primary: Colors.green,
+                                              ),
+                                              onPressed: () {
+
+                                                if(firebaseProvider.subCategoryList.contains(subCategoryTextController.text)){
+
+                                                  showToast('This SubCategory is Already Exist');
+                                                }else {
+                                                  setState(() {
+                                                    _isLoading=true;
+                                                  });
+                                                  _submitSubCategoryData(firebaseProvider).then((value) {
+                                                    setState(() {
+                                                      _isLoading=false;
+                                                    });
+                                                  });
+                                                }
+
+
+                                              },
+                                              child: Text('Add Subcategory',style: TextStyle(color: Colors.white),),
+                                            ),
+
+                                            Container(
+                                              height: publicProvider.isWindows?size.height*.35:size.width*.35,
+                                              width: publicProvider.isWindows?size.height*.4:size.width*.4,
+                                              child: ListView.builder(
+                                                  shrinkWrap: true,
+                                                  padding: const EdgeInsets.all(8),
+                                                  itemCount: firebaseProvider.subCategoryList.length,
+                                                  itemBuilder: (BuildContext context, int index) {
+                                                    return Column(
+                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children:[
+
+                                                        Padding(
+                                                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                                          child: Divider(
+                                                            height: 1,
+                                                            color: Colors.grey,
+                                                          ),
+                                                        ),
+
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Text(firebaseProvider.subCategoryList[index].subCategory,style: TextStyle(fontSize: 15,color: Colors.black),),
+
+                                                            InkWell(
                                                               onTap: (){
-                                                                FirebaseFirestore.instance.collection('Category').doc(firebaseProvider.categoryList[index].id).delete().then((value) {
+
+
+                                                                FirebaseFirestore.instance.collection('SubCategory').doc(firebaseProvider.subCategoryList[index].id).delete().then((value) {
                                                                  showToast('Success');
                                                                  customInt(firebaseProvider);
                                                                  Navigator.pop(context);
                                                                 });
+
+
                                                               },
-                                                              child: Icon(Icons.cancel_outlined))
+                                                                child: Icon(Icons.cancel_outlined))
 
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  );
-                                                }
-                                            ),
-                                          ),
-
-
-
-
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: Text('Cancel'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              });
-                            }) ;
-
-                          },
-                          child: Text('Add Category',style: TextStyle(color: Colors.green,fontSize: 14),))
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-
-                        children: [
-                          Text('Subcategory: ',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontStyle: FontStyle.normal,
-                                  fontSize: 15)),
-                          DropdownButtonHideUnderline(
-                            child: Row(
-                              children: [
-                                DropdownButton<String>(
-
-                                  value: subCategorysValue,
-                                  elevation: 0,
-                                  dropdownColor: Colors.white,
-                                  style: TextStyle(color: Colors.black),
-                                  items: subCategorys.map((itemValue) {
-                                    return DropdownMenuItem<String>(
-
-                                      value: itemValue.subCategory,
-                                      child: Text(itemValue.subCategory!),
-                                    );
-                                  }).toList(),
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      subCategorysValue = newValue!;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      InkWell(
-                          onTap: (){
-                            showDialog(context: context, builder: (_){
-                              return  StatefulBuilder(builder: (BuildContext context, StateSetter setState){
-                                return  AlertDialog(
-                                  title: Text('Add Subcategory'),
-                                  content: Container(
-                                    height: publicProvider.isWindows?size.height*.5:size.width*.5,
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        children: <Widget>[
-
-                                          Padding(
-                                            padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                            child: TextField(
-                                              controller: subCategoryTextController,
-                                              decoration: textFieldFormDecoration(size).copyWith(
-                                                labelText: 'Subcategory Name',
-                                                hintText: 'Subcategory Name',
-                                                hintStyle: TextStyle(fontSize: 15),
-
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    );
+                                                  }
                                               ),
                                             ),
-                                          ),
-
-                                          _isLoading
-                                              ? fadingCircle
-                                              :ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              primary: Colors.green,
-                                            ),
-                                            onPressed: () {
-
-                                              if(firebaseProvider.subCategoryList.contains(subCategoryTextController.text)){
-
-                                                showToast('This SubCategory is Already Exist');
-                                              }else {
-                                                setState(() {
-                                                  _isLoading=true;
-                                                });
-                                                _submitSubCategoryData(firebaseProvider).then((value) {
-                                                  setState(() {
-                                                    _isLoading=false;
-                                                  });
-                                                });
-                                              }
-
-
-                                            },
-                                            child: Text('Add Subcategory',style: TextStyle(color: Colors.white),),
-                                          ),
-
-                                          Container(
-                                            height: publicProvider.isWindows?size.height*.35:size.width*.35,
-                                            width: publicProvider.isWindows?size.height*.4:size.width*.4,
-                                            child: ListView.builder(
-                                                shrinkWrap: true,
-                                                padding: const EdgeInsets.all(8),
-                                                itemCount: firebaseProvider.subCategoryList.length,
-                                                itemBuilder: (BuildContext context, int index) {
-                                                  return Column(
-                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children:[
-
-                                                      Padding(
-                                                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                                        child: Divider(
-                                                          height: 1,
-                                                          color: Colors.grey,
-                                                        ),
-                                                      ),
-
-                                                      Row(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                        children: [
-                                                          Text(firebaseProvider.subCategoryList[index].subCategory,style: TextStyle(fontSize: 15,color: Colors.black),),
-
-                                                          InkWell(
-                                                            onTap: (){
-
-
-                                                              FirebaseFirestore.instance.collection('SubCategory').doc(firebaseProvider.subCategoryList[index].id).delete().then((value) {
-                                                               showToast('Success');
-                                                               customInt(firebaseProvider);
-                                                               Navigator.pop(context);
-                                                              });
-
-
-                                                            },
-                                                              child: Icon(Icons.cancel_outlined))
-
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  );
-                                                }
-                                            ),
-                                          ),
 
 
 
 
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: Text('Cancel'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              });
-                            }) ;
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: Text('Cancel'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                });
+                              }) ;
 
-                          },
+                            },
 
-                          child: Text('Add Subcategory',style: TextStyle(color: Colors.green),))
-                    ],
+                            child: Text('Add Subcategory',style: TextStyle(color: Colors.green),))
+                      ],
+                    ),
                   ),
 
                   Row(
