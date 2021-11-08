@@ -1,22 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
-import 'dart:math';
 import 'dart:typed_data';
-import 'dart:html' as html;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:makb_admin_pannel/data_model/dart/category_model.dart';
-import 'package:makb_admin_pannel/data_model/dart/sub_category_model.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
 import 'package:makb_admin_pannel/widgets/fading_circle.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+
 
 class UpdatePackage extends StatefulWidget {
   @override
@@ -90,7 +85,8 @@ class _UpdatePackageState extends State<UpdatePackage> {
       quantityTextController.text= firebaseProvider.packageList[firebaseProvider.packageIndex].quantity;
       selectedPackageID = firebaseProvider.packageList[firebaseProvider.packageIndex].id;
       selectedPackageColor = firebaseProvider.packageList[firebaseProvider.packageIndex].colors;
-     sizes = firebaseProvider.packageList[firebaseProvider.packageIndex].size ;
+      imageUrl = firebaseProvider.packageList[firebaseProvider.packageIndex].image;
+      sizes = firebaseProvider.packageList[firebaseProvider.packageIndex].size ;
 
       if( sizes.contains('XL')){
         _isXL = true;
@@ -166,6 +162,7 @@ class _UpdatePackageState extends State<UpdatePackage> {
           SizedBox(height: 20,),
           Stack(
               children:[
+
                 Container(
                   // width: size.height*.4,
                   height: publicProvider.isWindows?size.height*.6:size.width*.6,
@@ -173,23 +170,22 @@ class _UpdatePackageState extends State<UpdatePackage> {
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       border: Border.all(width: 1,color: Colors.grey)
                   ),
-                  child: firebaseProvider.packageIndex==null? convertedImages.isNotEmpty? Container(
+                  child:  convertedImages.isNotEmpty? Container(
                     child: Image.memory(convertedImages[imageIndex!],fit: BoxFit.cover,) ,
-                  ):Container():Image.network(firebaseProvider.packageList[firebaseProvider.packageIndex].image[imageIndex]),
-
-
+                  ):imageUrl.isNotEmpty?Image.network(imageUrl[imageIndex!]):fadingCircle,
                 ),
 
                 Positioned.fill(
                     child: IconButton(onPressed: (){
-
+                      imageUrl.clear();
                       convertedImages.clear();
+
                       pickedImage();
 
                     }, icon: Icon(Icons.camera) ))]
 
           ),
-          Container(
+           Container(
             height:  publicProvider.isWindows?size.height*.2:size.width*.2,
             width:publicProvider.pageWidth(size)*.5,
             child: ListView.builder(
@@ -222,7 +218,7 @@ class _UpdatePackageState extends State<UpdatePackage> {
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                             border: Border.all(width: 1,color: Colors.grey)
                         ),
-                        child: Image.network(firebaseProvider.packageList[firebaseProvider.packageIndex].image[index]) ,
+                        child:imageUrl.isNotEmpty? Image.network(firebaseProvider.packageList[firebaseProvider.packageIndex].image[index]):Container() ,
 
                         height: 200,),
                     ),
@@ -651,8 +647,6 @@ class _UpdatePackageState extends State<UpdatePackage> {
       }
     });
   }
-
-
 
   Future<void> _submitData(
       FirebaseProvider firebaseProvider,PublicProvider publicProvider) async {

@@ -138,7 +138,7 @@ class _CustomerPageState extends State<CustomerPage> {
                                     batch.delete(ref);
                                   }
                                   batch.commit().then((value) {
-                                    firebaseProvider.getUser();
+                                    customInit(firebaseProvider);
                                     deleteList.clear();
                                     selectedCustomerID.clear();
                                   });
@@ -156,6 +156,12 @@ class _CustomerPageState extends State<CustomerPage> {
                   TextButton(
                     style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.green)),
                     onPressed: (){
+
+                      setState(() {
+                           deleteList.clear();
+                      selectedCustomerID.clear();
+
+                      });
 
                   }, child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0),
@@ -628,10 +634,22 @@ class _CustomerPageState extends State<CustomerPage> {
                                                                     height: 100,
                                                                     width: 100,
                                                                     decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10))),
-                                                                    child: Image.asset( 'assets/images/splash_3.png',fit: BoxFit.fill,),),
+                                                                    child: Image.asset(int.parse(firebaseProvider.userList[index].level)<=99? 'assets/images/normal.png':
+                                                                    int.parse(firebaseProvider.userList[index].level)<199? 'assets/images/bronz.png':
+                                                                    int.parse(firebaseProvider.userList[index].level)<299? 'assets/images/silver.png':
+                                                                    int.parse(firebaseProvider.userList[index].level)<399? 'assets/images/gold.png':
+                                                                    int.parse(firebaseProvider.userList[index].level)<499? 'assets/images/platinum.png':
+                                                                    'assets/images/premeum.png'
+                                                                      ,fit: BoxFit.fill,),),
                                                                   Padding(
                                                                     padding: const EdgeInsets.symmetric(vertical: 18.0),
-                                                                    child: Text('Silver',style: TextStyle(fontSize: 14,color: Colors.black),),
+                                                                    child: Text(int.parse(firebaseProvider.userList[index].level)<=99?'Regular':
+                                                                    int.parse(firebaseProvider.userList[index].level)<199?'Bronze':
+                                                                    int.parse(firebaseProvider.userList[index].level)<299?'Silver':
+                                                                    int.parse(firebaseProvider.userList[index].level)<399?'Gold':
+                                                                    int.parse(firebaseProvider.userList[index].level)<499?'Platinum':
+                                                                    'Premium'
+                                                                      ,style: TextStyle(fontSize: 14,color: Colors.black),),
                                                                   ),
                                                                 ],
                                                               ),

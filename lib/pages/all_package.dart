@@ -61,8 +61,7 @@ class _AllPackagePageState extends State<AllPackagePage> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final PublicProvider publicProvider = Provider.of<PublicProvider>(context);
-    final FirebaseProvider firebaseProvider =
-        Provider.of<FirebaseProvider>(context);
+    final FirebaseProvider firebaseProvider = Provider.of<FirebaseProvider>(context);
 
     if (counter == 0) {
       _customInit(firebaseProvider);

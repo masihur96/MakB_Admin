@@ -100,7 +100,7 @@ class FirebaseProvider extends ChangeNotifier {
   int? insuranceID;
 
 
-
+String? DateFromDatabase;
 
   Future<void> getUser()async{
     try{
@@ -118,7 +118,7 @@ class FirebaseProvider extends ChangeNotifier {
             email: element.doc['email'],
             zip: element.doc['zip'],
             referCode: element.doc['referCode'],
-            // timeStamp: element.doc['timeStamp'],
+            timeStamp: element.doc['timeStamp'],
             referDate: element.doc['referDate'],
             imageUrl: element.doc['imageUrl'],
             //referredList: element.doc['referredList'],
@@ -140,18 +140,15 @@ class FirebaseProvider extends ChangeNotifier {
           );
 
          final  date = new DateTime.fromMillisecondsSinceEpoch(int.parse(element.doc['timeStamp']));
-
           day = date.day;
           month = date.month;
           year = date.year;
-
-
+           DateFromDatabase = '${date.day}-${date.month}-${date.year}';
           _userList.add(user);
         });
-        print('Customer List: ${_userList.length}');
-        print(day);
-        print(month);
-        print(year);
+
+        print('Customeraaaaaa List: ${_userList.length}');
+
       });
     }catch(error){
       print('get User: $error');
@@ -185,14 +182,9 @@ class FirebaseProvider extends ChangeNotifier {
           CategoryModel category=CategoryModel(
             category: element.doc['category'],
             id: element.doc['id'],
-
-
-
           );
           _categoryList.add(category);
         });
-
-
         print('Category List: ${_categoryList.length}');
       });
     }catch(error){
@@ -783,20 +775,44 @@ class FirebaseProvider extends ChangeNotifier {
 
   Future<bool> updatePackageOrderStatus(Map<String, dynamic> map,int index) async {
     String id = packageOrderList[index].id;
+    String userId = packageOrderList[index].userPhone;
 
     try {
       await FirebaseFirestore.instance
           .collection("PackageCollectionRequest")
           .doc(id)
-          .update(map).then((value) {
-        getProductOrder();
+          .update(map).then((value) async{
+        await FirebaseFirestore.instance
+            .collection("SoldPackages")
+            .doc(id)
+            .update(map);
+        await FirebaseFirestore.instance
+            .collection("Users")
+            .doc(userId).collection('MyStore')
+            .doc(id)
+            .update(map);
+
+        getPackageRequest();
       });
       notifyListeners();
       return true;
     } catch (err) {
-
       print(err);
-      showToast(err.toString());
+      return false;
+    }
+  }
+
+  Future<bool> updateAreaHub(Map<String, dynamic> map,String id) async {
+
+    try {
+      await FirebaseFirestore.instance
+          .collection("Area&Hub")
+          .doc(id)
+          .update(map);
+      notifyListeners();
+      return true;
+    } catch (err) {
+      print(err);
       return false;
     }
   }
@@ -845,7 +861,7 @@ class FirebaseProvider extends ChangeNotifier {
       await FirebaseFirestore.instance
           .collection("Area&Hub")
           .doc(map['id'])
-          .set(map);
+          .set(map).then((value) => getAreaHub());
       notifyListeners();
       return true;
     } catch (err) {
@@ -894,13 +910,13 @@ class FirebaseProvider extends ChangeNotifier {
       await FirebaseFirestore.instance
           .collection("Area&Hub")
           .doc(map['id'])
-          .update(map);
+          .update(map).then((value) => getAreaHub());
       notifyListeners();
       return true;
     } catch (err) {
 
       print(err);
-      // showToast(err.toString());
+       showToast(err.toString());
       return false;
     }
   }

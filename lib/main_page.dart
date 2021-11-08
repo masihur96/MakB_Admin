@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:makb_admin_pannel/colors.dart';
 import 'package:makb_admin_pannel/pages/login_page.dart';
+import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
 import 'package:makb_admin_pannel/variables.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
@@ -16,34 +17,29 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
 
-  var searchTextController = TextEditingController();
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-
-  double searchWidth = 0;
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final PublicProvider publicProvider = Provider.of<PublicProvider>(context);
+    final FirebaseProvider firebaseProvider = Provider.of<FirebaseProvider>(context);
 
     if ((defaultTargetPlatform == TargetPlatform.iOS) || (defaultTargetPlatform == TargetPlatform.android)) {
       setState(() {
-        publicProvider.deviceDetect = 'mobile';
+
         publicProvider.isWindows = false;
       });// print('iOS');
     }
     else if ((defaultTargetPlatform == TargetPlatform.linux) || (defaultTargetPlatform == TargetPlatform.macOS) || (defaultTargetPlatform == TargetPlatform.windows)) {
       setState(() {
-        publicProvider.deviceDetect = 'windows';
+
         publicProvider.isWindows = true;
       });
       //  print('windows'); // Some desktop specific code there
     }
     else {
-
       setState(() {
-        publicProvider.deviceDetect = 'windows';
         publicProvider.isWindows = true;
 
       });
@@ -71,13 +67,13 @@ class _MainPageState extends State<MainPage> {
               )
           ),
           padding: EdgeInsets.symmetric(
-              horizontal:publicProvider.deviceDetect=='windows'? size.height * .02:size.width*.02, vertical: publicProvider.deviceDetect=='windows'? size.height * .01:size.width*.01),
+              horizontal:publicProvider.isWindows? size.height * .02:size.width*.02, vertical:publicProvider.isWindows? size.height * .01:size.width*.01),
           alignment: Alignment.center,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              size.width < 1300 || publicProvider.deviceDetect!='windows'
+              size.width < 1300 || publicProvider.isWindows
                   ? IconButton(
                       onPressed: () => _scaffoldKey.currentState!.openDrawer(),
                       icon: Icon(
@@ -96,7 +92,7 @@ class _MainPageState extends State<MainPage> {
                     ),
               Text(publicProvider.pageHeader(),
                   style: TextStyle(
-                      fontSize: publicProvider.deviceDetect=='windows'? size.height * .03:size.width*.03,
+                      fontSize:publicProvider.isWindows? size.height * .03:size.width*.03,
                       fontWeight: FontWeight.w400,
                       color: Colors.white,
                       fontFamily: 'OpenSans')),
@@ -106,47 +102,7 @@ class _MainPageState extends State<MainPage> {
 
                   Row(
                     children: [
-                      // AnimatedContainer(
-                      //   width: searchWidth,
-                      //
-                      //     duration: Duration(milliseconds: 100),
-                      //   child:  Padding(
-                      //     padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                      //     child: TextField(
-                      //       controller: searchTextController,
-                      //       decoration: textFieldFormDecoration(size).copyWith(
-                      //         fillColor: Colors.white,
-                      //         filled: true,
-                      //
-                      //         hintText: 'Search Product',
-                      //         hintStyle: TextStyle(fontSize: publicProvider.deviceDetect=='windows'? size.height * .02:size.width*.02,),
-                      //
-                      //       ),
-                      //     ),
-                      //   ),
-                      //
-                      //
-                      // ),
-                      //
-                      // InkWell(
-                      //   onTap: (){
-                      //     setState(() {
-                      //
-                      //       if(searchWidth==0){
-                      //         searchWidth =200;
-                      //       }else {
-                      //         searchWidth =0;
-                      //       }
-                      //
-                      //     });
-                      //   },
-                      //   child: Icon(
-                      //     Icons.search_outlined,
-                      //     size: 20,
-                      //     color: Colors.white,
-                      //   ),
-                      // ),
-                      // SizedBox(width: size.height * .01),
+
                       PopupMenuButton(
                         offset: Offset(0, kToolbarHeight),
                         itemBuilder: (BuildContext context) =>[
@@ -159,7 +115,7 @@ class _MainPageState extends State<MainPage> {
                                     publicProvider.category = '';
                                   });
                                 },
-                                  child: Text('You Have 10 new Orders',style: TextStyle(fontSize: publicProvider.deviceDetect=='windows'? size.height * .02:size.width*.02,),)),
+                                  child: Text('You Have ${firebaseProvider.productOrderList.length+firebaseProvider.packageOrderList.length} new Orders',style: TextStyle(fontSize: publicProvider.isWindows? size.height * .02:size.width*.02,),)),
                               value: 1,),
                               PopupMenuItem(
                               child: InkWell(
@@ -172,7 +128,7 @@ class _MainPageState extends State<MainPage> {
                                   });
                                 },
 
-                                  child: Text('You Have 5 Withdraw Request',style: TextStyle(fontSize: publicProvider.deviceDetect=='windows'? size.height * .02:size.width*.02,))),
+                                  child: Text('You Have ${firebaseProvider.withdrawRequestList.length} Withdraw Request',style: TextStyle(fontSize: publicProvider.isWindows? size.height * .02:size.width*.02,))),
                               value: 1,),
 
                         ],
@@ -193,7 +149,7 @@ class _MainPageState extends State<MainPage> {
                                   child: CircleAvatar(
                                     radius: 6,
                                       backgroundColor: Colors.red,
-                                      child: Text('3',style: TextStyle(color: Colors.white,fontSize: 9),)))
+                                      child: Text('${firebaseProvider.packageOrderList.length+firebaseProvider.productOrderList.length+firebaseProvider.withdrawRequestList.length}',style: TextStyle(color: Colors.white,fontSize: 9),)))
                             ],
                           ),
                         ),
@@ -212,7 +168,7 @@ class _MainPageState extends State<MainPage> {
                                   publicProvider.category = '';
                                 });
                               },
-                                child: Text('Change Password',style: TextStyle(fontSize: publicProvider.deviceDetect=='windows'? size.height * .02:size.width*.02,))),
+                                child: Text('Change Password',style: TextStyle(fontSize: publicProvider.isWindows? size.height * .02:size.width*.02,))),
                             value: 1,),
                           PopupMenuItem(
                             child: Divider(
@@ -229,7 +185,7 @@ class _MainPageState extends State<MainPage> {
                               },
 
 
-                                child: Text('Logout',style: TextStyle(fontSize: publicProvider.deviceDetect=='windows'? size.height * .02:size.width*.02,))),
+                                child: Text('Logout',style: TextStyle(fontSize: publicProvider.isWindows? size.height * .02:size.width*.02,))),
                             value: 1,),
 
                            ],
@@ -270,7 +226,7 @@ class SideBar extends StatelessWidget {
     final Size size = MediaQuery.of(context).size;
     final PublicProvider publicProvider = Provider.of<PublicProvider>(context);
     return Container(
-      width: size.width < 1300 ||publicProvider.deviceDetect!='windows' ? 0.0 : size.width * .15,
+      width: size.width < 1300 ||publicProvider.isWindows==false ? 0.0 : size.width * .15,
       height: size.height,
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -346,15 +302,15 @@ class NavigationDrawer extends StatelessWidget {
         child: Drawer(
           elevation: 0.0,
           child: Container(
-            width: size.width < 1300 ? 0.0 : size.width * .15,
+            width: size.width < 1300 ? 0.0 : size.width * .10,
             height: size.height,
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Color(0xFF19B52B),
-                      Color(0xFF19B52B)
+                      ColorsVariables.themColor,
+                      ColorsVariables.themColor,
                     ]
                 )
             ),
@@ -374,6 +330,7 @@ class NavigationDrawer extends StatelessWidget {
                       publicProvider,
                       context),
                 ),
+                SidebarContentBuilder(title: 'Customer'),
                 SidebarContentBuilder(title: 'Advertisement'),
                 SidebarContentBuilder(title: 'Settings'),
               ],

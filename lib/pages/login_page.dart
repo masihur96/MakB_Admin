@@ -36,28 +36,21 @@ class _LoginPageState extends State<LoginPage> {
     final PublicProvider publicProvider = Provider.of<PublicProvider>(context);
     final FirebaseProvider firebaseProvider = Provider.of<FirebaseProvider>(context);
     final Size size = MediaQuery.of(context).size;
-
     if ((defaultTargetPlatform == TargetPlatform.iOS) || (defaultTargetPlatform == TargetPlatform.android)) {
       setState(() {
-        publicProvider.deviceDetect = 'mobile';
-      });// print('iOS');
+        publicProvider.isWindows = false;
+      });
     }
     else if ((defaultTargetPlatform == TargetPlatform.linux) || (defaultTargetPlatform == TargetPlatform.macOS) || (defaultTargetPlatform == TargetPlatform.windows)) {
       setState(() {
-        publicProvider.deviceDetect = 'windows';
+        publicProvider.isWindows = true;
       });
-    //  print('windows'); // Some desktop specific code there
     }
     else {
-
       setState(() {
-        publicProvider.deviceDetect = 'windows';
-
+        publicProvider.isWindows = true;
       });
-
-      // Some web specific code there
     }
-
     if(counter==0){
       _customInit(firebaseProvider);
     }
@@ -66,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.blueGrey.shade700,
         body: Padding(
           padding: const EdgeInsets.all(8.0),
-          child:publicProvider.deviceDetect=='windows'? Row(
+          child:publicProvider.isWindows? Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -79,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                   Text(
                     'Sign In With',textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: publicProvider.deviceDetect=='windows'? size.height*.05:size.width*.04,
+                      fontSize:publicProvider.isWindows? size.height*.05:size.width*.04,
                       fontWeight: FontWeight.normal,
                     ),
                   ),
@@ -88,10 +81,10 @@ class _LoginPageState extends State<LoginPage> {
                     height: 10,
                   ),
 
-                  publicProvider.deviceDetect=='windows'? Image.asset(
+                  publicProvider.isWindows? Image.asset(
                     'assets/images/deub.gif',fit: BoxFit.fill,
-                    width:publicProvider.deviceDetect=='windows'? size.width*.15:size.width*.1,
-                    height: publicProvider.deviceDetect=='windows'?size.width*.15:size.width*.1,
+                    width:publicProvider.isWindows? size.width*.15:size.width*.1,
+                    height: publicProvider.isWindows?size.width*.15:size.width*.1,
                   ):Container(),
                 ],
               ):Container(),
@@ -105,9 +98,9 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Ligin to \nMy Application',textAlign: TextAlign.center,
+                          'Login to \nMy Application',textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: publicProvider.deviceDetect=='windows'? size.height*.04:size.width*.04,
+                            fontSize: publicProvider.isWindows? size.height*.04:size.width*.04,
                             fontWeight: FontWeight.normal,
                           ),
                         ),
@@ -122,8 +115,8 @@ class _LoginPageState extends State<LoginPage> {
 
 
                     Container(
-                      width: publicProvider.deviceDetect=='windows'? size.height*.5:size.width*.4,
-                      height: publicProvider.deviceDetect=='windows'? size.height*.5:size.width*.4,
+                      width: publicProvider.isWindows? size.height*.5:size.width*.4,
+                      height: publicProvider.isWindows? size.height*.5:size.width*.4,
 
                       child: _formLogin(context),
                     ),
@@ -141,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                   Text(
                     'Login to \nMy Application',textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: publicProvider.deviceDetect=='windows'? size.height*.04:size.width*.04,
+                      fontSize: publicProvider.isWindows? size.height*.04:size.width*.04,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -150,10 +143,10 @@ class _LoginPageState extends State<LoginPage> {
                     height: 10,
                   ),
 
-                  publicProvider.deviceDetect=='windows'? Image.asset(
+                  publicProvider.isWindows? Image.asset(
                     'assets/icons/logo.PNG',fit: BoxFit.fill,
-                    width:publicProvider.deviceDetect=='windows'? size.height*.1:size.width*.1,
-                    height: publicProvider.deviceDetect=='windows'? size.height*.1:size.width*.1,
+                    width:publicProvider.isWindows? size.height*.1:size.width*.1,
+                    height: publicProvider.isWindows? size.height*.1:size.width*.1,
                   ):Container(),
                 ],
               ),
@@ -162,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                 padding: EdgeInsets.symmetric(
                     vertical: MediaQuery.of(context).size.height / 6),
                 child: Container(
-                  width: publicProvider.deviceDetect=='windows'? size.height*.1:size.width*.1,
+                  width: publicProvider.isWindows? size.height*.1:size.width*.1,
                   child: _formLogin(context),
                 ),
               )

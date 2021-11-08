@@ -114,7 +114,7 @@ class _UpdateProductState extends State<UpdateProduct> {
       subCategorysValue= firebaseProvider.productList[firebaseProvider.productIndex].subCategory;
       selectedProductID = firebaseProvider.productList[firebaseProvider.productIndex].id;
       selectedProductColor = firebaseProvider.productList[firebaseProvider.productIndex].colors;
-
+      imageUrl = firebaseProvider.productList[firebaseProvider.productIndex].image;
       sizes = firebaseProvider.productList[firebaseProvider.productIndex].size ;
 
 
@@ -133,8 +133,6 @@ class _UpdateProductState extends State<UpdateProduct> {
       } if(sizes.contains('XXXL')){
         _isXXXL =true;
       }
-
-
       print(sizes);
 
     });
@@ -190,6 +188,7 @@ class _UpdateProductState extends State<UpdateProduct> {
           SizedBox(height: 20,),
           Stack(
               children:[
+                imageUrl.isNotEmpty?
                 Container(
                   // width: size.height*.4,
                   height: publicProvider.isWindows?size.height*.6:size.width*.6,
@@ -197,17 +196,16 @@ class _UpdateProductState extends State<UpdateProduct> {
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       border: Border.all(width: 1,color: Colors.grey)
                   ),
-                  child: firebaseProvider.productIndex==null? convertedImages.isNotEmpty? Container(
+                  child:  convertedImages.isNotEmpty? Container(
                     child: Image.memory(convertedImages[imageIndex!],fit: BoxFit.cover,) ,
-                  ):Container():Image.network(firebaseProvider.productList[firebaseProvider.productIndex].image[imageIndex]),
-
-
-                ),
+                  ):Image.network(imageUrl[imageIndex!]),
+                ):fadingCircle,
 
                 Positioned.fill(
                     child: IconButton(onPressed: (){
 
                       convertedImages.clear();
+                      imageUrl.clear();
 
 
                       pickedImage();
@@ -215,7 +213,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                     }, icon: Icon(Icons.camera) ))]
 
           ),
-          Container(
+         Container(
             height:  publicProvider.isWindows?size.height*.2:size.width*.2,
             width:publicProvider.pageWidth(size)*.5,
             child: ListView.builder(
@@ -248,7 +246,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                             border: Border.all(width: 1,color: Colors.grey)
                         ),
-                        child: Image.network(firebaseProvider.productList[firebaseProvider.productIndex].image[index]) ,
+                        child:  imageUrl.isNotEmpty? Image.network(firebaseProvider.productList[firebaseProvider.productIndex].image[index]):Container() ,
 
                         height: 200,),
                     ),

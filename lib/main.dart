@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:makb_admin_pannel/main_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:makb_admin_pannel/pages/login_page.dart';
 
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: MaterialColor(0xffBC9E57, color),
           canvasColor: Colors.transparent
         ),
-        home: MainPage(),
+        home: LoginPage(),
       ),
     );
   }

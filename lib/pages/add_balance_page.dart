@@ -86,20 +86,20 @@ class _AddBalanceState extends State<AddBalance> {
                       maxLines: 1,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: _videoRate,
-                      decoration: InputDecoration(
-                        labelText: 'Video Rate',
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(5.0),
-                          borderSide: new BorderSide(width: 1),
-                        ),
-                      ),
-                      maxLines: 1,
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: TextFormField(
+                  //     controller: _videoRate,
+                  //     decoration: InputDecoration(
+                  //       labelText: 'Video Rate',
+                  //       border: new OutlineInputBorder(
+                  //         borderRadius: new BorderRadius.circular(5.0),
+                  //         borderSide: new BorderSide(width: 1),
+                  //       ),
+                  //     ),
+                  //     maxLines: 1,
+                  //   ),
+                  // ),
                   SizedBox(height: 10),
                   _isLoading
                       ? Container(
@@ -112,8 +112,6 @@ class _AddBalanceState extends State<AddBalance> {
                     onPressed: () {
                       _isLoading = true;
                       _submitData(firebaseProvider);
-
-
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(

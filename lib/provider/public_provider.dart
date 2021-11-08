@@ -28,7 +28,7 @@ class PublicProvider extends ChangeNotifier{
   String _category='';
   String _subCategory='';
 
-  String deviceDetect='';
+
   bool isWindows=false;
 
   String  get category=>_category;

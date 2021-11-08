@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
+import 'package:makb_admin_pannel/widgets/fading_circle.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
 import 'package:provider/provider.dart';
 
@@ -102,14 +103,9 @@ class _AreaHubState extends State<AreaHub> {
 
                                                         var db = FirebaseFirestore.instance;
                                                         WriteBatch batch = db.batch();
-
                                                           DocumentReference ref = db.collection("Area&Hub").doc(firebaseProvider.areaHubList[index1].id);
                                                           batch.delete(ref);
-
-                                                        batch.commit();
-
-
-
+                                                        batch.commit().then((value) => firebaseProvider.getAreaHub());
                                                         Navigator.of(context).pop();
                                                       },
                                                     ),
@@ -125,85 +121,96 @@ class _AreaHubState extends State<AreaHub> {
                                           ),
                                           InkWell(
                                             onTap: (){
-
                                               showDialog(context: context, builder: (_){
-                                                return   AlertDialog(
-                                                  title: Text('Add Hub'),
-                                                  content: Container(
+                                                return   StatefulBuilder(
 
-                                                    height: publicProvider.isWindows?size.height*.3:size.width*.3,
-                                                    child: SingleChildScrollView(
-                                                      scrollDirection: Axis.vertical,
-                                                      child: Column(
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        children: <Widget>[
-                                                          Padding(
-                                                            padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                                            child: TextField(
-                                                              controller: areaTextController,
-                                                              decoration: textFieldFormDecoration(size).copyWith(
-                                                                labelText: 'Area Name',
-                                                                hintText: 'Area Name',
-                                                                hintStyle: TextStyle(fontSize: 15),
+                                                    builder: (BuildContext context, StateSetter setState) {
+                                                      return AlertDialog(
+                                                        title: Text('Add Hub'),
+                                                        content: Container(
 
-                                                              ),
+                                                          height: publicProvider.isWindows?size.height*.3:size.width*.3,
+                                                          child: SingleChildScrollView(
+                                                            scrollDirection: Axis.vertical,
+                                                            child: Column(
+                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                              children: <Widget>[
+                                                                Padding(
+                                                                  padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                                                                  child: TextField(
+                                                                    controller: areaTextController,
+                                                                    decoration: textFieldFormDecoration(size).copyWith(
+                                                                      labelText: 'Area Name',
+                                                                      hintText: 'Area Name',
+                                                                      hintStyle: TextStyle(fontSize: 15),
+
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
+                                                                  child: TextField(
+                                                                    controller: hubTextController,
+                                                                    decoration: textFieldFormDecoration(size).copyWith(
+                                                                      labelText: 'Hub Name',
+                                                                      hintText: 'Hub Name',
+                                                                      hintStyle: TextStyle(fontSize: 15),
+
+
+                                                                    ),
+
+                                                                  ),
+                                                                ),
+
+
+                                                                SizedBox(height: 20,),
+                                                                _isLoading?fadingCircle:  ElevatedButton(
+
+                                                                    style: ElevatedButton.styleFrom(
+
+                                                                      primary: Colors.green,
+                                                                    ),
+                                                                    onPressed: (){
+                                                                      setState((){
+                                                                        _isLoading=true;
+                                                                      });
+
+                                                                      setState(() {
+                                                                        hubValue.add(hubTextController.text);
+                                                                      });
+
+
+
+                                                                      _submitData(firebaseProvider).then((value) => _isLoading=false);
+
+
+                                                                    }, child: Padding(
+                                                                  padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                                                                  child: Text('Add',
+                                                                    style: TextStyle(
+                                                                        fontSize: 15,
+                                                                        color: Colors.white,
+                                                                        fontWeight: FontWeight.normal),
+                                                                  ),
+                                                                ))
+
+                                                              ],
                                                             ),
                                                           ),
-                                                          Padding(
-                                                            padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                                            child: TextField(
-                                                              controller: hubTextController,
-                                                              decoration: textFieldFormDecoration(size).copyWith(
-                                                                labelText: 'Hub Name',
-                                                                hintText: 'Hub Name',
-                                                                hintStyle: TextStyle(fontSize: 15),
-
-
-                                                              ),
-
-                                                            ),
+                                                        ),
+                                                        actions: <Widget>[
+                                                          TextButton(
+                                                            child: Text('Cancel'),
+                                                            onPressed: () {
+                                                              Navigator.of(context).pop();
+                                                            },
                                                           ),
-
-
-                                                          SizedBox(height: 20,),
-                                                          ElevatedButton(
-
-                                                              style: ElevatedButton.styleFrom(
-
-                                                                primary: Colors.green,
-                                                              ),
-                                                              onPressed: (){
-
-                                                                setState(() {
-                                                                  hubValue.add(hubTextController.text);
-                                                                });
-
-
-                                                              _submitData(firebaseProvider);
-
-
-                                                              }, child: Padding(
-                                                                padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                                                                child: Text('Add',
-                                                            style: TextStyle(
-                                                                  fontSize: 15,
-                                                                  color: Colors.white,
-                                                                  fontWeight: FontWeight.normal),
-                                                          ),
-                                                              ))
-
                                                         ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  actions: <Widget>[
-                                                    TextButton(
-                                                      child: Text('Cancel'),
-                                                      onPressed: () {
-                                                        Navigator.of(context).pop();
-                                                      },
-                                                    ),
-                                                  ],
+                                                      );
+
+
+                                                    }
+
                                                 );
                                               }) ;
 
@@ -223,11 +230,29 @@ class _AreaHubState extends State<AreaHub> {
                                       itemCount: firebaseProvider.areaHubList[index1].hub.length,
                                       itemBuilder: (BuildContext context, int index) {
                                         return Container(
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(firebaseProvider.areaHubList[index1].hub[index],style: TextStyle(fontSize: 15,color: Colors.black),),
+
+                                              IconButton(onPressed: ()async{
+
+                                                setState(() {
+                                                  firebaseProvider.areaHubList[index1].hub.remove(firebaseProvider.areaHubList[index1].hub[index]);
+                                                });
+                                                Map<String, dynamic> map = {
+                                                  'hub': firebaseProvider.areaHubList[index1].hub,
+                                                };
+                                                await firebaseProvider.updateAreaHub(map,firebaseProvider.areaHubList[index1].id).then((value) {
+                                                  if (value) {
+                                                    showToast('Success');
+                                                  } else {
+                                                    showToast('Failed');
+                                                  }
+                                                });
+
+                                              }, icon: Icon(Icons.cancel_outlined))
                                             ],
                                           ),
                                         );
@@ -268,7 +293,8 @@ class _AreaHubState extends State<AreaHub> {
       };
       await firebaseProvider.updateHubData(map).then((value) {
         if (value) {
-          print('Success');
+          print('Successfully Updated');
+          Navigator.pop(context);
           _emptyFildCreator();
 
           setState(() {
@@ -276,35 +302,32 @@ class _AreaHubState extends State<AreaHub> {
 
             hubValue.clear();
 
-
+            showToast('Successfully Updated');
 
           });
         } else {
           setState(() => _isLoading = false);
           print('Failed');
+          showToast('Failed');
         }
       });
 
     }else{
-
       Map<String, dynamic> map = {
-
         'id': areaTextController.text,
         'hub': hubValue,
       };
       await firebaseProvider.addHubData(map).then((value) {
         if (value) {
           print('Success');
+          showToast('Successfully Added');
           _emptyFildCreator();
-
+          Navigator.pop(context);
           setState(() {
             _isLoading = false;
-            setState(() {
-
-            });
-
           });
         } else {
+          showToast('Failed');
           setState(() => _isLoading = false);
           print('Failed');
         }
@@ -313,28 +336,28 @@ class _AreaHubState extends State<AreaHub> {
     }
 
 
-    Map<String, dynamic> map = {
-
-      'id': areaTextController.text,
-      'hub': hubValue,
-    };
-    await firebaseProvider.addHubData(map).then((value) {
-      if (value) {
-        print('Success');
-        _emptyFildCreator();
-
-        setState(() {
-          _isLoading = false;
-          setState(() {
-
-          });
-
-        });
-      } else {
-        setState(() => _isLoading = false);
-        print('Failed');
-      }
-    });
+    // Map<String, dynamic> map = {
+    //
+    //   'id': areaTextController.text,
+    //   'hub': hubValue,
+    // };
+    // await firebaseProvider.addHubData(map).then((value) {
+    //   if (value) {
+    //     print('Success');
+    //     _emptyFildCreator();
+    //
+    //     setState(() {
+    //       _isLoading = false;
+    //       setState(() {
+    //
+    //       });
+    //
+    //     });
+    //   } else {
+    //     setState(() => _isLoading = false);
+    //     print('Failed');
+    //   }
+    // });
 
   }
   _emptyFildCreator() {
@@ -342,7 +365,6 @@ class _AreaHubState extends State<AreaHub> {
     hubTextController.clear();
 
   }
-
 }
 
 

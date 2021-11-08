@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:makb_admin_pannel/data_model/dart/package_order_request_model.dart';
+import 'package:makb_admin_pannel/data_model/dart/product_order_model.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
 import 'package:makb_admin_pannel/widgets/fading_circle.dart';
@@ -10,7 +12,10 @@ class RegularOrderPage extends StatefulWidget {
   _RegularOrderPageState createState() => _RegularOrderPageState();
 }
 class _RegularOrderPageState extends State<RegularOrderPage> {
-  var searchTextController = TextEditingController();
+  var productSearchTextController = TextEditingController();
+  var packageSearchTextController = TextEditingController();
+
+  bool _isLoading=false;
   final _ktabs = <Tab>[
     const Tab(text: 'Product Order'),
     const Tab(
@@ -25,13 +30,67 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
   String statusValue = 'Collected';
   List<dynamic> selectOrder = [];
+  List<dynamic> selectOrderID = [];
 
+
+  List<ProductOrderModel> _productSubList = [];
+  List<ProductOrderModel> _productFilteredList = [];
+  List<PackageOrderModel> _packageSubList = [];
+  List<PackageOrderModel> _packageFilteredList = [];
+  int counter =0;
+  customInit(FirebaseProvider firebaseProvider)async{
+    setState(() {
+      counter++;
+    });
+    setState(() {
+      _isLoading = true;
+    });
+
+    await firebaseProvider.getProductOrder().then((value) {
+      setState(() {
+        _productSubList = firebaseProvider.productOrderList;
+        _productFilteredList = _productSubList;
+      _isLoading = false;
+      });
+    });
+
+    await firebaseProvider.getPackageRequest().then((value) {
+      setState(() {
+        _packageSubList = firebaseProvider.packageOrderList;
+        _packageFilteredList = _packageSubList;
+        _isLoading = false;
+      });
+    });
+
+
+
+  }
+  _productFilterList(String searchItem) {
+    setState(() {
+      _productFilteredList = _productSubList
+          .where((element) =>
+      (element.orderNumber!.toLowerCase().contains(searchItem.toLowerCase())))
+          .toList();
+    });
+  }
+  _packageFilterList(String searchItem) {
+    setState(() {
+      _packageFilteredList = _packageSubList
+          .where((element) =>
+      (element.productName!.toLowerCase().contains(searchItem.toLowerCase())))
+          .toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final PublicProvider publicProvider = Provider.of<PublicProvider>(context);
     final FirebaseProvider firebaseProvider = Provider.of<FirebaseProvider>(context);
+
+    if(counter==0){
+      customInit(firebaseProvider);
+    }
 
     return Container(
         width: publicProvider.pageWidth(size),
@@ -77,13 +136,18 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-            width: publicProvider.isWindows?size.height*.2:size.width*.2,
-            child:     TextField(
-              controller: searchTextController,
+            width: size.height*.4,
+            child: TextField(
+              controller: productSearchTextController,
               decoration: textFieldFormDecoration(size).copyWith(
-                hintText: 'Search Package by Order ID',
-                hintStyle: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),
+                hintText: 'Search By Order ID',
+                hintStyle: TextStyle(
+                  fontSize: publicProvider.isWindows
+                      ? size.height * .02
+                      : size.width * .02,
+                ),
               ),
+              onChanged: _productFilterList,
             ),
           ),
         ),
@@ -126,10 +190,21 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                             child: Text('Ok'),
                             onPressed: () {
 
+                              showLoaderDialog(context);
 
-
-
-
+                              var db = FirebaseFirestore.instance;
+                              WriteBatch batch = db.batch();
+                              for (String id in selectOrderID) {
+                                DocumentReference ref =
+                                db.collection("Orders").doc(id);
+                                batch.delete(ref);
+                              }
+                              batch.commit().then((value) {
+                              customInit(firebaseProvider);
+                                selectOrder.clear();
+                                selectOrderID.clear();
+                              Navigator.of(context).pop();
+                              });
                               Navigator.of(context).pop();
                             },
                           ),
@@ -147,6 +222,7 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
                   setState(() {
                     selectOrder.clear();
+                    selectOrderID.clear();
                   });
 
                 }, child: Padding(
@@ -184,13 +260,16 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
             ],),
         ),
-
+        _isLoading?Padding(
+          padding: const EdgeInsets.only(top: 200.0),
+          child: fadingCircle,
+        ):
         Expanded(
           child: ListView.builder(
               shrinkWrap: true,
               padding: const EdgeInsets.all(8),
-              itemCount: firebaseProvider.productOrderList.length,
-              itemBuilder: (BuildContext context, int index) {
+              itemCount: _productFilteredList.length,
+              itemBuilder: (BuildContext context, int index1) {
                 return Container(
                   child: Column(
                     children: [
@@ -202,15 +281,17 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                           InkWell(
                               onTap: (){
                                 setState(() {
-                                  if(selectOrder.contains(index)){
-                                    selectOrder.remove(index);
+                                  if(selectOrder.contains(index1)){
+                                    selectOrder.remove(index1);
+                                    selectOrderID.remove(firebaseProvider.productOrderList[index1].id);
                                   }
                                   else {
-                                    selectOrder.add(index);
+                                    selectOrder.add(index1);
+                                    selectOrderID.add(firebaseProvider.productOrderList[index1].id);
                                   }
                                 });
                               },
-                              child: selectOrder.contains(index)? Icon(Icons.check_box_outlined):Icon(Icons.check_box_outline_blank)),
+                              child: selectOrder.contains(index1)? Icon(Icons.check_box_outlined):Icon(Icons.check_box_outline_blank)),
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8.0),
@@ -218,25 +299,25 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(firebaseProvider.productOrderList[index].name,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                  Text(firebaseProvider.productOrderList[index].phone,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                  Text(_productFilteredList[index1].name!,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                  Text(_productFilteredList[index1].phone!,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
                                ],
                               ),
                             ),
                           ),
                           Expanded(
-                              child: Text(firebaseProvider.productOrderList[index].orderDate,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),)),
+                              child: Text(_productFilteredList[index1].orderDate!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),)),
                           Expanded(
-                            child: Text(firebaseProvider.productOrderList[index].orderNumber,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.green ,),),
+                            child: Text(_productFilteredList[index1].orderNumber!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.green ,),),
                           ),
                           Expanded(
-                            child: Text(firebaseProvider.productOrderList[index].quantity,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
+                            child: Text(_productFilteredList[index1].quantity!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
                           ),
                           Expanded(
-                            child: Text(firebaseProvider.productOrderList[index].state,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
+                            child: Text(_productFilteredList[index1].state!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
                           ),
                           Expanded(
-                            child: Text(firebaseProvider.productOrderList[index].totalAmount,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
+                            child: Text(_productFilteredList[index1].totalAmount!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
                           ),
                           Expanded(
                             child: Row(
@@ -280,13 +361,13 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                                       Column(
                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
-                                                          Text(firebaseProvider.productOrderList[index].orderNumber,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                          Text(_productFilteredList[index1].orderNumber!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
                                                           // Text(firebaseProvider.productOrderList[index].orderNumber,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                          Text(firebaseProvider.productOrderList[index].orderDate,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                          Text(firebaseProvider.productOrderList[index].Area,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                          Text(firebaseProvider.productOrderList[index].hub,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                          Text(firebaseProvider.productOrderList[index].quantity,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                          Text(firebaseProvider.productOrderList[index].totalAmount,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                          Text(_productFilteredList[index1].orderDate!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                          Text(_productFilteredList[index1].Area!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                          Text(_productFilteredList[index1].hub!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                          Text(_productFilteredList[index1].quantity!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                          Text(_productFilteredList[index1].totalAmount!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
                                                           DropdownButtonHideUnderline(
                                                             child: DropdownButton<String>(
                                                               value: statusValue,
@@ -304,7 +385,7 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                                                   statusValue = newValue!;
                                                                 });
 
-                                                                updateStateValue(firebaseProvider,index,statusValue);
+                                                                updateStateValue(firebaseProvider,index1,statusValue);
 
 
                                                               },
@@ -326,21 +407,18 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                                   Row(
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
-                                                      Text('Photo',style: TextStyle(color: Colors.green,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
-
-                                                      Text('Product Info',style: TextStyle(color: Colors.green,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
-                                                      Text('Quantity',style: TextStyle(color: Colors.green,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
-                                                      Text('Size',style: TextStyle(color: Colors.green,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
-                                                      Text('Color',style: TextStyle(color: Colors.green,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
-                                                      Text('Total',style: TextStyle(color: Colors.green,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
-                                                    ],),
+                                                      Text('Photo',textAlign: TextAlign.center,style: TextStyle(color: Colors.green,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+                                                      Expanded(child: Text('Product Info',textAlign: TextAlign.center,style: TextStyle(color: Colors.green,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),)),
+                                                      Text('Price',textAlign: TextAlign.center,style: TextStyle(color: Colors.green,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+                                                      Expanded(child: Text('Profit',textAlign: TextAlign.center,style: TextStyle(color: Colors.green,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),)),
+                                                   ],),
 
 
                                                   Expanded(
                                                     child: ListView.builder(
                                                         shrinkWrap: true,
                                                         padding: const EdgeInsets.all(8),
-                                                        itemCount: 10,
+                                                        itemCount: _productFilteredList[index1].products!.length,
                                                         itemBuilder: (BuildContext context, int index) {
                                                           return Column(
                                                             children: [
@@ -352,21 +430,26 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                   children: [
 
-                                                                    Image.asset('assets/images/splash_3.png',height: 30,width: 25,),
+                                                               Container(
+                                                                 width: 50,
+                                                                 height: 50,
 
-                                                                    Column(
-                                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                                      children: [
+                                                                   child: Image.network('${_productFilteredList[index1].products![index]['productImage']}',height: 30,width: 25,)),
 
-                                                                        Text('MakB Product',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                                        Text('Product ID : FS-edfdi475',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                                    Expanded(
+                                                                      child: Column(
+                                                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                                        children: [
 
-                                                                      ],),
-                                                                    Text('Quantity: 1 Pcs',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                                    Text('Size: 1 XL',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                                    Text('Color: Green',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                                    Text('Total: 50 Pcs',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                                  ]
+                                                                          Text('Title: ${_productFilteredList[index1].products![index]['productName']}',textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                                          Text('Quantity: ${_productFilteredList[index1].products![index]['quantity']}',textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+
+                                                                        ],),
+                                                                    ),
+                                                                    Text('${_productFilteredList[index1].products![index]['price']}',textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                                    Expanded(child: Text('${_productFilteredList[index1].products![index]['profitAmount']}',textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),)),
+                                                                ]
                                                               ),
                                                             ],
                                                           );
@@ -423,9 +506,10 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                             TextButton(
                                               child: Text('OK'),
                                               onPressed: () {
-                                                firebaseProvider.deleteProductOrder(firebaseProvider, index);
-
-                                                Navigator.of(context).pop();
+                                                showLoaderDialog(context);
+                                                firebaseProvider.deleteProductOrder(firebaseProvider, index1).then((value) {
+                                                  Navigator.of(context).pop();
+                                                });
                                               },
                                             ),
                                           ],
@@ -476,13 +560,18 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-            width: publicProvider.isWindows?size.height*.2:size.width*.2,
-            child:     TextField(
-              controller: searchTextController,
+            width: size.height*.4,
+            child: TextField(
+              controller: packageSearchTextController,
               decoration: textFieldFormDecoration(size).copyWith(
-                hintText: 'Search Package by Order ID ',
-                hintStyle: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),
+                hintText: 'Search By Package Name',
+                hintStyle: TextStyle(
+                  fontSize: publicProvider.isWindows
+                      ? size.height * .02
+                      : size.width * .02,
+                ),
               ),
+              onChanged: _packageFilterList,
             ),
           ),
         ),
@@ -524,6 +613,21 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                           TextButton(
                             child: Text('Ok'),
                             onPressed: () {
+                              showLoaderDialog(context);
+                              var db = FirebaseFirestore.instance;
+                              WriteBatch batch = db.batch();
+                              for (String id in selectOrderID) {
+                                DocumentReference ref =
+                                db.collection("PackageCollectionRequest").doc(id);
+                                batch.delete(ref);
+                              }
+                              batch.commit().then((value) {
+                                 customInit(firebaseProvider);
+                                selectOrder.clear();
+                                selectOrderID.clear();
+                                 Navigator.of(context).pop();
+                              });
+
                               Navigator.of(context).pop();
                             },
                           ),
@@ -541,6 +645,7 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
                   setState(() {
                     selectOrder.clear();
+                    selectOrderID.clear();
                   });
 
                 }, child: Padding(
@@ -579,12 +684,15 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
             ],),
         ),
-
+        _isLoading?Padding(
+          padding: const EdgeInsets.only(top: 200.0),
+          child: fadingCircle,
+        ):
         Expanded(
           child: ListView.builder(
               shrinkWrap: true,
               padding: const EdgeInsets.all(8),
-              itemCount: firebaseProvider.packageOrderList.length,
+              itemCount: _packageFilteredList.length,
               itemBuilder: (BuildContext context, int index) {
                 return Container(
                   child: Column(
@@ -613,30 +721,30 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(firebaseProvider.packageOrderList[index].userName,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                  Text(firebaseProvider.packageOrderList[index].userAddress,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                  Text(firebaseProvider.packageOrderList[index].userPhone,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                  Text(_packageFilteredList[index].userName!,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                  Text(_packageFilteredList[index].userAddress!,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                  Text(_packageFilteredList[index].userPhone!,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
                                 ],
                               ),
                             ),
                           ),
                           Expanded(
-                              child: Text(firebaseProvider.packageOrderList[index].date,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),)),
+                              child: Text(_packageFilteredList[index].date!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),)),
                           Expanded(
-                            child: Text(firebaseProvider.packageOrderList[index].productName,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.green ,),),
+                            child: Text(_packageFilteredList[index].productName!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.green ,),),
                           ),
                           Expanded(
-                            child: Text(firebaseProvider.packageOrderList[index].productPrice,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
+                            child: Text(_packageFilteredList[index].productPrice!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
                           ),
                           Expanded(
-                            child: Text(firebaseProvider.packageOrderList[index].discount,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
+                            child: Text(_packageFilteredList[index].discount!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
                           ),
                           Expanded(
-                            child: Text(firebaseProvider.packageOrderList[index].quantity,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
+                            child: Text(_packageFilteredList[index].quantity!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
                           ),
 
                           Expanded(
-                            child: Text(firebaseProvider.packageOrderList[index].status,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
+                            child: Text(_packageFilteredList[index].status!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
                           ),
 
                           DropdownButtonHideUnderline(
@@ -655,144 +763,11 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                 setState(() {
                                   statusValue = newValue!;
                                 });
-
-                              //   updatePackageStateValue(firebaseProvider,index,statusValue);
-
-
+                                showLoaderDialog(context);
+                             updatePackageStateValue(firebaseProvider,index,statusValue).then((value) => Navigator.pop(context));
                               },
                             ),
                           ),
-
-
-                          // Expanded(
-                          //   child: Row(
-                          //     mainAxisAlignment: MainAxisAlignment.center,
-                          //     children: [
-                          //       InkWell(
-                          //         onTap: (){
-                          //
-                          //           showDialog(context: context, builder: (_){
-                          //             return   AlertDialog(
-                          //
-                          //               content: Container(
-                          //                 height: publicProvider.isWindows?size.height*.7:size.width*.7,
-                          //                 width: publicProvider.isWindows?size.height*.8:size.width*.5,
-                          //                 child: ListView(
-                          //
-                          //
-                          //                   children: <Widget>[
-                          //
-                          //                     Text('Payment Information',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.03:size.width*.03,),),
-                          //
-                          //                     Row(
-                          //                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          //                       children: [
-                          //                         Column(
-                          //                           crossAxisAlignment: CrossAxisAlignment.start,
-                          //                           children: [
-                          //                             Text('Customer Name',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             Text('Address',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             Text('Package Name',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             Text('Quantity',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             Text('Price',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             Text('Discount',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             Text('Date',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             Text('Status',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //
-                          //                           ],),
-                          //                         Column(
-                          //                           crossAxisAlignment: CrossAxisAlignment.start,
-                          //                           children: [
-                          //                             Text(firebaseProvider.packageOrderList[index].userName,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             Text(firebaseProvider.packageOrderList[index].userAddress,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             Text(firebaseProvider.packageOrderList[index].productName,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             Text(firebaseProvider.packageOrderList[index].quantity,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             Text(firebaseProvider.packageOrderList[index].productPrice,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             Text(firebaseProvider.packageOrderList[index].discount,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             Text(firebaseProvider.packageOrderList[index].date,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                          //                             DropdownButtonHideUnderline(
-                          //                               child: DropdownButton<String>(
-                          //                                 value: statusValue,
-                          //                                 elevation: 0,
-                          //                                 dropdownColor: Colors.white,
-                          //                                 style: TextStyle(color: Colors.black),
-                          //                                 items: status.map((itemValue) {
-                          //                                   return DropdownMenuItem<String>(
-                          //                                     value: itemValue,
-                          //                                     child: Text(itemValue),
-                          //                                   );
-                          //                                 }).toList(),
-                          //                                 onChanged: (newValue) {
-                          //                                   setState(() {
-                          //                                     statusValue = newValue!;
-                          //                                   });
-                          //
-                          //                                   //   updateStateValue(firebaseProvider,index,statusValue);
-                          //
-                          //                                 },
-                          //                               ),
-                          //                             ),
-                          //                           ],)
-                          //                       ],),
-                          //
-                          //                   ],
-                          //                 ),
-                          //               ),
-                          //               actions: <Widget>[
-                          //                 TextButton(
-                          //                   child: Text('Cancel'),
-                          //                   onPressed: () {
-                          //                     Navigator.of(context).pop();
-                          //                   },
-                          //                 ),
-                          //               ],
-                          //             );
-                          //           }) ;
-                          //         },
-                          //         child: Icon(Icons.visibility,size: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.green ,),
-                          //       ),
-                          //
-                          //       SizedBox(width: 15,),
-                          //       InkWell(
-                          //           onTap: (){
-                          //
-                          //             showDialog(context: context, builder: (_){
-                          //               return   AlertDialog(
-                          //
-                          //                 title: Text('Alert'),
-                          //
-                          //                 content: Container(
-                          //                   height: size.height*.2,
-                          //                   child: Column(
-                          //                     children: [
-                          //                       Icon(Icons.warning_amber_outlined,size: 50,color: Colors.red,),
-                          //                       Text('Are You Sure To Delete This Order ??'),
-                          //                     ],
-                          //                   ),
-                          //                 ),
-                          //                 actions: <Widget>[
-                          //
-                          //                   TextButton(
-                          //                     child: Text('Cancel'),
-                          //                     onPressed: () {
-                          //                       Navigator.of(context).pop();
-                          //                     },
-                          //                   ),
-                          //                   TextButton(
-                          //                     child: Text('OK'),
-                          //                     onPressed: () {
-                          //                       Navigator.of(context).pop();
-                          //                     },
-                          //                   ),
-                          //                 ],
-                          //               );
-                          //             }) ;
-                          //           },
-                          //
-                          //           child: Icon(Icons.cancel,color: Colors.red,size: publicProvider.isWindows?size.height*.03:size.width*.03,)),
-                          //     ],
-                          //   ),
-                          // ),
                         ],
                       ),
                     ],
@@ -815,9 +790,11 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
       if (value) {
         showToast('Success');
 
-      } else {
+        customInit(firebaseProvider);
 
-        showToast('Failed');
+      } else {
+        customInit(firebaseProvider);
+
       }
     });
 

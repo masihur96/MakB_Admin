@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:makb_admin_pannel/data_model/dart/customer_data_model.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
 import 'package:provider/provider.dart';
@@ -23,31 +24,59 @@ class _DashBoardPageState extends State<DashBoardPage> {
   bool isPlaying = false;
 
 
-
   int counter=0;
 
+
+  List<UserModel> _totalUserList = [];
+  List<UserModel> _todayUserList = [];
   Future <void>_customInt (FirebaseProvider firebaseProvider) async{
     setState(() {
       counter++;
     });
-     firebaseProvider.getUser();
-    firebaseProvider.getCategory();
-    firebaseProvider.getSubCategory();
-    firebaseProvider.getProducts();
-    firebaseProvider.getPackage();
-    firebaseProvider.getAreaHub();
-    firebaseProvider.getRate();
-    firebaseProvider.getWithdrawRequest();
-    firebaseProvider.getDepositRequest();
-    firebaseProvider.getInsurancePendingRequest();
-    firebaseProvider.getInsuranceTransferredRequest();
-    firebaseProvider.getSoldPackage();
-    firebaseProvider.getProductOrder();
-    firebaseProvider.getPackageRequest();
+    await firebaseProvider.getRate();
+    await firebaseProvider.getUser();
+    await firebaseProvider.getCategory();
+    await firebaseProvider.getSubCategory();
+    await firebaseProvider.getProducts();
+    await  firebaseProvider.getPackage();
+    await firebaseProvider.getAreaHub();
+    await firebaseProvider.getWithdrawRequest();
+    await firebaseProvider.getDepositRequest();
+    await firebaseProvider.getInsurancePendingRequest();
+    await firebaseProvider.getInsuranceTransferredRequest();
+    await   firebaseProvider.getSoldPackage();
+    await firebaseProvider.getProductOrder();
+    await firebaseProvider.getPackageRequest();
     // firebaseProvider.getDepositHistory('01929444532');
-    
-    firebaseProvider.getVideo();
-    firebaseProvider.getAdminData();
+    await  firebaseProvider.getVideo();
+    await firebaseProvider.getAdminData();
+
+
+    DateTime date = DateTime.now();
+    String dateData = '${date.day}-${date.month}-${date.year}';
+
+    print(' Date From Device Instance: $dateData');
+
+
+    setState(() {
+      _totalUserList = firebaseProvider.userList;
+      for (int i = 0; i < _totalUserList.length; i++) {
+        //
+        // print(' Date From ssss Instance: ${_totalUserList.length}');
+        // print('_totalUserList[i].timeStamp');
+
+        DateTime dateFromList = DateTime.fromMillisecondsSinceEpoch(int.parse('${_totalUserList[i].timeStamp}'));
+
+        String dateFromDatabase = '${dateFromList.day}-${dateFromList.month}-${dateFromList.year}';
+        print('Date Database: $dateFromDatabase');
+        print(' Date From Device: $dateData');
+        if (dateFromDatabase == dateData) {
+          _todayUserList.add(_totalUserList[i]);
+        }
+      }
+      print('Today List: ${_todayUserList.length}');
+      _isLoading = false;
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -56,9 +85,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
     final FirebaseProvider firebaseProvider = Provider.of<FirebaseProvider>(context);
 
       if(counter ==0){
-
         _customInt(firebaseProvider);
-
       }
 
     return SingleChildScrollView(
@@ -68,427 +95,426 @@ class _DashBoardPageState extends State<DashBoardPage> {
           width: publicProvider.pageWidth(size),
 
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SingleChildScrollView(
                 child: GridView(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: publicProvider.deviceDetect=='windows'?4:1,
+                    crossAxisCount: publicProvider.isWindows ?4:1,
                     childAspectRatio: 3.5/2
                   ),
                   children: [
                     _gridViewTile(size,'Product',Color(0xff9D7CFD),
-                        'Total Product','Items ','${firebaseProvider.productList.length}','50'),
+                        'Total Product','Soled ','${firebaseProvider.productList.length}','${firebaseProvider.productOrderList.length}'),
 
                     _gridViewTile(size,'Package',Color(0xff00B5C9),
-                        'Total Package','Soled Package', '${firebaseProvider.packageList.length}','13'),
+                        'Total Package','Soled Package', '${firebaseProvider.packageList.length}','${firebaseProvider.soldPackageList.length}'),
 
                     _gridViewTile(size,'Order',Color(0xffFF8C00),
-                        'Total Order','Today','110','10'),
+                        'Product Order','Package Order','${firebaseProvider.productOrderList.length}','${firebaseProvider.packageOrderList.length}'),
                     _gridViewTile(size,'Customer',Color(0xffFF8C00),
-                        'Total Customer','New Customer','${firebaseProvider.userList.length}','10'),
-                    _gridViewTile(size,'Insurance\nRequest',Color(0xffFF8C00),
-                        'New','Total','${firebaseProvider.productList.length}','110'),
-                    _gridViewTile(size,'Deposit\nRequest',Color(0xff00A958),
-                        'New ','Total','${firebaseProvider.depositRequestList.length}','200'),
-                    _gridViewTile(size,'Video',Color(0xff00C4FE),
-                        'Total Video','Today Watch','${firebaseProvider.advertisementList.length}','10'),
-
-
-
+                        'Total Customer','New Customer','${firebaseProvider.userList.length}','${_todayUserList.length}'),
+                    _gridViewTile(size,'Insurance',Color(0xffFF8C00),
+                        'Pending','Transferred','${firebaseProvider.insuranceRequestList.length}','${firebaseProvider.insuranceTransferredRequestList.length}'),
+                    _gridViewTile(size,'Deposit',Color(0xff00A958),
+                        'Request ','Total','${firebaseProvider.depositRequestList.length}','${firebaseProvider.userList.length}'),
+                    _gridViewTile(size,'Advertisement',Color(0xff00C4FE),
+                        'Total Video','Rate','${firebaseProvider.advertisementList.length}','5'),
                   ],
                 ),
               ),
 
-              SizedBox(height: 30,),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: publicProvider.isWindows? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        elevation: 5,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: publicProvider.isWindows? size.height*.5:size.width*.4,
-                              color: Colors.green,
-                              child: Stack(
-                                children: <Widget>[
-                                  AspectRatio(
-                                    aspectRatio: 1.3,
-                                    child: Container(
-
-
-                                      child: LineChart(
-                                        showAvg ? avgData() : mainData(),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Daily Sales',style: TextStyle(fontSize: 20),),
-                                  Text('10 Sales in Today',style: TextStyle(fontSize: 15),),
-                                  Divider(
-                                    height: 1,
-                                    color: Colors.grey,
-                                  ),
-                                  Row(children: [
-
-                                    Icon(Icons.update_outlined,size: 15,),
-                                    Text('Updated 23521 Millisecond ago',style: TextStyle(fontSize: 10),),
-                                  ],)
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        elevation: 5,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: publicProvider.isWindows? size.height*.5:size.width*.4,
-
-                              child: Stack(
-                                children: <Widget>[
-                                  AspectRatio(
-                                    aspectRatio: 1.3,
-                                    child: Container(
-                                      color: Colors.amber.shade400,
-                                      child: BarChart(
-                                         mainBarData(),
-                                          swapAnimationDuration: Duration(milliseconds: 50), // Optional
-                                      swapAnimationCurve: Curves.linear, // Optional
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-
-                                  Text('Product By Date',style: TextStyle(fontSize: 20),),
-                                  Text('Last Campaign Performance',style: TextStyle(fontSize: 15),),
-                                  Divider(
-                                    height: 1,
-                                    color: Colors.grey,
-                                  ),
-                                  Row(children: [
-
-                                    Icon(Icons.update_outlined,size: 15,),
-                                    Text('Updated 23521 Millisecond ago',style: TextStyle(fontSize: 10),),
-                                  ],)
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        elevation: 8,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: publicProvider.isWindows? size.height*.5:size.width*.4,
-                              child: Stack(
-                                children: <Widget>[
-                                  AspectRatio(
-                                    aspectRatio: 1.3,
-                                    child: Container(
-
-                                      color: Colors.green.shade300,
-                                      child: LineChart(
-                                        showAvg ? avgData() : mainData(),
-                                      ),
-                                    ),
-                                  ),
-                                  // SizedBox(
-                                  //   width: size.width*.02,
-                                  //   height: size.width*.02,
-                                  //   child: TextButton(
-                                  //     onPressed: () {
-                                  //       setState(() {
-                                  //         showAvg = !showAvg;
-                                  //       });
-                                  //     },
-                                  //     child: Text(
-                                  //       'avg',
-                                  //       style: TextStyle(
-                                  //           fontSize: 12, color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                ],
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-
-                                  Text('Daily Orders',style: TextStyle(fontSize: 20),),
-                                  Text('Last Campaigns Performance',style: TextStyle(fontSize: 15),),
-                                  Divider(
-                                    height: 1,
-                                    color: Colors.grey,
-                                  ),
-                                  Row(children: [
-
-                                    Icon(Icons.update_outlined,size: 15,),
-                                    Text('Updated 23521 Millisecond ago',style: TextStyle(fontSize: 10),),
-                                  ],)
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ):Column(
-
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        elevation: 5,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: publicProvider.isWindows? size.height*.4:size.width*.4,
-                              color: Colors.green,
-                              child: Stack(
-                                children: <Widget>[
-                                  AspectRatio(
-                                    aspectRatio: 1.3,
-                                    child: Container(
-
-
-                                      child: LineChart(
-                                        showAvg ? avgData() : mainData(),
-                                      ),
-                                    ),
-                                  ),
-                                  // SizedBox(
-                                  //   width: size.width*.02,
-                                  //   height: size.width*.02,
-                                  //   child: TextButton(
-                                  //     onPressed: () {
-                                  //       setState(() {
-                                  //         showAvg = !showAvg;
-                                  //       });
-                                  //     },
-                                  //     child: Text(
-                                  //       'avg',
-                                  //       style: TextStyle(
-                                  //           fontSize: 12, color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-
-                                  Text('Daily Sales',style: TextStyle(fontSize: 20),),
-                                  Text('10 Sales in Today',style: TextStyle(fontSize: 15),),
-                                  Divider(
-                                    height: 1,
-                                    color: Colors.grey,
-                                  ),
-                                  Row(children: [
-
-                                    Icon(Icons.update_outlined,size: 15,),
-                                    Text('Updated 23521 Millisecond ago',style: TextStyle(fontSize: 10),),
-                                  ],)
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        elevation: 5,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 350,
-
-                              child: Stack(
-                                children: <Widget>[
-                                  AspectRatio(
-                                    aspectRatio: 1.3,
-                                    child: Container(
-                                      color: Colors.amber.shade400,
-
-
-                                      child: BarChart(
-                                        mainBarData(),
-                                        swapAnimationDuration: Duration(milliseconds: 50), // Optional
-                                        swapAnimationCurve: Curves.linear, // Optional
-                                      ),
-                                    ),
-                                  ),
-                                  // SizedBox(
-                                  //   width: size.width*.02,
-                                  //   height: size.width*.02,
-                                  //   child: TextButton(
-                                  //     onPressed: () {
-                                  //       setState(() {
-                                  //         showAvg = !showAvg;
-                                  //       });
-                                  //     },
-                                  //     child: Text(
-                                  //       'avg',
-                                  //       style: TextStyle(
-                                  //           fontSize: 12, color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                ],
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-
-                                  Text('Product By Date',style: TextStyle(fontSize: 20),),
-                                  Text('Last Campaign Performance',style: TextStyle(fontSize: 15),),
-                                  Divider(
-                                    height: 1,
-                                    color: Colors.grey,
-                                  ),
-                                  Row(children: [
-
-                                    Icon(Icons.update_outlined,size: 15,),
-                                    Text('Updated 23521 Millisecond ago',style: TextStyle(fontSize: 10),),
-                                  ],)
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        elevation: 8,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 350,
-                              child: Stack(
-                                children: <Widget>[
-                                  AspectRatio(
-                                    aspectRatio: 1.3,
-                                    child: Container(
-
-                                      color: Colors.green.shade300,
-                                      child: LineChart(
-                                        showAvg ? avgData() : mainData(),
-                                      ),
-                                    ),
-                                  ),
-                                  // SizedBox(
-                                  //   width: size.width*.02,
-                                  //   height: size.width*.02,
-                                  //   child: TextButton(
-                                  //     onPressed: () {
-                                  //       setState(() {
-                                  //         showAvg = !showAvg;
-                                  //       });
-                                  //     },
-                                  //     child: Text(
-                                  //       'avg',
-                                  //       style: TextStyle(
-                                  //           fontSize: 12, color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                ],
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-
-                                  Text('Daily Orders',style: TextStyle(fontSize: 20),),
-                                  Text('Last Campaigns Performance',style: TextStyle(fontSize: 15),),
-                                  Divider(
-                                    height: 1,
-                                    color: Colors.grey,
-                                  ),
-                                  Row(children: [
-
-                                    Icon(Icons.update_outlined,size: 15,),
-                                    Text('Updated 23521 Millisecond ago',style: TextStyle(fontSize: 10),),
-                                  ],)
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              SizedBox(height: 300,),
+              // SingleChildScrollView(
+              //   scrollDirection: Axis.horizontal,
+              //   child: publicProvider.isWindows? Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //     children: [
+              //       Padding(
+              //         padding: const EdgeInsets.all(8.0),
+              //         child: Card(
+              //           elevation: 5,
+              //           child: Column(
+              //             mainAxisAlignment: MainAxisAlignment.start,
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             children: [
+              //               Container(
+              //                 width: publicProvider.isWindows? size.height*.5:size.width*.4,
+              //                 color: Colors.green,
+              //                 child: Stack(
+              //                   children: <Widget>[
+              //                     AspectRatio(
+              //                       aspectRatio: 1.3,
+              //                       child: Container(
+              //
+              //
+              //                         child: LineChart(
+              //                           showAvg ? avgData() : mainData(),
+              //                         ),
+              //                       ),
+              //                     ),
+              //                   ],
+              //                 ),
+              //               ),
+              //               Padding(
+              //                 padding: const EdgeInsets.all(5.0),
+              //                 child: Column(
+              //                   mainAxisAlignment: MainAxisAlignment.start,
+              //                   crossAxisAlignment: CrossAxisAlignment.start,
+              //                   children: [
+              //                     Text('Daily Sales',style: TextStyle(fontSize: 20),),
+              //                     Text('10 Sales in Today',style: TextStyle(fontSize: 15),),
+              //                     Divider(
+              //                       height: 1,
+              //                       color: Colors.grey,
+              //                     ),
+              //                     Row(children: [
+              //
+              //                       Icon(Icons.update_outlined,size: 15,),
+              //                       Text('Updated 23521 Millisecond ago',style: TextStyle(fontSize: 10),),
+              //                     ],)
+              //                   ],
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //       ),
+              //       Padding(
+              //         padding: const EdgeInsets.all(8.0),
+              //         child: Card(
+              //           elevation: 5,
+              //           child: Column(
+              //             mainAxisAlignment: MainAxisAlignment.start,
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             children: [
+              //               Container(
+              //                 width: publicProvider.isWindows? size.height*.5:size.width*.4,
+              //
+              //                 child: Stack(
+              //                   children: <Widget>[
+              //                     AspectRatio(
+              //                       aspectRatio: 1.3,
+              //                       child: Container(
+              //                         color: Colors.amber.shade400,
+              //                         child: BarChart(
+              //                            mainBarData(),
+              //                             swapAnimationDuration: Duration(milliseconds: 50), // Optional
+              //                         swapAnimationCurve: Curves.linear, // Optional
+              //                         ),
+              //                       ),
+              //                     ),
+              //                   ],
+              //                 ),
+              //               ),
+              //
+              //               Padding(
+              //                 padding: const EdgeInsets.all(5.0),
+              //                 child: Column(
+              //                   mainAxisAlignment: MainAxisAlignment.start,
+              //                   crossAxisAlignment: CrossAxisAlignment.start,
+              //                   children: [
+              //
+              //                     Text('Product By Date',style: TextStyle(fontSize: 20),),
+              //                     Text('Last Campaign Performance',style: TextStyle(fontSize: 15),),
+              //                     Divider(
+              //                       height: 1,
+              //                       color: Colors.grey,
+              //                     ),
+              //                     Row(children: [
+              //
+              //                       Icon(Icons.update_outlined,size: 15,),
+              //                       Text('Updated 23521 Millisecond ago',style: TextStyle(fontSize: 10),),
+              //                     ],)
+              //                   ],
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //       ),
+              //       Padding(
+              //         padding: const EdgeInsets.all(8.0),
+              //         child: Card(
+              //           elevation: 8,
+              //           child: Column(
+              //             mainAxisAlignment: MainAxisAlignment.start,
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             children: [
+              //               Container(
+              //                 width: publicProvider.isWindows? size.height*.5:size.width*.4,
+              //                 child: Stack(
+              //                   children: <Widget>[
+              //                     AspectRatio(
+              //                       aspectRatio: 1.3,
+              //                       child: Container(
+              //
+              //                         color: Colors.green.shade300,
+              //                         child: LineChart(
+              //                           showAvg ? avgData() : mainData(),
+              //                         ),
+              //                       ),
+              //                     ),
+              //                     // SizedBox(
+              //                     //   width: size.width*.02,
+              //                     //   height: size.width*.02,
+              //                     //   child: TextButton(
+              //                     //     onPressed: () {
+              //                     //       setState(() {
+              //                     //         showAvg = !showAvg;
+              //                     //       });
+              //                     //     },
+              //                     //     child: Text(
+              //                     //       'avg',
+              //                     //       style: TextStyle(
+              //                     //           fontSize: 12, color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
+              //                     //     ),
+              //                     //   ),
+              //                     // ),
+              //                   ],
+              //                 ),
+              //               ),
+              //
+              //               Padding(
+              //                 padding: const EdgeInsets.all(5.0),
+              //                 child: Column(
+              //                   mainAxisAlignment: MainAxisAlignment.start,
+              //                   crossAxisAlignment: CrossAxisAlignment.start,
+              //                   children: [
+              //
+              //                     Text('Daily Orders',style: TextStyle(fontSize: 20),),
+              //                     Text('Last Campaigns Performance',style: TextStyle(fontSize: 15),),
+              //                     Divider(
+              //                       height: 1,
+              //                       color: Colors.grey,
+              //                     ),
+              //                     Row(children: [
+              //
+              //                       Icon(Icons.update_outlined,size: 15,),
+              //                       Text('Updated 23521 Millisecond ago',style: TextStyle(fontSize: 10),),
+              //                     ],)
+              //                   ],
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ):Column(
+              //
+              //     children: [
+              //       Padding(
+              //         padding: const EdgeInsets.all(8.0),
+              //         child: Card(
+              //           elevation: 5,
+              //           child: Column(
+              //             mainAxisAlignment: MainAxisAlignment.start,
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             children: [
+              //               Container(
+              //                 width: publicProvider.isWindows? size.height*.4:size.width*.4,
+              //                 color: Colors.green,
+              //                 child: Stack(
+              //                   children: <Widget>[
+              //                     AspectRatio(
+              //                       aspectRatio: 1.3,
+              //                       child: Container(
+              //
+              //
+              //                         child: LineChart(
+              //                           showAvg ? avgData() : mainData(),
+              //                         ),
+              //                       ),
+              //                     ),
+              //                     // SizedBox(
+              //                     //   width: size.width*.02,
+              //                     //   height: size.width*.02,
+              //                     //   child: TextButton(
+              //                     //     onPressed: () {
+              //                     //       setState(() {
+              //                     //         showAvg = !showAvg;
+              //                     //       });
+              //                     //     },
+              //                     //     child: Text(
+              //                     //       'avg',
+              //                     //       style: TextStyle(
+              //                     //           fontSize: 12, color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
+              //                     //     ),
+              //                     //   ),
+              //                     // ),
+              //                   ],
+              //                 ),
+              //               ),
+              //               Padding(
+              //                 padding: const EdgeInsets.all(5.0),
+              //                 child: Column(
+              //                   mainAxisAlignment: MainAxisAlignment.start,
+              //                   crossAxisAlignment: CrossAxisAlignment.start,
+              //                   children: [
+              //
+              //                     Text('Daily Sales',style: TextStyle(fontSize: 20),),
+              //                     Text('10 Sales in Today',style: TextStyle(fontSize: 15),),
+              //                     Divider(
+              //                       height: 1,
+              //                       color: Colors.grey,
+              //                     ),
+              //                     Row(children: [
+              //
+              //                       Icon(Icons.update_outlined,size: 15,),
+              //                       Text('Updated 23521 Millisecond ago',style: TextStyle(fontSize: 10),),
+              //                     ],)
+              //                   ],
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //       ),
+              //       Padding(
+              //         padding: const EdgeInsets.all(8.0),
+              //         child: Card(
+              //           elevation: 5,
+              //           child: Column(
+              //             mainAxisAlignment: MainAxisAlignment.start,
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             children: [
+              //               Container(
+              //                 width: 350,
+              //
+              //                 child: Stack(
+              //                   children: <Widget>[
+              //                     AspectRatio(
+              //                       aspectRatio: 1.3,
+              //                       child: Container(
+              //                         color: Colors.amber.shade400,
+              //
+              //
+              //                         child: BarChart(
+              //                           mainBarData(),
+              //                           swapAnimationDuration: Duration(milliseconds: 50), // Optional
+              //                           swapAnimationCurve: Curves.linear, // Optional
+              //                         ),
+              //                       ),
+              //                     ),
+              //                     // SizedBox(
+              //                     //   width: size.width*.02,
+              //                     //   height: size.width*.02,
+              //                     //   child: TextButton(
+              //                     //     onPressed: () {
+              //                     //       setState(() {
+              //                     //         showAvg = !showAvg;
+              //                     //       });
+              //                     //     },
+              //                     //     child: Text(
+              //                     //       'avg',
+              //                     //       style: TextStyle(
+              //                     //           fontSize: 12, color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
+              //                     //     ),
+              //                     //   ),
+              //                     // ),
+              //                   ],
+              //                 ),
+              //               ),
+              //
+              //               Padding(
+              //                 padding: const EdgeInsets.all(5.0),
+              //                 child: Column(
+              //                   mainAxisAlignment: MainAxisAlignment.start,
+              //                   crossAxisAlignment: CrossAxisAlignment.start,
+              //                   children: [
+              //
+              //                     Text('Product By Date',style: TextStyle(fontSize: 20),),
+              //                     Text('Last Campaign Performance',style: TextStyle(fontSize: 15),),
+              //                     Divider(
+              //                       height: 1,
+              //                       color: Colors.grey,
+              //                     ),
+              //                     Row(children: [
+              //
+              //                       Icon(Icons.update_outlined,size: 15,),
+              //                       Text('Updated 23521 Millisecond ago',style: TextStyle(fontSize: 10),),
+              //                     ],)
+              //                   ],
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //       ),
+              //       Padding(
+              //         padding: const EdgeInsets.all(8.0),
+              //         child: Card(
+              //           elevation: 8,
+              //           child: Column(
+              //             mainAxisAlignment: MainAxisAlignment.start,
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             children: [
+              //               Container(
+              //                 width: 350,
+              //                 child: Stack(
+              //                   children: <Widget>[
+              //                     AspectRatio(
+              //                       aspectRatio: 1.3,
+              //                       child: Container(
+              //
+              //                         color: Colors.green.shade300,
+              //                         child: LineChart(
+              //                           showAvg ? avgData() : mainData(),
+              //                         ),
+              //                       ),
+              //                     ),
+              //                     // SizedBox(
+              //                     //   width: size.width*.02,
+              //                     //   height: size.width*.02,
+              //                     //   child: TextButton(
+              //                     //     onPressed: () {
+              //                     //       setState(() {
+              //                     //         showAvg = !showAvg;
+              //                     //       });
+              //                     //     },
+              //                     //     child: Text(
+              //                     //       'avg',
+              //                     //       style: TextStyle(
+              //                     //           fontSize: 12, color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
+              //                     //     ),
+              //                     //   ),
+              //                     // ),
+              //                   ],
+              //                 ),
+              //               ),
+              //
+              //               Padding(
+              //                 padding: const EdgeInsets.all(5.0),
+              //                 child: Column(
+              //                   mainAxisAlignment: MainAxisAlignment.start,
+              //                   crossAxisAlignment: CrossAxisAlignment.start,
+              //                   children: [
+              //
+              //                     Text('Daily Orders',style: TextStyle(fontSize: 20),),
+              //                     Text('Last Campaigns Performance',style: TextStyle(fontSize: 15),),
+              //                     Divider(
+              //                       height: 1,
+              //                       color: Colors.grey,
+              //                     ),
+              //                     Row(children: [
+              //
+              //                       Icon(Icons.update_outlined,size: 15,),
+              //                       Text('Updated 23521 Millisecond ago',style: TextStyle(fontSize: 10),),
+              //                     ],)
+              //                   ],
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
 
             ],
           ),
@@ -529,16 +555,16 @@ class _DashBoardPageState extends State<DashBoardPage> {
                     fontSize: size.height*.022,
                     fontWeight: FontWeight.w400,
                     fontFamily: 'OpenSans')),
-                SizedBox(height: size.height*.05),
+                SizedBox(height: size.height*.02),
 
-                // Text(heading2,style: TextStyle(color: Colors.grey,
-                //     fontSize: size.height*.016,
-                //     fontWeight: FontWeight.w400,
-                //     fontFamily: 'OpenSans'),),
-                // Text(h2Data,style: TextStyle(color: Colors.grey[900],
-                //     fontSize: size.height*.022,
-                //     fontWeight: FontWeight.w400,
-                //     fontFamily: 'OpenSans')),
+                Text(heading2,style: TextStyle(color: Colors.grey,
+                    fontSize: size.height*.016,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'OpenSans'),),
+                Text(h2Data,style: TextStyle(color: Colors.grey[900],
+                    fontSize: size.height*.022,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'OpenSans')),
 
                 Divider(height: 3,thickness: 0.2,color: Colors.grey),
 

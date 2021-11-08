@@ -297,10 +297,10 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
                       ),
                     ),
 
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Align(
-                        alignment: Alignment.topLeft,
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,

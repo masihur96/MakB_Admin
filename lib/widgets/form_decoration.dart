@@ -59,7 +59,7 @@ InputDecoration textFieldFormDecorationLogin(Size size,PublicProvider publicProv
     hintText: 'Enter email or Phone number',
     filled: true,
     fillColor: Colors.blueGrey[50],
-    labelStyle: TextStyle(fontSize: publicProvider.deviceDetect=='windows'? size.height*.02:size.width*.02,),
+    labelStyle: TextStyle(fontSize:publicProvider.isWindows? size.height*.02:size.width*.02,),
     contentPadding: EdgeInsets.only(left: 30),
     enabledBorder: OutlineInputBorder(
       borderSide: BorderSide(color: Colors.green.shade100),

@@ -654,8 +654,12 @@ class _AllProductPageState extends State<AllProductPage> {
             child: TextButton(
                 onPressed: (){
 
-                  publicProvider.subCategory = 'Update Product';
-                  publicProvider.category = '';
+                  setState(() {
+                    publicProvider.subCategory = 'Update Product';
+                    publicProvider.category = '';
+                  });
+
+
                   Navigator.pop(context);
                 }, child: Container(
                 decoration: BoxDecoration(
