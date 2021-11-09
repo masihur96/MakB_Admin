@@ -30,22 +30,24 @@ class _AllPackagePageState extends State<AllPackagePage> {
     setState(() {
       counter++;
     });
-
     setState(() {
       _isLoading = true;
     });
-
-    await firebaseProvider.getPackage().then((value) {
-      setState(() {
-
-        _subList = firebaseProvider.packageList;
-
-        _filteredList = _subList;
-
+    if(firebaseProvider.packageList.isEmpty){
+      await firebaseProvider.getPackage().then((value) {
+        setState(() {
+          _subList = firebaseProvider.packageList;
+          _filteredList = _subList;
           _isLoading = false;
-
+        });
       });
-    });
+    }else{
+      setState(() {
+        _subList = firebaseProvider.packageList;
+        _filteredList = _subList;
+        _isLoading = false;
+      });
+    }
   }
 
   _filterList(String searchItem) {

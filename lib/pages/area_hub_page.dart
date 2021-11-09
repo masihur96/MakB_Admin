@@ -17,11 +17,20 @@ class _AreaHubState extends State<AreaHub> {
   var areaTextController = TextEditingController();
   var hubTextController = TextEditingController();
 
-  List area=['Dhaka','Gazipur'];
-  List hub=['Bason','Konabari'];
-
   List<dynamic> hubValue=[];
 
+  int counter=0;
+
+  customInit(FirebaseProvider firebaseProvider){
+
+    if(firebaseProvider.areaHubList.isEmpty){
+
+      firebaseProvider.getAreaHub();
+    }
+
+
+
+  }
 
 
   @override
@@ -30,6 +39,11 @@ class _AreaHubState extends State<AreaHub> {
     final PublicProvider publicProvider = Provider.of<PublicProvider>(context);
     final FirebaseProvider firebaseProvider = Provider.of<FirebaseProvider>(context);
 
+
+    if(counter==0){
+
+      customInit(firebaseProvider);
+    }
 
     return Container(
         width: publicProvider.pageWidth(size),

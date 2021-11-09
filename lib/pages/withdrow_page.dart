@@ -27,12 +27,23 @@ class _WithdrowPageState extends State<WithdrowPage> {
       counter++;
     });
 
-    await firebaseProvider.getWithdrawRequest().then((value) {
+    if(firebaseProvider.withdrawRequestList.isEmpty){
+      await firebaseProvider.getWithdrawRequest().then((value) {
+        setState(() {
+          _subList = firebaseProvider.withdrawRequestList;
+          _filteredList = _subList;
+        });
+      });
+
+    }else{
       setState(() {
         _subList = firebaseProvider.withdrawRequestList;
         _filteredList = _subList;
       });
-    });
+
+    }
+
+
 
   }
 

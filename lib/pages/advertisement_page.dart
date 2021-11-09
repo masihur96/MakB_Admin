@@ -31,22 +31,6 @@ class _AdvertisementState extends State<Advertisement> {
  String? videoName;
 
   String? video_size;
- //double? e;
-
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _controller = VideoPlayerController.network(url
-  //      )
-  //     ..initialize().then((_) {
-  //       // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-  //       setState(() {});
-  //     });
-  // }
-
-
-
   Uint8List? fileBytes;
   String? videoUrl;
   int counter=0;
@@ -56,6 +40,11 @@ class _AdvertisementState extends State<Advertisement> {
     setState(() {
       counter++;
     });
+
+    if(firebaseProvider.advertisementList.isEmpty){
+
+      firebaseProvider.getVideo();
+    }
 
     _controller = VideoPlayerController.network(url
     )

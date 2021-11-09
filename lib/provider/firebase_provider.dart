@@ -39,11 +39,17 @@ class FirebaseProvider extends ChangeNotifier {
   List<ProductOrderModel> _productOrderList = [];
   get productOrderList => _productOrderList;
 
+  List<ProductOrderModel> _productPendingOrderList = [];   //Pending Product list
+  get productPendingOrderList => _productPendingOrderList;
+
   List<PackageModel> _packageList = [];
   get packageList => _packageList;
 
   List<PackageOrderModel> _packageOrderList = [];
   get packageOrderList => _packageOrderList;
+
+  List<PackageOrderModel> _packagePendingOrderList = [];    //Package Stored List
+  get packagePendingOrderList => _packagePendingOrderList;
 
   List<ReferModel> _referList = [];
   get referList => _referList;
@@ -295,6 +301,31 @@ String? DateFromDatabase;
         print('Package Order List: ${_packageOrderList.length}');
         notifyListeners();
       });
+
+      await FirebaseFirestore.instance.collection('PackageCollectionRequest').where('status',isEqualTo: 'stored').get().then((snapShot){
+        _packagePendingOrderList.clear();
+        snapShot.docChanges.forEach((element) {
+          PackageOrderModel packageOrderModel=PackageOrderModel(
+            colors: element.doc['colors'],
+            date: element.doc['date'],
+            discount: element.doc['discount'],
+            id: element.doc['id'],
+            imageUrl: element.doc['imageUrl'],
+            packageId: element.doc['packageId'],
+            productName: element.doc['productName'],
+            productPrice: element.doc['productPrice'],
+            quantity: element.doc['quantity'],
+            sizes: element.doc['sizes'],
+            status: element.doc['status'],
+            userName: element.doc['userName'],
+            userAddress: element.doc['userAddress'],
+            userPhone: element.doc['userPhone'],
+          );
+          _packagePendingOrderList.add(packageOrderModel) ;
+        });
+        print('Package Stored Order List: ${_packagePendingOrderList.length}');
+        notifyListeners();
+      });
     }catch(error){
       print(error);
     }
@@ -372,6 +403,28 @@ String? DateFromDatabase;
           _productOrderList.add(productOrderModel) ;
         });
         print('Product Order  List: ${_productOrderList.length}');
+        notifyListeners();
+      });
+
+      await FirebaseFirestore.instance.collection('Orders').where('state',isEqualTo: 'pending').get().then((snapShot){
+        _productPendingOrderList.clear();
+        snapShot.docChanges.forEach((element) {
+          ProductOrderModel productOrderModel =ProductOrderModel(
+              Area: element.doc['Area'],
+              hub: element.doc['hub'],
+              name: element.doc['name'],
+              orderDate: element.doc['orderDate'],
+              orderNumber: element.doc['orderNumber'],
+              phone: element.doc['phone'],
+              products: element.doc['products'],
+              quantity: element.doc['quantity'],
+              state: element.doc['state'],
+              totalAmount: element.doc['totalAmount'],
+              id: element.doc['id']
+          );
+          _productPendingOrderList.add(productOrderModel) ;
+        });
+        print('Product Pending Order  List: ${_productPendingOrderList.length}');
         notifyListeners();
       });
     }catch(error){

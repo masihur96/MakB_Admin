@@ -23,11 +23,11 @@ class Variables{
         Entry('All Package'),
 
       ]),
-      Entry('Area & Hub',Icons.category_outlined, <Entry>[
-        Entry('Area'),
-        Entry('Hub'),
-
-      ]),
+      // Entry('Area & Hub',Icons.category_outlined, <Entry>[
+      //   Entry('Area'),
+      //   Entry('Hub'),
+      //
+      // ]),
       Entry('Deposit',Icons.category_outlined, <Entry>[
         Entry('Deposit'),
         Entry('Insurance'),

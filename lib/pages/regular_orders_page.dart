@@ -24,11 +24,18 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
   ];
 
   static const status = <String> [
-    'Processing',
-    'Collected',
+    'pending',
+    'delivered',
   ];
+  String statusValue = 'pending';
 
-  String statusValue = 'Collected';
+  static const packageStatus = <String> [
+    'processing',
+    'collected',
+  ];
+  String packageStatusValue = 'processing';
+
+
   List<dynamic> selectOrder = [];
   List<dynamic> selectOrderID = [];
 
@@ -46,21 +53,42 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
       _isLoading = true;
     });
 
-    await firebaseProvider.getProductOrder().then((value) {
+    if(firebaseProvider.productOrderList.isEmpty){
+
+      await firebaseProvider.getProductOrder().then((value) {
+        setState(() {
+          _productSubList = firebaseProvider.productOrderList;
+          _productFilteredList = _productSubList;
+          _isLoading = false;
+        });
+      });
+
+    }else{
       setState(() {
         _productSubList = firebaseProvider.productOrderList;
         _productFilteredList = _productSubList;
-      _isLoading = false;
+        _isLoading = false;
       });
-    });
+    }
 
-    await firebaseProvider.getPackageRequest().then((value) {
+
+    if(firebaseProvider.packageOrderList.isEmpty){
+      await firebaseProvider.getPackageRequest().then((value) {
+        setState(() {
+          _packageSubList = firebaseProvider.packageOrderList;
+          _packageFilteredList = _packageSubList;
+          _isLoading = false;
+        });
+      });
+    }else {
       setState(() {
         _packageSubList = firebaseProvider.packageOrderList;
         _packageFilteredList = _packageSubList;
         _isLoading = false;
       });
-    });
+    }
+
+
 
 
 
@@ -385,7 +413,7 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                                                   statusValue = newValue!;
                                                                 });
 
-                                                                updateStateValue(firebaseProvider,index1,statusValue);
+                                                                updateStateValue(firebaseProvider,index1,statusValue).then((value) => Navigator.pop(context));
 
 
                                                               },
@@ -749,11 +777,11 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
                           DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
-                              value: statusValue,
+                              value: packageStatusValue,
                               elevation: 0,
                               dropdownColor: Colors.white,
                               style: TextStyle(color: Colors.black),
-                              items: status.map((itemValue) {
+                              items: packageStatus.map((itemValue) {
                                 return DropdownMenuItem<String>(
                                   value: itemValue,
                                   child: Text(itemValue),
@@ -761,10 +789,10 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                               }).toList(),
                               onChanged: (newValue) {
                                 setState(() {
-                                  statusValue = newValue!;
+                                  packageStatusValue = newValue!;
                                 });
                                 showLoaderDialog(context);
-                             updatePackageStateValue(firebaseProvider,index,statusValue).then((value) => Navigator.pop(context));
+                             updatePackageStateValue(firebaseProvider,index,packageStatusValue).then((value) => Navigator.pop(context));
                               },
                             ),
                           ),

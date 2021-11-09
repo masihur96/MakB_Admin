@@ -149,7 +149,7 @@ class _MainPageState extends State<MainPage> {
                                   child: CircleAvatar(
                                     radius: 6,
                                       backgroundColor: Colors.red,
-                                      child: Text('${firebaseProvider.packageOrderList.length+firebaseProvider.productOrderList.length+firebaseProvider.withdrawRequestList.length}',style: TextStyle(color: Colors.white,fontSize: 9),)))
+                                      child: Text('${firebaseProvider.packagePendingOrderList.length+firebaseProvider.productPendingOrderList.length+firebaseProvider.withdrawRequestList.length}',style: TextStyle(color: Colors.white,fontSize: 9),)))
                             ],
                           ),
                         ),
@@ -253,6 +253,7 @@ class SideBar extends StatelessWidget {
                 publicProvider,
                 context),
           ),
+          SidebarContentBuilder(title: 'Area & Hub'),
           SidebarContentBuilder(title: 'Customer'),
 
           SidebarContentBuilder(title: 'Advertisement'),
@@ -330,6 +331,7 @@ class NavigationDrawer extends StatelessWidget {
                       publicProvider,
                       context),
                 ),
+                SidebarContentBuilder(title: 'Area & Hub'),
                 SidebarContentBuilder(title: 'Customer'),
                 SidebarContentBuilder(title: 'Advertisement'),
                 SidebarContentBuilder(title: 'Settings'),

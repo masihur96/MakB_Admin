@@ -45,29 +45,61 @@ class _AllProductPageState extends State<AllProductPage> {
       _isLoading =true;
     });
 
-    await firebaseProvider.getCategory().then((value) {
+    if(firebaseProvider.categoryList.isEmpty){
+
+      await firebaseProvider.getCategory().then((value) {
+        setState(() {
+          caterorys = firebaseProvider.categoryList;
+          categorysValue = caterorys[0].category!;
+
+          _isLoading =false;
+        });
+      });
+
+
+    }else{
       setState(() {
         caterorys = firebaseProvider.categoryList;
         categorysValue = caterorys[0].category!;
 
         _isLoading =false;
       });
-    });
 
-    await firebaseProvider.getSubCategory().then((value) {
+    }
+
+    if(firebaseProvider.subCategoryList.isEmpty){
+      await firebaseProvider.getSubCategory().then((value) {
+        setState(() {
+          subCategorys = firebaseProvider.subCategoryList;
+          subCategorysValue = subCategorys[0].subCategory!;
+          _isLoading =false;
+        });
+      });
+    }else {
       setState(() {
         subCategorys = firebaseProvider.subCategoryList;
         subCategorysValue = subCategorys[0].subCategory!;
         _isLoading =false;
       });
-    });
-    await firebaseProvider.getProducts().then((value) {
-      setState(() {
-        _subList = firebaseProvider.productList;
-        _filteredList = _subList;
-        _isLoading =false;
-      });
-    });
+    }
+
+   if(firebaseProvider.productList.isEmpty){
+     await firebaseProvider.getProducts().then((value) {
+       setState(() {
+         _subList = firebaseProvider.productList;
+         _filteredList = _subList;
+         _isLoading =false;
+       });
+     });
+   }else{
+     setState(() {
+       _subList = firebaseProvider.productList;
+       _filteredList = _subList;
+       _isLoading =false;
+     });
+
+   }
+
 
   }
 
@@ -691,74 +723,3 @@ class _AllProductPageState extends State<AllProductPage> {
     }
   }
 }
-// Row(
-//   mainAxisAlignment: MainAxisAlignment.start,
-//   children: [
-//     Text('Category: ',
-//         style: TextStyle(
-//           color: Colors.black,
-//           fontStyle: FontStyle.normal,
-//           fontSize: publicProvider.isWindows
-//               ? size.height * .02
-//               : size.width * .02,
-//         )),
-//     DropdownButtonHideUnderline(
-//       child: DropdownButton<String>(
-//         value: categorysValue,
-//         elevation: 0,
-//         dropdownColor: Colors.white,
-//         style: TextStyle(color: Colors.black),
-//         items: caterorys.map((itemValue) {
-//           return DropdownMenuItem<String>(
-//             value: itemValue.category,
-//             child: Text(itemValue.category!),
-//           );
-//         }).toList(),
-//         onChanged: (newValue) {
-//           setState(() {
-//             categorysValue = newValue!;
-//           });
-//
-//         },
-//       ),
-//     ),
-//   ],
-// ),
-// Row(
-//   mainAxisAlignment: MainAxisAlignment.start,
-//   children: [
-//     Text('Subcategory: ',
-//         style: TextStyle(
-//           color: Colors.black,
-//           fontStyle: FontStyle.normal,
-//           fontSize: publicProvider.isWindows
-//               ? size.height * .02
-//               : size.width * .02,
-//         )),
-//     DropdownButtonHideUnderline(
-//       child: Row(
-//         children: [
-//           DropdownButton<String>(
-//
-//             value: subCategorysValue,
-//             elevation: 0,
-//             dropdownColor: Colors.white,
-//             style: TextStyle(color: Colors.black),
-//             items: subCategorys.map((itemValue) {
-//               return DropdownMenuItem<String>(
-//
-//                 value: itemValue.subCategory,
-//                 child: Text(itemValue.subCategory!),
-//               );
-//             }).toList(),
-//             onChanged: (newValue) {
-//               setState(() {
-//                 subCategorysValue = newValue!;
-//               });
-//             },
-//           ),
-//         ],
-//       ),
-//     ),
-//   ],
-// ),

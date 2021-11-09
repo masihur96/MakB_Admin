@@ -42,23 +42,42 @@ class _InsurancePageState extends State<InsurancePage> {
       _isLoading =true;
     });
 
-    await firebaseProvider.getInsurancePendingRequest().then((value) {
+    if(firebaseProvider.insuranceRequestList.isEmpty){
+      await firebaseProvider.getInsurancePendingRequest().then((value) {
+        setState(() {
+          _subList = firebaseProvider.insuranceRequestList;
+          _filteredList = _subList;
+
+          _isLoading =false;
+        });
+      });
+
+    }else{
       setState(() {
         _subList = firebaseProvider.insuranceRequestList;
         _filteredList = _subList;
 
         _isLoading =false;
       });
-    });
 
-    await firebaseProvider.getInsuranceTransferredRequest().then((value) {
+    }
+
+
+    if(firebaseProvider.insuranceTransferredRequestList.isEmpty){
+      await firebaseProvider.getInsuranceTransferredRequest().then((value) {
+        setState(() {
+          _transferredSubList = firebaseProvider.insuranceTransferredRequestList;
+          _transferredFilteredList = _transferredSubList;
+          _isLoading =false;
+        });
+      });
+    }else{
       setState(() {
         _transferredSubList = firebaseProvider.insuranceTransferredRequestList;
         _transferredFilteredList = _transferredSubList;
         _isLoading =false;
       });
-    });
-
+    }
   }
 
   _filterList(String searchItem) {

@@ -20,12 +20,29 @@ class _LoginPageState extends State<LoginPage> {
 
   int counter=0;
 
-  _customInit(FirebaseProvider firebaseProvider){
+  _customInit(FirebaseProvider firebaseProvider)async{
     setState(() {
       counter++;
     });
 
-    firebaseProvider.getAdminData();
+    await  firebaseProvider.getAdminData();
+    await firebaseProvider.getRate();
+    await firebaseProvider.getUser();
+    await firebaseProvider.getCategory();
+    await firebaseProvider.getSubCategory();
+    await firebaseProvider.getProducts();
+    await  firebaseProvider.getPackage();
+    await firebaseProvider.getAreaHub();
+    await firebaseProvider.getWithdrawRequest();
+    await firebaseProvider.getDepositRequest();
+    await firebaseProvider.getInsurancePendingRequest();
+    await firebaseProvider.getInsuranceTransferredRequest();
+    await firebaseProvider.getSoldPackage();
+    await firebaseProvider.getProductOrder();
+    await firebaseProvider.getPackageRequest();
+    // firebaseProvider.getDepositHistory('01929444532');
+    await  firebaseProvider.getVideo();
+    await firebaseProvider.getAdminData();
 
   }
 
@@ -70,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Sign In With',textAlign: TextAlign.center,
+                    'SIGN IN WITH',textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize:publicProvider.isWindows? size.height*.05:size.width*.04,
                       fontWeight: FontWeight.normal,
@@ -108,8 +125,6 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           height: 10,
                         ),
-
-
                       ],
                     ):Container(),
 

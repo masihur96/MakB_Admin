@@ -34,14 +34,21 @@ class _DepositePageState extends State<DepositePage> {
       _isLoading = true;
     });
 
-    await firebaseProvider.getDepositRequest().then((value) {
+    if(firebaseProvider.depositRequestList.isEmpty){
+      await firebaseProvider.getDepositRequest().then((value) {
+        setState(() {
+          _subList = firebaseProvider.depositRequestList;
+          _filteredList = _subList;
+          _isLoading = false;
+        });
+      });
+    }else{
       setState(() {
         _subList = firebaseProvider.depositRequestList;
         _filteredList = _subList;
         _isLoading = false;
       });
-    });
-
+    }
   }
 
 

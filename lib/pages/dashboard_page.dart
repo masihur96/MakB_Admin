@@ -14,7 +14,7 @@ class DashBoardPage extends StatefulWidget {
 
 class _DashBoardPageState extends State<DashBoardPage> {
 
-  int _counter=0;
+
   bool _isLoading=true;
   bool showAvg = false;
   //Barchart
@@ -33,23 +33,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
     setState(() {
       counter++;
     });
-    await firebaseProvider.getRate();
-    await firebaseProvider.getUser();
-    await firebaseProvider.getCategory();
-    await firebaseProvider.getSubCategory();
-    await firebaseProvider.getProducts();
-    await  firebaseProvider.getPackage();
-    await firebaseProvider.getAreaHub();
-    await firebaseProvider.getWithdrawRequest();
-    await firebaseProvider.getDepositRequest();
-    await firebaseProvider.getInsurancePendingRequest();
-    await firebaseProvider.getInsuranceTransferredRequest();
-    await   firebaseProvider.getSoldPackage();
-    await firebaseProvider.getProductOrder();
-    await firebaseProvider.getPackageRequest();
-    // firebaseProvider.getDepositHistory('01929444532');
-    await  firebaseProvider.getVideo();
-    await firebaseProvider.getAdminData();
+
 
 
     DateTime date = DateTime.now();

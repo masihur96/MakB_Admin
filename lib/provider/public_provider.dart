@@ -62,8 +62,7 @@ class PublicProvider extends ChangeNotifier{
     else if(_subCategory=='Add Package') return UploadPackagePage();
     else if(_subCategory=='All Package') return AllPackagePage();
     else if(_subCategory=='Update Package') return UpdatePackage();
-    else if(_subCategory=='Area') return AreaHub();
-    else if(_subCategory=='Hub') return AreaHub();
+    else if(_subCategory=='Area & Hub') return AreaHub();
     else if(_subCategory=='Deposit') return DepositePage();
     else if(_subCategory=='Insurance') return InsurancePage();
     else if(_subCategory=='Withdraw') return WithdrowPage();

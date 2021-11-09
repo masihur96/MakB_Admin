@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
+import 'package:makb_admin_pannel/widgets/fading_circle.dart';
 import 'package:provider/provider.dart';
 
 class AddBalance extends StatefulWidget {
@@ -102,12 +103,7 @@ class _AddBalanceState extends State<AddBalance> {
                   // ),
                   SizedBox(height: 10),
                   _isLoading
-                      ? Container(
-                      child: Column(
-                        children: [
-                          // fadingCircle,
-                        ],
-                      ))
+                      ? fadingCircle
                       : ElevatedButton(
                     onPressed: () {
                       _isLoading = true;

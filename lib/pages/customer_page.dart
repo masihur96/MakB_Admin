@@ -32,13 +32,24 @@ class _CustomerPageState extends State<CustomerPage> {
       _isLoading = true;
     });
 
-    await firebaseProvider.getUser().then((value) {
+    if(firebaseProvider.userList.isEmpty){
+      await firebaseProvider.getUser().then((value) {
+        setState(() {
+          _subList = firebaseProvider.userList;
+          _filteredList = _subList;
+          _isLoading = false;
+        });
+      });
+
+    }else{
       setState(() {
         _subList = firebaseProvider.userList;
         _filteredList = _subList;
         _isLoading = false;
       });
-    });
+    }
+
+
 
   }
 
