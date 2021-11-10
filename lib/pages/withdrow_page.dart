@@ -152,160 +152,158 @@ class _WithdrowPageState extends State<WithdrowPage> {
                 ],
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(8),
-                  itemCount: _filteredList.length,
-                  itemBuilder: (BuildContext context, int index) {
+            ListView.builder(
+                shrinkWrap: true,
+                physics: ClampingScrollPhysics(),
+                padding: const EdgeInsets.all(8),
+                itemCount: _filteredList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(firebaseProvider
+                     .withdrawRequestList[index].date));
+                  var format = new DateFormat("yMMMd").add_jm();
+                  String withdrawDate = format.format(date);
+                  return Column(
+                    children: [
+                      Divider(
+                        height: 1,
+                        color: Colors.grey,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${_filteredList[index].id}',textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                withdrawDate,textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                               '${_filteredList[index].name}',textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                '${_filteredList[index].transactionMobileNo}',textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                '${_filteredList[index].transactionSystem}',textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                '${_filteredList[index].amount}',textAlign: TextAlign.center,
+                              ),
+                            ),
 
-                    DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(firebaseProvider
-                       .withdrawRequestList[index].date));
-                    var format = new DateFormat("yMMMd").add_jm();
-                    String withdrawDate = format.format(date);
-                    return Column(
-                      children: [
-                        Divider(
-                          height: 1,
-                          color: Colors.grey,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  '${_filteredList[index].id}',textAlign: TextAlign.center,
-                                ),
+                            Expanded(
+                              child: Text('${_filteredList[index].status}',textAlign: TextAlign.center,
                               ),
-                              Expanded(
-                                child: Text(
-                                  withdrawDate,textAlign: TextAlign.center,
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                 '${_filteredList[index].name}',textAlign: TextAlign.center,
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  '${_filteredList[index].transactionMobileNo}',textAlign: TextAlign.center,
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  '${_filteredList[index].transactionSystem}',textAlign: TextAlign.center,
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  '${_filteredList[index].amount}',textAlign: TextAlign.center,
-                                ),
-                              ),
+                            ),
 
-                              Expanded(
-                                child: Text('${_filteredList[index].status}',textAlign: TextAlign.center,
-                                ),
-                              ),
-
-                              Expanded(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                            primary: Colors.green,
-                                         ),
-                                        onPressed: (){
-                                          showLoaderDialog(context);
-                                      // setState(() {
-                                      //   _isLoading =true;
-                                      // });
-
-                                          _transferedWithdrawRequest(firebaseProvider,index).then((value) {
-                                         // _isLoading = false;
-
-                                         Navigator.pop(context);
-                                      });
-
-                                    }, child: Text('Approve', style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w500))),
-                                    ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
                                           primary: Colors.green,
-                                        ),
-                                        onPressed: (){
-                                       showLoaderDialog(context);
-                                          // setState(() {
-                                          //   _isLoading =true;
-                                          // });
+                                       ),
+                                      onPressed: (){
+                                        showLoaderDialog(context);
+                                    // setState(() {
+                                    //   _isLoading =true;
+                                    // });
 
-                                          firebaseProvider.getSingleUserData(firebaseProvider.withdrawRequestList[index].id).then((value) {
-                                            String requestedAmount = firebaseProvider.withdrawRequestList[index].amount;
-                                            String servicharge = firebaseProvider.rateDataList[0].serviceCharge;
+                                        _transferedWithdrawRequest(firebaseProvider,index).then((value) {
+                                       // _isLoading = false;
 
-                                            int refundAmount = int.parse(requestedAmount)+int.parse(servicharge)+int.parse(firebaseProvider.userMainBalance);
+                                       Navigator.pop(context);
+                                    });
 
-                                            print('Service $servicharge');
-                                            print('Requested: $requestedAmount');
-                                            print('User Main Balance: ${firebaseProvider.userMainBalance}');
-                                            print('Refund $refundAmount');
+                                  }, child: Text('Approve', style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500))),
+                                  ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Colors.green,
+                                      ),
+                                      onPressed: (){
+                                     showLoaderDialog(context);
+                                        // setState(() {
+                                        //   _isLoading =true;
+                                        // });
+
+                                        firebaseProvider.getSingleUserData(firebaseProvider.withdrawRequestList[index].id).then((value) {
+                                          String requestedAmount = firebaseProvider.withdrawRequestList[index].amount;
+                                          String servicharge = firebaseProvider.rateDataList[0].serviceCharge;
+
+                                          int refundAmount = int.parse(requestedAmount)+int.parse(servicharge)+int.parse(firebaseProvider.userMainBalance);
+
+                                          print('Service $servicharge');
+                                          print('Requested: $requestedAmount');
+                                          print('User Main Balance: ${firebaseProvider.userMainBalance}');
+                                          print('Refund $refundAmount');
 
 
-                                            _refundWithDrawRequest(firebaseProvider,refundAmount,index).then((value) {
-                                              // _isLoading = false;
+                                          _refundWithDrawRequest(firebaseProvider,refundAmount,index).then((value) {
+                                            // _isLoading = false;
 
-                                              Navigator.pop(context);
-                                            });
+                                            Navigator.pop(context);
                                           });
+                                        });
 
 
 
 
 
 
-                                        }, child: Text('Refund', style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w500))),
-                                  ],
-                                )
+                                      }, child: Text('Refund', style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500))),
+                                ],
+                              )
 
-                                // InkWell(
-                                //   onTap: () {
-                                //
-                                //     firebaseProvider.getWithdrawHistory(firebaseProvider.withdrawRequestList[index].id).then((value) {
-                                //       setState(() {
-                                //         publicProvider.subCategory =
-                                //         'Withdraw Details';
-                                //         publicProvider.category = '';
-                                //         setState(() {
-                                //           firebaseProvider.withdrawIndex = index;
-                                //         });
-                                //       });
-                                //     });
-                                //   },
-                                //   child: Icon(
-                                //     Icons.visibility,
-                                //     size: publicProvider.isWindows
-                                //         ? size.height * .02
-                                //         : size.width * .02,
-                                //     color: Colors.green,
-                                //   ),
-                                // ),
-                              ),
+                              // InkWell(
+                              //   onTap: () {
+                              //
+                              //     firebaseProvider.getWithdrawHistory(firebaseProvider.withdrawRequestList[index].id).then((value) {
+                              //       setState(() {
+                              //         publicProvider.subCategory =
+                              //         'Withdraw Details';
+                              //         publicProvider.category = '';
+                              //         setState(() {
+                              //           firebaseProvider.withdrawIndex = index;
+                              //         });
+                              //       });
+                              //     });
+                              //   },
+                              //   child: Icon(
+                              //     Icons.visibility,
+                              //     size: publicProvider.isWindows
+                              //         ? size.height * .02
+                              //         : size.width * .02,
+                              //     color: Colors.green,
+                              //   ),
+                              // ),
+                            ),
 
-                            ],
-                          ),
+                          ],
                         ),
-                      ],
-                    );
-                  }),
-            )
+                      ),
+                    ],
+                  );
+                })
           ],
         )
     );

@@ -5,11 +5,8 @@ class Variables{
   ///This is the entire multi-level list displayed by this app
   static List<Entry> sideBarMenuList(){
     final List<Entry> data = <Entry>[
-
-
       Entry('Orders',Icons.category_outlined, <Entry>[
         Entry('Regular Orders'),
-
       ]),
 
       Entry('Product',Icons.category_outlined, <Entry>[

@@ -372,110 +372,109 @@ class _InsurancePageState extends State<InsurancePage> {
           padding: const EdgeInsets.only(top: 200.0),
           child: fadingCircle,
         ):
-        Expanded(
-          child: ListView.builder(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(8),
-              itemCount: _filteredList.length,
-              itemBuilder: (BuildContext context, int index) {
-                DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(firebaseProvider
-                    .insuranceRequestList[index].date));
-                var format = new DateFormat("yMMMd").add_jm();
-                String withdrawDate = format.format(date);
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Divider(
-                        height: 1,
-                        color: Colors.grey,
+        ListView.builder(
+            shrinkWrap: true,
+            physics: ClampingScrollPhysics(),
+            padding: const EdgeInsets.all(8),
+            itemCount: _filteredList.length,
+            itemBuilder: (BuildContext context, int index) {
+              DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(firebaseProvider
+                  .insuranceRequestList[index].date));
+              var format = new DateFormat("yMMMd").add_jm();
+              String withdrawDate = format.format(date);
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Divider(
+                      height: 1,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '${_filteredList[index].userId}',textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: publicProvider.isWindows
+                                ? size.height * .02
+                                : size.width * .02,
+                          ),
+                        ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${_filteredList[index].userId}',textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: publicProvider.isWindows
-                                  ? size.height * .02
-                                  : size.width * .02,
-                            ),
+
+                      Expanded(
+                        child: Text(
+                          '${_filteredList[index].name}',textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: publicProvider.isWindows
+                                ? size.height * .02
+                                : size.width * .02,
                           ),
                         ),
+                      ),
 
-                        Expanded(
-                          child: Text(
-                            '${_filteredList[index].name}',textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: publicProvider.isWindows
-                                  ? size.height * .02
-                                  : size.width * .02,
-                            ),
-                          ),
-                        ),
+                      Expanded(child: Text('${_filteredList[index].phone}',textAlign: TextAlign.center,)),
+                      Expanded(child: Text(withdrawDate,textAlign: TextAlign.center)),
+                      Expanded(child: Text('${_filteredList[index].status}',textAlign: TextAlign.center)),
+                      Expanded(child: Text('${_filteredList[index].amount}',textAlign: TextAlign.center)),
 
-                        Expanded(child: Text('${_filteredList[index].phone}',textAlign: TextAlign.center,)),
-                        Expanded(child: Text(withdrawDate,textAlign: TextAlign.center)),
-                        Expanded(child: Text('${_filteredList[index].status}',textAlign: TextAlign.center)),
-                        Expanded(child: Text('${_filteredList[index].amount}',textAlign: TextAlign.center)),
+                      Expanded(
+                        child: ElevatedButton(
 
-                        Expanded(
-                          child: ElevatedButton(
+                            onPressed: (){
+                              showDialog(context: context, builder: (_){
+                                return   AlertDialog(
+                                  title: Text('Alert'),
+                                  content: Container(
+                                    height: publicProvider.isWindows?size.height*.2:size.width*.2,
 
-                              onPressed: (){
-                                showDialog(context: context, builder: (_){
-                                  return   AlertDialog(
-                                    title: Text('Alert'),
-                                    content: Container(
-                                      height: publicProvider.isWindows?size.height*.2:size.width*.2,
+                                    child:SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.warning_amber_outlined,color: Colors.yellow,size: 40,),
 
-                                      child:SingleChildScrollView(
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.warning_amber_outlined,color: Colors.yellow,size: 40,),
-
-                                            Padding(
-                                              padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                              child: Text('Are you going to transfer the Insurance Balance ?',style: TextStyle(fontSize: 14,color: Colors.black),),
-                                            ),
-                                          ],),
-                                      ),
-
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 5.0),
+                                            child: Text('Are you going to transfer the Insurance Balance ?',style: TextStyle(fontSize: 14,color: Colors.black),),
+                                          ),
+                                        ],),
                                     ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: Text('Cancel'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      TextButton(
-                                        child: Text('Ok'),
-                                        onPressed: () {
-                                          showLoaderDialog(context);
-                                          _updateInsuranceRequestBalance(firebaseProvider,index).then((value) {
-                                            _updateInsuranceStatus(firebaseProvider,index);
-                                          }).then((value) => Navigator.of(context).pop()).then((value) => Navigator.of(context).pop());
 
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                }) ;
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text('Cancel'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text('Ok'),
+                                      onPressed: () {
+                                        showLoaderDialog(context);
+                                        _updateInsuranceRequestBalance(firebaseProvider,index).then((value) {
+                                          _updateInsuranceStatus(firebaseProvider,index);
+                                        }).then((value) => Navigator.of(context).pop()).then((value) => Navigator.of(context).pop());
+
+                                      },
+                                    ),
+                                  ],
+                                );
+                              }) ;
 
 
-                              }, child: Text('Accept')),
-                        ),
-                      ],
-                    ),
-                  ],
-                );
-              }),
-        )
+                            }, child: Text('Accept')),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            })
 
       ],);
 
