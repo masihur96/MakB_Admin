@@ -8,6 +8,7 @@ import 'package:makb_admin_pannel/provider/public_provider.dart';
 import 'package:makb_admin_pannel/variables.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class MainPage extends StatefulWidget {
@@ -19,15 +20,40 @@ class _MainPageState extends State<MainPage> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
+  int counter=0;
+
+  _customInit(FirebaseProvider firebaseProvider)async{
+    counter++;
+    await  firebaseProvider.getAdminData();
+    await firebaseProvider.getRate();
+    await firebaseProvider.getUser();
+    await firebaseProvider.getCategory();
+    await firebaseProvider.getSubCategory();
+    await firebaseProvider.getProducts();
+    await firebaseProvider.getPackage();
+    await firebaseProvider.getAreaHub();
+    await firebaseProvider.getWithdrawRequest();
+    await firebaseProvider.getDepositRequest();
+    await firebaseProvider.getInsurancePendingRequest();
+    await firebaseProvider.getInsuranceTransferredRequest();
+    await firebaseProvider.getSoldPackage();
+    await firebaseProvider.getProductOrder();
+    await firebaseProvider.getPackageRequest();
+    // firebaseProvider.getDepositHistory('01929444532');
+    await  firebaseProvider.getVideo();
+    await firebaseProvider.getAdminData();
+
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final PublicProvider publicProvider = Provider.of<PublicProvider>(context);
     final FirebaseProvider firebaseProvider = Provider.of<FirebaseProvider>(context);
+    if(counter==0) _customInit(firebaseProvider);
 
     if ((defaultTargetPlatform == TargetPlatform.iOS) || (defaultTargetPlatform == TargetPlatform.android)) {
       setState(() {
-
         publicProvider.isWindows = false;
       });// print('iOS');
     }
@@ -98,11 +124,8 @@ class _MainPageState extends State<MainPage> {
                       fontFamily: 'OpenSans')),
               Row(
                 children: [
-
-
                   Row(
                     children: [
-
                       PopupMenuButton(
                         offset: Offset(0, kToolbarHeight),
                         itemBuilder: (BuildContext context) =>[
@@ -178,13 +201,11 @@ class _MainPageState extends State<MainPage> {
                             ),),
                           PopupMenuItem(
                             child: InkWell(
-
-                              onTap: (){
-
+                              onTap: ()async{
+                                SharedPreferences pref=await SharedPreferences.getInstance();
+                                pref.clear();
                                 Navigator.push(context, MaterialPageRoute(builder: (_)=>LoginPage()));
                               },
-
-
                                 child: Text('Logout',style: TextStyle(fontSize: publicProvider.isWindows? size.height * .02:size.width*.02,))),
                             value: 1,),
 

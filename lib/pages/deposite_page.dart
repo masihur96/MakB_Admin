@@ -151,137 +151,136 @@ class _DepositePageState extends State<DepositePage> {
             padding: const EdgeInsets.only(top: 200.0),
             child: fadingCircle,
           ):
-          Expanded(
-            child: ListView.builder(
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(8),
-                itemCount: _filteredList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(firebaseProvider
-                      .depositRequestList[index].date));
-                  var format = new DateFormat("yMMMd").add_jm();
-                  String withdrawDate = format.format(date);
-                  return Column(
-                      children: [
-                        Divider(
-                          height: 1,
-                          color: Colors.grey,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
+          ListView.builder(
+              shrinkWrap: true,
+              physics: ClampingScrollPhysics(),
+              padding: const EdgeInsets.all(8),
+              itemCount: _filteredList.length,
+              itemBuilder: (BuildContext context, int index) {
+                DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(firebaseProvider
+                    .depositRequestList[index].date));
+                var format = new DateFormat("yMMMd").add_jm();
+                String withdrawDate = format.format(date);
+                return Column(
+                    children: [
+                      Divider(
+                        height: 1,
+                        color: Colors.grey,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
 
-                              Expanded(
-                                child: Text(
-                                  '${_filteredList[index].name}',textAlign: TextAlign.center,
-                                ),
+                            Expanded(
+                              child: Text(
+                                '${_filteredList[index].name}',textAlign: TextAlign.center,
                               ),
-                              Expanded(
-                                child: Text(
-                                  '${_filteredList[index].phone}',textAlign: TextAlign.center,
-                                ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                '${_filteredList[index].phone}',textAlign: TextAlign.center,
                               ),
-                              Expanded(
-                                child: Text(
-                                  withdrawDate,textAlign: TextAlign.center,
-                                ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                withdrawDate,textAlign: TextAlign.center,
                               ),
-                              Expanded(
-                                child: Text('${_filteredList[index].amount==''?'--':_filteredList[index].amount}',textAlign: TextAlign.center,
-                                ),
+                            ),
+                            Expanded(
+                              child: Text('${_filteredList[index].amount==''?'--':_filteredList[index].amount}',textAlign: TextAlign.center,
                               ),
-                              Expanded(
-                                child: Text('${_filteredList[index].status}',textAlign: TextAlign.center,
-                                ),
+                            ),
+                            Expanded(
+                              child: Text('${_filteredList[index].status}',textAlign: TextAlign.center,
                               ),
-                              Expanded(
-                                child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors.green,
-                                    ),
-                                    onPressed: (){
+                            ),
+                            Expanded(
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.green,
+                                  ),
+                                  onPressed: (){
 
 
-                                      showDialog(context: context, builder: (_){
-                                        return   AlertDialog(
-                                          title: Text('Add Deposit'),
-                                          content: Container(
-                                            height: publicProvider.isWindows?size.height*.1:size.width*.1,
-                                            width: publicProvider.isWindows?size.height*.3:size.width*.3,
-                                            child:SingleChildScrollView(
-                                              child: Column(
-                                                children: [
+                                    showDialog(context: context, builder: (_){
+                                      return   AlertDialog(
+                                        title: Text('Add Deposit'),
+                                        content: Container(
+                                          height: publicProvider.isWindows?size.height*.1:size.width*.1,
+                                          width: publicProvider.isWindows?size.height*.3:size.width*.3,
+                                          child:SingleChildScrollView(
+                                            child: Column(
+                                              children: [
 
-                                                  Container(
-                                                    width: size.height*.4,
-                                                    child: TextField(
-                                                      controller: depositTextController,
-                                                      decoration: textFieldFormDecoration(size).copyWith(
-                                                        hintText: 'Depositor Amount',
-                                                        hintStyle: TextStyle(
-                                                          fontSize: publicProvider.isWindows
-                                                              ? size.height * .02
-                                                              : size.width * .02,
-                                                        ),
+                                                Container(
+                                                  width: size.height*.4,
+                                                  child: TextField(
+                                                    controller: depositTextController,
+                                                    decoration: textFieldFormDecoration(size).copyWith(
+                                                      hintText: 'Depositor Amount',
+                                                      hintStyle: TextStyle(
+                                                        fontSize: publicProvider.isWindows
+                                                            ? size.height * .02
+                                                            : size.width * .02,
                                                       ),
-                                                    //  onChanged: _filterList,
                                                     ),
+                                                  //  onChanged: _filterList,
                                                   ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                          actions: <Widget>[
+                                        ),
+                                        actions: <Widget>[
 
-                                            TextButton(
-                                              child: Text('Cancel'),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                            ),
+                                          TextButton(
+                                            child: Text('Cancel'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
 
-                                            TextButton(
-                                              child: Text('OK'),
-                                              onPressed: () {
-                                                showLoaderDialog(context);
+                                          TextButton(
+                                            child: Text('OK'),
+                                            onPressed: () {
+                                              showLoaderDialog(context);
 
-                                                firebaseProvider.getSingleUserData(firebaseProvider.depositRequestList[index].userId).then((value) async{
-                                                  String depositAmount = firebaseProvider.userDepositBalance;
+                                              firebaseProvider.getSingleUserData(firebaseProvider.depositRequestList[index].userId).then((value) async{
+                                                String depositAmount = firebaseProvider.userDepositBalance;
 
-                                                  int updatableAmount = int.parse(depositAmount)+int.parse(depositTextController.text);
+                                                int updatableAmount = int.parse(depositAmount)+int.parse(depositTextController.text);
 
-                                               await   _addDepositRequestBalance(firebaseProvider, updatableAmount, index);
+                                             await   _addDepositRequestBalance(firebaseProvider, updatableAmount, index);
 
-                                                }).then((value) async{
+                                              }).then((value) async{
 
-                                                await  _transferedDepositRequestBalance(firebaseProvider,depositTextController.text,index).then((value) {
-                                                    // _isLoading = false;
+                                              await  _transferedDepositRequestBalance(firebaseProvider,depositTextController.text,index).then((value) {
+                                                  // _isLoading = false;
 
-                                                    Navigator.pop(context);
-                                                  });
-                                                Navigator.pop(context);
-
+                                                  Navigator.pop(context);
                                                 });
+                                              Navigator.pop(context);
 
-                                              },
-                                            ),
-                                          ],
-                                        );
-                                      }) ;
+                                              });
+
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    }) ;
 
 
-                                }, child: Text('Approve',style: TextStyle(color: Colors.white),))
-                              ),
+                              }, child: Text('Approve',style: TextStyle(color: Colors.white),))
+                            ),
 
-                            ],
-                          ),
+                          ],
                         ),
-                      ],
-                      );
-                }),
-          )
+                      ),
+                    ],
+                    );
+              })
         ],
       )
     );

@@ -6,6 +6,7 @@ import 'package:makb_admin_pannel/provider/public_provider.dart';
 import 'package:makb_admin_pannel/widgets/fading_circle.dart';
 import 'package:makb_admin_pannel/widgets/form_decoration.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -21,17 +22,14 @@ class _LoginPageState extends State<LoginPage> {
   int counter=0;
 
   _customInit(FirebaseProvider firebaseProvider)async{
-    setState(() {
       counter++;
-    });
-
     await  firebaseProvider.getAdminData();
     await firebaseProvider.getRate();
     await firebaseProvider.getUser();
     await firebaseProvider.getCategory();
     await firebaseProvider.getSubCategory();
     await firebaseProvider.getProducts();
-    await  firebaseProvider.getPackage();
+    await firebaseProvider.getPackage();
     await firebaseProvider.getAreaHub();
     await firebaseProvider.getWithdrawRequest();
     await firebaseProvider.getDepositRequest();
@@ -228,21 +226,19 @@ class _LoginPageState extends State<LoginPage> {
                   width: double.infinity,
                     child: Text("Sign In",textAlign: TextAlign.center,)),
               ),
-              onPressed: () {
-
-             //   _submitSubCategoryData();
+              onPressed: ()async {
 
                 print(firebaseProvider.adminList[0].userName);
                 print(firebaseProvider.adminList[0].password);
 
                 if(firebaseProvider.adminList[0].userName == userNameTextController.text && firebaseProvider.adminList[0].password == passwordTextController.text){
+                  SharedPreferences pref = await SharedPreferences.getInstance();
+                  pref.setString('phone', userNameTextController.text);
                   Navigator.push(context, MaterialPageRoute(builder: (_)=>MainPage()));
                 }
                 else {
                   showToast('Wrong User Name or Password');
                 }
-
-
               },
               style: ElevatedButton.styleFrom(
                 primary: Colors.green,

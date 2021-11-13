@@ -322,180 +322,179 @@ class _AllProductPageState extends State<AllProductPage> {
             padding: const EdgeInsets.only(top: 200.0),
             child: fadingCircle,
           ):
-          Expanded(
-            child: ListView.builder(
-                shrinkWrap: true,
-                padding: const EdgeInsets.all(8),
-                itemCount:_filteredList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Divider(
-                            height: 1,
-                            color: Colors.grey,
-                          ),
+          ListView.builder(
+            shrinkWrap: true,
+              physics: ClampingScrollPhysics(),
+              padding: const EdgeInsets.all(8),
+              itemCount:_filteredList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Divider(
+                          height: 1,
+                          color: Colors.grey,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            InkWell(
-                                onTap: (){
-                                  setState(() {
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InkWell(
+                              onTap: (){
+                                setState(() {
 
 
 
-                                    if(selectedProduct.contains(index)){
-                                      selectedProductID.remove(_filteredList[index].id);
-                                      selectedProduct.remove(index);
-                                    }else {
+                                  if(selectedProduct.contains(index)){
+                                    selectedProductID.remove(_filteredList[index].id);
+                                    selectedProduct.remove(index);
+                                  }else {
 
-                                      selectedProductID.add(_filteredList[index].id);
-                                      selectedProduct.add(index);
+                                    selectedProductID.add(_filteredList[index].id);
+                                    selectedProduct.add(index);
 
-                                      print(selectedProductID);
-                                    }
+                                    print(selectedProductID);
+                                  }
 
 
-                                  });
-                                },
-                                child: selectedProduct. contains(index)?Icon(Icons.check_box_outlined):Icon(Icons.check_box_outline_blank_outlined)),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                              child: Container(
-                                  height: publicProvider.isWindows
-                                      ? size.height * .04
-                                      : size.width * .04,
-                                  width: publicProvider.isWindows
-                                      ? size.height * .03
-                                      : size.width * .03,
-                                  child: Image.network(
-                                    _filteredList[index].image![0],
-                                    fit: BoxFit.fill,
-                                  )),
-                            ),
+                                });
+                              },
+                              child: selectedProduct. contains(index)?Icon(Icons.check_box_outlined):Icon(Icons.check_box_outline_blank_outlined)),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                            child: Container(
+                                height: publicProvider.isWindows
+                                    ? size.height * .04
+                                    : size.width * .04,
+                                width: publicProvider.isWindows
+                                    ? size.height * .03
+                                    : size.width * .03,
+                                child: Image.network(
+                                  _filteredList[index].image![0],
+                                  fit: BoxFit.fill,
+                                )),
+                          ),
 
-                            Expanded(
-                              child: Text(
-                                '${_filteredList[index].title}',textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: publicProvider.isWindows
-                                      ? size.height * .02
-                                      : size.width * .02,
-                                ),
+                          Expanded(
+                            child: Text(
+                              '${_filteredList[index].title}',textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: publicProvider.isWindows
+                                    ? size.height * .02
+                                    : size.width * .02,
                               ),
                             ),
-                            Expanded(
-                              child: Text('${_filteredList[index].price}',textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: publicProvider.isWindows
-                                      ? size.height * .02
-                                      : size.width * .02,
-                                ),),
-                            ),
-                            Expanded(
-                              child: Text('${_filteredList[index].profitAmount}',textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: publicProvider.isWindows
-                                      ? size.height * .02
-                                      : size.width * .02,
-                                ),),
-                            ),
-                            Expanded(
-                              child: Text('${_filteredList[index].category}',textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: publicProvider.isWindows
-                                      ? size.height * .02
-                                      : size.width * .02,
-                                ),),
-                            ),
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
+                          ),
+                          Expanded(
+                            child: Text('${_filteredList[index].price}',textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: publicProvider.isWindows
+                                    ? size.height * .02
+                                    : size.width * .02,
+                              ),),
+                          ),
+                          Expanded(
+                            child: Text('${_filteredList[index].profitAmount}',textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: publicProvider.isWindows
+                                    ? size.height * .02
+                                    : size.width * .02,
+                              ),),
+                          ),
+                          Expanded(
+                            child: Text('${_filteredList[index].category}',textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: publicProvider.isWindows
+                                    ? size.height * .02
+                                    : size.width * .02,
+                              ),),
+                          ),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                InkWell(
+                                  onTap: () {
 
-                                      setState(() {
-                                        firebaseProvider.productIndex = index;
-                                      });
+                                    setState(() {
+                                      firebaseProvider.productIndex = index;
+                                    });
 
-                                        showDialog(context: context, builder: (_){
-                                          return   AlertDialog(
-                                            title: Text('Product Details'),
-                                            content: Container(
-                                              height: publicProvider.isWindows?size.height*.6:size.width*.6,
-                                              width: publicProvider.isWindows?size.height:size.width*.8,
-                                              child:ListView(
-                                                children: [
+                                      showDialog(context: context, builder: (_){
+                                        return   AlertDialog(
+                                          title: Text('Product Details'),
+                                          content: Container(
+                                            height: publicProvider.isWindows?size.height*.6:size.width*.6,
+                                            width: publicProvider.isWindows?size.height:size.width*.8,
+                                            child:ListView(
+                                              children: [
 
-                                                  publicProvider.isWindows? SingleChildScrollView(
-                                                    scrollDirection: Axis.horizontal,
-                                                    child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Container(
-                                                            width:publicProvider.isWindows?size.height/2:size.width*.8/2,
-                                                            child: productImageList(publicProvider,size,index,firebaseProvider)
-                                                        ),
-                                                        Container(
-                                                            width:publicProvider.isWindows?size.height/2:size.width*.8/2,
-                                                            child: productDetailsData(publicProvider,firebaseProvider,index,size))
-                                                      ],
-                                                    ),
-                                                  ): Column(
+                                                publicProvider.isWindows? SingleChildScrollView(
+                                                  scrollDirection: Axis.horizontal,
+                                                  child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.center,
-                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
                                                       Container(
-                                                          width:publicProvider.pageWidth(size)*.5,
+                                                          width:publicProvider.isWindows?size.height/2:size.width*.8/2,
                                                           child: productImageList(publicProvider,size,index,firebaseProvider)
                                                       ),
-                                                      productDetailsData(publicProvider,firebaseProvider,index,size)
+                                                      Container(
+                                                          width:publicProvider.isWindows?size.height/2:size.width*.8/2,
+                                                          child: productDetailsData(publicProvider,firebaseProvider,index,size))
                                                     ],
                                                   ),
+                                                ): Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                        width:publicProvider.pageWidth(size)*.5,
+                                                        child: productImageList(publicProvider,size,index,firebaseProvider)
+                                                    ),
+                                                    productDetailsData(publicProvider,firebaseProvider,index,size)
+                                                  ],
+                                                ),
 
-                                                ],
-                                              )
+                                              ],
+                                            )
 
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: Text('Cancel'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
                                             ),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                child: Text('Cancel'),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        }) ;
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Icon(
-                                        Icons.visibility,
-                                        size: publicProvider.isWindows
-                                            ? size.height * .02
-                                            : size.width * .02,
-                                        color: Colors.green,
-                                      ),
+                                          ],
+                                        );
+                                      }) ;
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.visibility,
+                                      size: publicProvider.isWindows
+                                          ? size.height * .02
+                                          : size.width * .02,
+                                      color: Colors.green,
                                     ),
                                   ),
+                                ),
 
-                                ],
-                              ),
+                              ],
                             ),
+                          ),
 
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-          )
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              })
         ],
       ),
     );
