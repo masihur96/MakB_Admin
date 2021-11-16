@@ -106,26 +106,25 @@ class _MainPageState extends State<MainPage> {
                         Icons.menu,
                         color: Colors.white,
                       ))
-                  : Row(
-                    children: [
-                      InkWell(
-                          onTap: () {
-                            publicProvider.subCategory = 'Dashboard';
-                            publicProvider.category = '';
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 40.0),
-                            child: Image.asset('assets/images/deub.png',height: 48,width: 48,),
-                          ),
+                  : InkWell(
+                onTap: (){
+                  publicProvider.subCategory = 'Dashboard';
+                  publicProvider.category = '';
+                },
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 40.0),
+                          child: Image.asset('assets/images/deub.png',height: 48,width: 48,),
                         ),
-                      Text('DEUB',
-                          style: TextStyle(
-                              fontSize:publicProvider.isWindows? size.height * .035:size.width*.035,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white,
-                              fontFamily: 'OpenSans')),
-
-                    ],
+                        Text('DEUB',
+                            style: TextStyle(
+                                fontSize:publicProvider.isWindows? size.height * .035:size.width*.035,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white,
+                                fontFamily: 'OpenSans')),
+                      ],
+                    ),
                   ),
               Text(publicProvider.pageHeader(),
                   style: TextStyle(

@@ -34,8 +34,9 @@ class _ContactInfoState extends State<ContactInfo> {
       counter++;
     });
 
-    firebaseProvider.getRate().then((value) {
-      if(firebaseProvider.rateDataList.isNotEmpty){
+
+      if(firebaseProvider.infoList.isEmpty){
+      firebaseProvider.getContactInfo().then((value) {
         setState(() {
           _email = TextEditingController(text: firebaseProvider.infoList[0].email);
           _phone = TextEditingController(text: firebaseProvider.infoList[0].phone);
@@ -46,11 +47,24 @@ class _ContactInfoState extends State<ContactInfo> {
           _instragramLink = TextEditingController(text: firebaseProvider.infoList[0].instagram);
           _linkedInLink = TextEditingController(text: firebaseProvider.infoList[0].linkedIn);
 
+        });
+      });
+      }else{
+
+        setState(() {
+          _email = TextEditingController(text: firebaseProvider.infoList[0].email);
+          _phone = TextEditingController(text: firebaseProvider.infoList[0].phone);
+          _address = TextEditingController(text: firebaseProvider.infoList[0].address);
+          _fbLink = TextEditingController(text: firebaseProvider.infoList[0].fbLink);
+          _youtubeLink = TextEditingController(text: firebaseProvider.infoList[0].youtubeLink);
+          _twitterLink = TextEditingController(text: firebaseProvider.infoList[0].twitterLink);
+          _instragramLink = TextEditingController(text: firebaseProvider.infoList[0].instagram);
+          _linkedInLink = TextEditingController(text: firebaseProvider.infoList[0].linkedIn);
 
         });
-      }
 
-    });
+
+    }
 
 
 
@@ -68,169 +82,172 @@ class _ContactInfoState extends State<ContactInfo> {
         width: publicProvider.pageWidth(size),
 
         child: Center(
-          child: ListView(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView(
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
 
-                  Container(
-                    width: size.width * .35,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blueGrey),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10.0),
-                        ),
-                        color: Colors.white),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Column(children: <Widget>[
-                        SizedBox(height: size.height * .04),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            controller: _email,
-                            decoration: InputDecoration(
-                              labelText: 'Email',
-                              border: new OutlineInputBorder(
-                                borderRadius: new BorderRadius.circular(5.0),
-                                borderSide: new BorderSide(width: 1,color: Colors.green),
-                              ),
-                            ),
-                            maxLines: 1,
+                    Container(
+                      width: size.width * .35,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.blueGrey),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10.0),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            controller: _phone,
-                            decoration: InputDecoration(
-                              labelText: 'Phone',
-                              border: new OutlineInputBorder(
-                                borderRadius: new BorderRadius.circular(5.0),
-                                borderSide: new BorderSide(width: 1,color: Colors.green),
+                          color: Colors.white),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(children: <Widget>[
+                          SizedBox(height: size.height * .04),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: _email,
+                              decoration: InputDecoration(
+                                labelText: 'Email',
+                                border: new OutlineInputBorder(
+                                  borderRadius: new BorderRadius.circular(5.0),
+                                  borderSide: new BorderSide(width: 1,color: Colors.green),
+                                ),
                               ),
+                              maxLines: 1,
                             ),
-                            maxLines: 1,
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            controller: _address,
-                            decoration: InputDecoration(
-                              labelText: 'Address',
-                              border: new OutlineInputBorder(
-                                borderRadius: new BorderRadius.circular(5.0),
-                                borderSide: new BorderSide(width: 1,color: Colors.green),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: _phone,
+                              decoration: InputDecoration(
+                                labelText: 'Phone',
+                                border: new OutlineInputBorder(
+                                  borderRadius: new BorderRadius.circular(5.0),
+                                  borderSide: new BorderSide(width: 1,color: Colors.green),
+                                ),
                               ),
+                              maxLines: 1,
                             ),
-                            maxLines: 1,
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            controller: _fbLink,
-                            decoration: InputDecoration(
-                              labelText: 'FB Link',
-                              border: new OutlineInputBorder(
-                                borderRadius: new BorderRadius.circular(5.0),
-                                borderSide: new BorderSide(width: 1,color: Colors.green),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: _address,
+                              decoration: InputDecoration(
+                                labelText: 'Address',
+                                border: new OutlineInputBorder(
+                                  borderRadius: new BorderRadius.circular(5.0),
+                                  borderSide: new BorderSide(width: 1,color: Colors.green),
+                                ),
                               ),
+                              maxLines: 1,
                             ),
-                            maxLines: 1,
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            controller: _youtubeLink,
-                            decoration: InputDecoration(
-                              labelText: 'Youtube Link',
-                              border: new OutlineInputBorder(
-                                borderRadius: new BorderRadius.circular(5.0),
-                                borderSide: new BorderSide(width: 1,color: Colors.green),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: _fbLink,
+                              decoration: InputDecoration(
+                                labelText: 'FB Link',
+                                border: new OutlineInputBorder(
+                                  borderRadius: new BorderRadius.circular(5.0),
+                                  borderSide: new BorderSide(width: 1,color: Colors.green),
+                                ),
                               ),
+                              maxLines: 1,
                             ),
-                            maxLines: 1,
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            controller: _twitterLink,
-                            decoration: InputDecoration(
-                              labelText: 'Twitter Link',
-                              border: new OutlineInputBorder(
-                                borderRadius: new BorderRadius.circular(5.0),
-                                borderSide: new BorderSide(width: 1,color: Colors.green),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: _youtubeLink,
+                              decoration: InputDecoration(
+                                labelText: 'Youtube Link',
+                                border: new OutlineInputBorder(
+                                  borderRadius: new BorderRadius.circular(5.0),
+                                  borderSide: new BorderSide(width: 1,color: Colors.green),
+                                ),
                               ),
+                              maxLines: 1,
                             ),
-                            maxLines: 1,
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            controller: _instragramLink,
-                            decoration: InputDecoration(
-                              labelText: 'Instagram link',
-                              border: new OutlineInputBorder(
-                                borderRadius: new BorderRadius.circular(5.0),
-                                borderSide: new BorderSide(width: 1,color: Colors.green),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: _twitterLink,
+                              decoration: InputDecoration(
+                                labelText: 'Twitter Link',
+                                border: new OutlineInputBorder(
+                                  borderRadius: new BorderRadius.circular(5.0),
+                                  borderSide: new BorderSide(width: 1,color: Colors.green),
+                                ),
                               ),
+                              maxLines: 1,
                             ),
-                            maxLines: 1,
                           ),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: _instragramLink,
+                              decoration: InputDecoration(
+                                labelText: 'Instagram link',
+                                border: new OutlineInputBorder(
+                                  borderRadius: new BorderRadius.circular(5.0),
+                                  borderSide: new BorderSide(width: 1,color: Colors.green),
+                                ),
+                              ),
+                              maxLines: 1,
+                            ),
+                          ),
 
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            controller: _linkedInLink,
-                            decoration: InputDecoration(
-                              labelText: 'LinkedIn Link',
-                              border: new OutlineInputBorder(
-                                borderRadius: new BorderRadius.circular(5.0),
-                                borderSide: new BorderSide(width: 1,color: Colors.green),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: _linkedInLink,
+                              decoration: InputDecoration(
+                                labelText: 'LinkedIn Link',
+                                border: new OutlineInputBorder(
+                                  borderRadius: new BorderRadius.circular(5.0),
+                                  borderSide: new BorderSide(width: 1,color: Colors.green),
+                                ),
                               ),
-                            ),
-                            maxLines: 1,
-                          ),
-                        ),
-
-
-                        SizedBox(height: 10),
-                        _isLoading
-                            ? fadingCircle
-                            : ElevatedButton(
-                          onPressed: () {
-                            _isLoading = true;
-                            _submitData(firebaseProvider);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 0.0),
-                            child: Text(
-                              'Confirm',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: size.height * .03,
-                              ),
+                              maxLines: 1,
                             ),
                           ),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.green,
+
+
+                          SizedBox(height: 10),
+                          _isLoading
+                              ? fadingCircle
+                              : ElevatedButton(
+                            onPressed: () {
+                              _isLoading = true;
+                              _submitData(firebaseProvider);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 0.0),
+                              child: Text(
+                                'Confirm',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: size.height * .03,
+                                ),
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.green,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 10,)
-                      ]),
+                          SizedBox(height: 10,)
+                        ]),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         )
     );

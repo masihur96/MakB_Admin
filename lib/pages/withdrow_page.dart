@@ -287,29 +287,6 @@ class _WithdrowPageState extends State<WithdrowPage> {
                                       fontWeight: FontWeight.w500))),
                                 ],
                               )
-
-                              // InkWell(
-                              //   onTap: () {
-                              //
-                              //     firebaseProvider.getWithdrawHistory(firebaseProvider.withdrawRequestList[index].id).then((value) {
-                              //       setState(() {
-                              //         publicProvider.subCategory =
-                              //         'Withdraw Details';
-                              //         publicProvider.category = '';
-                              //         setState(() {
-                              //           firebaseProvider.withdrawIndex = index;
-                              //         });
-                              //       });
-                              //     });
-                              //   },
-                              //   child: Icon(
-                              //     Icons.visibility,
-                              //     size: publicProvider.isWindows
-                              //         ? size.height * .02
-                              //         : size.width * .02,
-                              //     color: Colors.green,
-                              //   ),
-                              // ),
                             ),
 
                           ],
@@ -343,8 +320,6 @@ class _WithdrowPageState extends State<WithdrowPage> {
     });
 
   }
-
-
   Future<void> _refundWithDrawRequest(
       FirebaseProvider firebaseProvider,int? refundAmount,int? index) async {
 
@@ -354,10 +329,7 @@ class _WithdrowPageState extends State<WithdrowPage> {
     await firebaseProvider.refundWithdrawAmount(map,index!).then((value) {
       if (value) {
         showToast('Success');
-
-
       } else {
-
         showToast('Failed');
       }
     });

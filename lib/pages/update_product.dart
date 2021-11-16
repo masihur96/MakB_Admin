@@ -130,7 +130,9 @@ class _UpdateProductState extends State<UpdateProduct> {
       subCategoryDropdownValue= firebaseProvider.productList[firebaseProvider.productIndex].subCategory;
       selectedProductID = firebaseProvider.productList[firebaseProvider.productIndex].id;
       selectedProductColor = firebaseProvider.productList[firebaseProvider.productIndex].colors;
-      imageUrl = firebaseProvider.productList[firebaseProvider.productIndex].image;
+       imageUrl = firebaseProvider.productList[firebaseProvider.productIndex].image;
+      thumbnailURL = firebaseProvider.productList[firebaseProvider.productIndex].thumbnail;
+        // imageUrl = firebaseProvider.packageList[firebaseProvider.packageIndex].image;
       sizes = firebaseProvider.productList[firebaseProvider.productIndex].size ;
 
 
@@ -149,7 +151,7 @@ class _UpdateProductState extends State<UpdateProduct> {
       } if(sizes.contains('XXXL')){
         _isXXXL =true;
       }
-      print(sizes);
+      // print(sizes);
 
     });
 
@@ -252,9 +254,11 @@ class _UpdateProductState extends State<UpdateProduct> {
                   ),
                   child:  convertedImages.isNotEmpty? Container(
                     child: Image.memory(convertedImages[imageIndex!],fit: BoxFit.cover,) ,
-                  ):convertedThumbnail.isNotEmpty?Image.memory(convertedImages[imageIndex!],fit: BoxFit.cover,) :Image.network(thumbnailURL[0]),
-                ):fadingCircle,
+                  ):convertedThumbnail.isNotEmpty?Container(
+                    child: Image.memory(convertedThumbnail[0],fit: BoxFit.cover,),
 
+                  ):imageUrl.isNotEmpty?Image.network(imageUrl[imageIndex!]):fadingCircle,
+                ):Container(),
                 Positioned.fill(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -282,7 +286,8 @@ class _UpdateProductState extends State<UpdateProduct> {
                             InkWell(
                                 onTap: (){
                                   convertedImages.clear();
-                                  imageUrl.clear();
+                                  convertedThumbnail.clear();
+
                                   pickedThumbnailImage();
                                 },
                                 child: Icon(Icons.filter_b_and_w_outlined)),
@@ -293,46 +298,77 @@ class _UpdateProductState extends State<UpdateProduct> {
                     ))]
 
           ),
-         Container(
-            height:  publicProvider.isWindows?size.height*.2:size.width*.2,
-            width:publicProvider.pageWidth(size)*.5,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemCount: firebaseProvider.productIndex==null? convertedImages.isEmpty?3:convertedImages.length:firebaseProvider.productList[firebaseProvider.productIndex].image.length,
-                itemBuilder: (BuildContext ctx, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: InkWell(
-                      onTap: (){
-                        setState(() {
-                          imageIndex = index;
-                        });
-                      },
-                      child: convertedImages.isNotEmpty?  Container(
-                          width: publicProvider.pageWidth(size)*.1,
-                          height: 200,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                              border: Border.all(width: 1,color: Colors.grey)
-                          ),
-                          alignment: Alignment.center,
-                          child: Image.memory(convertedImages[index],fit: BoxFit.cover,),
+         Row(
+           children: [
+             Padding(
+               padding: const EdgeInsets.all(8.0),
+               child: convertedThumbnail.isNotEmpty?  Container(
+                   padding: const EdgeInsets.all(8.0),
+                   width: publicProvider.pageWidth(size)*.1,
+                   height:  publicProvider.isWindows?size.height*.2:size.width*.2,
+                   decoration: BoxDecoration(
+                       borderRadius: BorderRadius.all(Radius.circular(10)),
+                       border: Border.all(width: 1,color: Colors.grey)
+                   ),
+                   alignment: Alignment.center,
+                   child: Image.memory(convertedThumbnail[0],fit: BoxFit.fill,)
 
-                      ):Container(
-                        width:publicProvider.pageWidth(size)*.1,
-                        decoration: BoxDecoration(
+               ):Padding(
+                 padding: const EdgeInsets.all(8.0),
+                 child: Container(
 
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            border: Border.all(width: 1,color: Colors.grey)
+                   width:publicProvider.pageWidth(size)*.1,
+                   decoration: BoxDecoration(
+                     borderRadius: BorderRadius.all(Radius.circular(10)),
+                     border: Border.all(width: 1,color: Colors.grey),
+                   ),
+                   child:thumbnailURL.isNotEmpty? Image.network(firebaseProvider.productList[firebaseProvider.productIndex].thumbnail):Container() ,
+
+                   height:  publicProvider.isWindows?size.height*.2:size.width*.2,),
+               ),
+             ),
+             Container(
+                height:  publicProvider.isWindows?size.height*.2:size.width*.2,
+                width:publicProvider.pageWidth(size)*.35,
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: firebaseProvider.productIndex==null? convertedImages.isEmpty?3:convertedImages.length:firebaseProvider.productList[firebaseProvider.productIndex].image.length,
+                    itemBuilder: (BuildContext ctx, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: InkWell(
+                          onTap: (){
+                            setState(() {
+                              imageIndex = index;
+                            });
+                          },
+                          child: convertedImages.isNotEmpty?  Container(
+                              width: publicProvider.pageWidth(size)*.1,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  border: Border.all(width: 1,color: Colors.grey)
+                              ),
+                              alignment: Alignment.center,
+                              child: Image.memory(convertedImages[index],fit: BoxFit.cover,),
+
+                          ):Container(
+                            width:publicProvider.pageWidth(size)*.1,
+                            decoration: BoxDecoration(
+
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                border: Border.all(width: 1,color: Colors.grey)
+                            ),
+                            child:  imageUrl.isNotEmpty? Image.network(firebaseProvider.productList[firebaseProvider.productIndex].image[index]):Container() ,
+
+                            height: 200,),
                         ),
-                        child:  imageUrl.isNotEmpty? Image.network(firebaseProvider.productList[firebaseProvider.productIndex].image[index]):Container() ,
-
-                        height: 200,),
-                    ),
-                  );
-                }),
-          ),
+                      );
+                    }),
+              ),
+           ],
+         ),
         ],
       ),
     );

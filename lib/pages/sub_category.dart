@@ -193,6 +193,8 @@ class _SubCategoryState extends State<SubCategory> {
                                                        _submitCategoryData(firebaseProvider,uuid)
                                                         .then((value) {
                                                           firebaseProvider.getSubCategory().then((value) {
+
+                                                            _filterSubCategoryList(dropdownValue);
                                                             setState(() {
                                                               publicProvider.subCategory =
                                                               'Subcategory';
@@ -273,7 +275,15 @@ class _SubCategoryState extends State<SubCategory> {
                                                                 oldCategory,
                                                                 context,
                                                                 firebaseProvider,
-                                                                firebaseProvider.subCategoryList[index].id!);
+                                                                firebaseProvider.subCategoryList[index].id!).then((value) => firebaseProvider.getSubCategory()).then((value) {
+
+                                                                   _filterSubCategoryList(dropdownValue);
+                                                                   setState(() {
+                                                                     publicProvider.subCategory =
+                                                                     'Subcategory';
+                                                                     publicProvider.category = '';
+                                                                   });
+                                                                });
 
 
                                                           },
@@ -372,8 +382,8 @@ class _SubCategoryState extends State<SubCategory> {
                           firebaseProvider.batchDeleteSubcategory(id,oldText)
                               .then((value) {
 
-
-                            firebaseProvider.getCategory();
+                            _filterSubCategoryList(dropdownValue);
+                            firebaseProvider.getSubCategory();
 
                             setState(() {
                               Navigator.pop(context);

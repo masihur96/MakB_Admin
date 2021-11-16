@@ -88,6 +88,7 @@ class _UpdatePackageState extends State<UpdatePackage> {
       selectedPackageID = firebaseProvider.packageList[firebaseProvider.packageIndex].id;
       selectedPackageColor = firebaseProvider.packageList[firebaseProvider.packageIndex].colors;
       imageUrl = firebaseProvider.packageList[firebaseProvider.packageIndex].image;
+      thumbnailURL = firebaseProvider.packageList[firebaseProvider.packageIndex].thumbnail;
       sizes = firebaseProvider.packageList[firebaseProvider.packageIndex].size ;
 
       if( sizes.contains('XL')){
@@ -191,7 +192,6 @@ class _UpdatePackageState extends State<UpdatePackage> {
                             InkWell(
                                 onTap: (){
                                   convertedImages.clear();
-                                  convertedThumbnail.clear();
                                   imageUrl.clear();
                                   pickedImage();
                                 },
@@ -209,7 +209,7 @@ class _UpdatePackageState extends State<UpdatePackage> {
                                 onTap: (){
                                   convertedImages.clear();
                                   convertedThumbnail.clear();
-                                  imageUrl.clear();
+
                                   pickedThumbnailImage();
                                 },
                                 child: Icon(Icons.filter_b_and_w_outlined)),
@@ -220,45 +220,76 @@ class _UpdatePackageState extends State<UpdatePackage> {
                     ))]
 
           ),
-           Container(
-            height:  publicProvider.isWindows?size.height*.2:size.width*.2,
-            width:publicProvider.pageWidth(size)*.5,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemCount: firebaseProvider.packageIndex==null? convertedImages.isEmpty?3:convertedImages.length:firebaseProvider.packageList[firebaseProvider.packageIndex].image.length,
-                itemBuilder: (BuildContext ctx, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: InkWell(
-                      onTap: (){
-                        setState(() {
-                          imageIndex = index;
-                        });
-                      },
-                      child: convertedImages.isNotEmpty?  Container(
-                        width: publicProvider.pageWidth(size)*.1,
-                        height: 200,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            border: Border.all(width: 1,color: Colors.grey)
-                        ),
-                        alignment: Alignment.center,
-                        child: Image.memory(convertedImages[index],fit: BoxFit.cover,),
+           Row(
+             children: [
+               Padding(
+                 padding: const EdgeInsets.all(8.0),
+                 child: convertedThumbnail.isNotEmpty?  Container(
+                     padding: const EdgeInsets.all(8.0),
+                     width: publicProvider.pageWidth(size)*.1,
+                     height:  publicProvider.isWindows?size.height*.2:size.width*.2,
+                     decoration: BoxDecoration(
+                         borderRadius: BorderRadius.all(Radius.circular(10)),
+                         border: Border.all(width: 1,color: Colors.grey)
+                     ),
+                     alignment: Alignment.center,
+                     child: Image.memory(convertedThumbnail[0],fit: BoxFit.fill,)
 
-                      ):Container(
-                        width:publicProvider.pageWidth(size)*.1,
-                        decoration: BoxDecoration(
+                 ):Padding(
+                   padding: const EdgeInsets.all(8.0),
+                   child: Container(
 
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            border: Border.all(width: 1,color: Colors.grey)
+                     width:publicProvider.pageWidth(size)*.1,
+                     decoration: BoxDecoration(
+                       borderRadius: BorderRadius.all(Radius.circular(10)),
+                       border: Border.all(width: 1,color: Colors.grey),
+                     ),
+                     child:thumbnailURL.isNotEmpty ? Image.network(firebaseProvider.packageList[firebaseProvider.packageIndex].thumbnail):Container() ,
+
+                     height:  publicProvider.isWindows?size.height*.2:size.width*.2,),
+                 ),
+               ),
+               Container(
+                 height:  publicProvider.isWindows?size.height*.2:size.width*.2,
+                 width:publicProvider.pageWidth(size)*.35,
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: firebaseProvider.packageIndex==null? convertedImages.isEmpty?3:convertedImages.length:firebaseProvider.packageList[firebaseProvider.packageIndex].image.length,
+                    itemBuilder: (BuildContext ctx, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: InkWell(
+                          onTap: (){
+                            setState(() {
+                              imageIndex = index;
+                            });
+                          },
+                          child: convertedImages.isNotEmpty?  Container(
+                            width: publicProvider.pageWidth(size)*.1,
+                            height: 200,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                border: Border.all(width: 1,color: Colors.grey)
+                            ),
+                            alignment: Alignment.center,
+                            child: Image.memory(convertedImages[index],fit: BoxFit.cover,),
+
+                          ):Container(
+                            width:publicProvider.pageWidth(size)*.1,
+                            decoration: BoxDecoration(
+
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                border: Border.all(width: 1,color: Colors.grey)
+                            ),
+                            child:imageUrl.isNotEmpty? Image.network(firebaseProvider.packageList[firebaseProvider.packageIndex].image[index]):Container() ,
+                            height: 200,),
                         ),
-                        child:imageUrl.isNotEmpty? Image.network(firebaseProvider.packageList[firebaseProvider.packageIndex].image[index]):Container() ,
-                        height: 200,),
-                    ),
-                  );
-                }),
+                      );
+                    }),
           ),
+             ],
+           ),
         ],
       ),
     );
@@ -742,7 +773,7 @@ class _UpdatePackageState extends State<UpdatePackage> {
     await firebaseProvider.updatePackageData(map).then((value)async{
       if (value) {
 
-        await firebaseProvider.getProducts().then((value) {
+        await firebaseProvider.getPackage().then((value) {
           setState(() {
             publicProvider.subCategory = 'All Package';
             publicProvider.category = '';

@@ -38,22 +38,55 @@ class _DashBoardPageState extends State<DashBoardPage> {
     setState(() {
       _isLoading = true;
     });
-    await firebaseProvider.getRate();
-    await firebaseProvider.getContactInfo();
-    await firebaseProvider.getUser();
-    await firebaseProvider.getCategory();
-    await firebaseProvider.getSubCategory();
-    await firebaseProvider.getProducts();
-    await firebaseProvider.getPackage();
-    await firebaseProvider.getAreaHub();
-    await firebaseProvider.getWithdrawRequest();
-    await firebaseProvider.getDepositRequest();
-    await firebaseProvider.getInsurancePendingRequest();
-    await firebaseProvider.getInsuranceTransferredRequest();
-    await firebaseProvider.getSoldPackage();
-    await firebaseProvider.getProductOrder();
-    await firebaseProvider.getPackageRequest();
-    await  firebaseProvider.getVideo().then((value) => _isLoading = false);
+
+    if(firebaseProvider.productOrderList.isEmpty){
+      await firebaseProvider.getProductOrder();
+    }else
+    if(firebaseProvider.packageOrderList.isEmpty){
+      await firebaseProvider.getPackageRequest();
+    }else
+    if(firebaseProvider.soldPackageList.isEmpty){
+      await firebaseProvider.getSoldPackage();
+    }else
+    if(firebaseProvider.withdrawRequestList.isEmpty){
+      await firebaseProvider.getWithdrawRequest();
+    }else
+    if(firebaseProvider.depositRequestList.isEmpty){
+      await firebaseProvider.getDepositRequest();
+    }else
+    if(firebaseProvider.productPendingOrderList.isEmpty){
+      await firebaseProvider.getInsurancePendingRequest();
+    }else
+    if(firebaseProvider.insuranceTransferredRequestList.isEmpty){
+      await firebaseProvider.getInsuranceTransferredRequest();
+    }else
+    if(firebaseProvider.rateDataList.isEmpty){
+      await firebaseProvider.getRate();
+    }else
+    if(firebaseProvider.infoList.isEmpty){
+      await firebaseProvider.getContactInfo();
+    }else
+    if(firebaseProvider.advertisementList.isEmpty){
+      await  firebaseProvider.getVideo().then((value) => _isLoading = false);
+    }else
+    if(firebaseProvider.userList.isEmpty){
+      await firebaseProvider.getUser();
+    }else
+    if(firebaseProvider.categoryList.isEmpty){
+      await firebaseProvider.getCategory();
+    }else
+    if(firebaseProvider.infoList.isEmpty){
+      await firebaseProvider.subCategoryList();
+    }else
+    if(firebaseProvider.productList.isEmpty){
+      await firebaseProvider.getProducts();
+    }else
+    if(firebaseProvider.packageList.isEmpty){
+      await firebaseProvider.getPackage();
+    }else
+    if(firebaseProvider.areaHubList.isEmpty){
+      await firebaseProvider.getAreaHub();
+    }
 
 
     DateTime date = DateTime.now();
@@ -79,11 +112,9 @@ class _DashBoardPageState extends State<DashBoardPage> {
     final Size size = MediaQuery.of(context).size;
     final PublicProvider publicProvider = Provider.of<PublicProvider>(context);
     final FirebaseProvider firebaseProvider = Provider.of<FirebaseProvider>(context);
-
       if(counter ==0){
         _customInt(firebaseProvider);
       }
-
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: SingleChildScrollView(

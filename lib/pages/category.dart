@@ -96,6 +96,7 @@ class _CategoryState extends State<Category> {
 
                                                   firebaseProvider.getCategory().then((value) {
                                                     _isLoading = false;
+                                                    categoryTextController.clear();
                                                     Navigator.pop(context);
                                                   });
                                                 });
@@ -227,7 +228,7 @@ class _CategoryState extends State<Category> {
         if (value) {
           showToast('Successfully Updated');
           // customInt(firebaseProvider);
-          // _emptyFildCreator();
+       categoryTextController.clear();
           setState(() {
             _isLoading = false;
           });

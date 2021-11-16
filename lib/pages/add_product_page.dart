@@ -221,7 +221,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                          InkWell(
                            onTap: (){
                              convertedImages.clear();
-                              convertedThumbnail.clear();
+                            //  convertedThumbnail.clear();
                             // // imageUrl.clear();
                             //  setState(() {
                             //    thumbnailURL='';
@@ -241,12 +241,8 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                          children: [
                            InkWell(
                                onTap: (){
-                                 convertedImages.clear();
+                               convertedImages.clear();
                                 convertedThumbnail.clear();
-                                //  imageUrl.clear();
-                                //  setState(() {
-                                //    thumbnailURL='';
-                                //  });
 
                                  pickedThumbnailImage();
                                },
@@ -264,44 +260,79 @@ class _UploadProductPageState extends State<UploadProductPage>  {
             child: Scrollbar(
               isAlwaysShown: true,
               controller: scrollController,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: ListView.builder(
-                  controller:scrollController ,
-                    scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
 
-                    shrinkWrap: true,
-                    itemCount: convertedImages.isEmpty?3:convertedImages.length,
-                    itemBuilder: (BuildContext ctx, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: InkWell(
-                          onTap: (){
-                            setState(() {
-                              imageIndex = index;
-                            });
-                          },
-                          child: convertedImages.isNotEmpty?  Container(
-                              width: publicProvider.pageWidth(size)*.1,
-                              height: 200,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                                  border: Border.all(width: 1,color: Colors.grey)
-                              ),
-                              alignment: Alignment.center,
-                              child: Image.memory(convertedImages[index],fit: BoxFit.fill,)
-
-                          ):Container(
-                            width:publicProvider.pageWidth(size)*.1,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                                border: Border.all(width: 1,color: Colors.grey)
-                            ),
-
-                            height: 200,),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: convertedThumbnail.isNotEmpty?  Container(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        width: publicProvider.pageWidth(size)*.1,
+                        height: 200,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            border: Border.all(width: 1,color: Colors.grey)
                         ),
-                      );
-                    }),
+                        alignment: Alignment.center,
+                        child: Image.memory(convertedThumbnail[0],fit: BoxFit.fill,)
+
+                    ):Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Container(
+
+                        width:publicProvider.pageWidth(size)*.1,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            border: Border.all(width: 1,color: Colors.grey),
+                        ),
+                        child: Center(child: Text('Thumbnail\nBox',textAlign: TextAlign.center,)),
+                        height: 200,),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Container(
+                      width:publicProvider.pageWidth(size)*.35,
+                      child: ListView.builder(
+                          controller:scrollController ,
+                          scrollDirection: Axis.horizontal,
+
+                          shrinkWrap: true,
+                          itemCount: convertedImages.isEmpty?3:convertedImages.length,
+                          itemBuilder: (BuildContext ctx, index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                onTap: (){
+                                  setState(() {
+                                    imageIndex = index;
+                                  });
+                                },
+                                child: convertedImages.isNotEmpty?  Container(
+                                    width: publicProvider.pageWidth(size)*.1,
+                                    height: 200,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                                        border: Border.all(width: 1,color: Colors.grey)
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: Image.memory(convertedImages[index],fit: BoxFit.fill,)
+
+                                ):Container(
+                                  width:publicProvider.pageWidth(size)*.1,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                      border: Border.all(width: 1,color: Colors.grey)
+                                  ),
+
+                                  height: 200,),
+                              ),
+                            );
+                          }),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -898,6 +929,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
           setState(() {
             setState(() {
               convertedImages.clear();
+              convertedThumbnail.clear();
               imageUrl.clear();
               colorList.clear();
               colors.clear();

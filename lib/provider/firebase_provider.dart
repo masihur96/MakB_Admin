@@ -1253,17 +1253,37 @@ String? DateFromDatabase;
                     .doc(element.doc.id),
                 {'category': newSubText});
           });
+
           return batch.commit();
+        }).then((value)async {
+          WriteBatch batch = FirebaseFirestore.instance.batch();
+          await FirebaseFirestore.instance
+              .collection('SubCategory')
+              .where('category', isEqualTo: oldSubtext)
+              .get()
+              .then((snapshot) {
+            snapshot.docChanges.forEach((element) {
+              batch.update(
+                  FirebaseFirestore.instance
+                      .collection('SubCategory')
+                      .doc(element.doc.id),
+                  {'category': newSubText});
+            });
+
+            return batch.commit();
+          });
+
+
         }).then((value) async {
           try {
             await FirebaseFirestore.instance
                 .collection('Category')
                 .doc(map['id'])
-                .update(map);
+                .update(map).then((value) =>  getCategory());
             notifyListeners();
             return true;
           } catch (error) {
-            // showToast(error.toString());
+             showToast(error.toString());
             return false;
           }
         });

@@ -166,7 +166,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
                           children: [
                             InkWell(
                                 onTap: (){
-                                  convertedThumbnail.clear();
+                                 // convertedThumbnail.clear();
                                   convertedImages.clear();
                                   // imageUrl.clear();
                                   // setState(() {
@@ -210,44 +210,83 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
 
               controller: scrollController,
 
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: ListView.builder(
-                  controller: scrollController,
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    itemCount:convertedImages.isEmpty?3:convertedImages.length,
-                    itemBuilder: (BuildContext ctx, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: InkWell(
-                          onTap: (){
-                            setState(() {
-                              imageIndex = index;
-                            });
-                          },
-                          child: convertedImages.isNotEmpty?  Container(
-                              width: publicProvider.pageWidth(size)*.1,
-                              height: 200,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                                  border: Border.all(width: 1,color: Colors.grey)
-                              ),
-                              alignment: Alignment.center,
-                              child:Image.memory(convertedImages[index],fit: BoxFit.cover,)
-
-                          ):Container(
-                            width: publicProvider.isWindows?size.height*.2:size.width*.2,
-                            decoration: BoxDecoration(
-
-                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                                border: Border.all(width: 1,color: Colors.grey)
-                            ),
-
-                            height: 200,),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: convertedThumbnail.isNotEmpty?  Container(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        width: publicProvider.pageWidth(size)*.1,
+                        height: 200,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            border: Border.all(width: 1,color: Colors.grey)
                         ),
-                      );
-                    }),
+                        alignment: Alignment.center,
+                        child: Image.memory(convertedThumbnail[0],fit: BoxFit.fill,)
+
+                    ):Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Container(
+
+                        width:publicProvider.pageWidth(size)*.1,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            border: Border.all(width: 1,color: Colors.grey),
+                        ),
+                        child: Center(child: Text('Thumbnail\nBox',textAlign: TextAlign.center,)),
+                        height: 200,),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      children: [
+
+
+                        Container(
+                          width:publicProvider.pageWidth(size)*.35,
+                          child: ListView.builder(
+                            controller: scrollController,
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              itemCount:convertedImages.isEmpty?2:convertedImages.length,
+                              itemBuilder: (BuildContext ctx, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: InkWell(
+                                    onTap: (){
+                                      setState(() {
+                                        imageIndex = index;
+                                      });
+                                    },
+                                    child: convertedImages.isNotEmpty?  Container(
+                                        width: publicProvider.pageWidth(size)*.1,
+                                        height: 200,
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                                            border: Border.all(width: 1,color: Colors.grey)
+                                        ),
+                                        alignment: Alignment.center,
+                                        child:Image.memory(convertedImages[index],fit: BoxFit.cover,)
+
+                                    ):Container(
+                                      width: publicProvider.isWindows?size.height*.2:size.width*.2,
+                                      decoration: BoxDecoration(
+
+                                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                                          border: Border.all(width: 1,color: Colors.grey)
+                                      ),
+
+                                      height: 200,),
+                                  ),
+                                );
+                              }),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -766,6 +805,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
           _isLoading = false;
           setState(() {
             convertedImages.clear();
+            convertedThumbnail.clear();
             imageUrl.clear();
             colorList.clear();
             colors.clear();

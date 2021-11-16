@@ -774,93 +774,91 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
           padding: const EdgeInsets.only(top: 200.0),
           child: fadingCircle,
         ):
-        Expanded(
-          child: ListView.builder(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(8),
-              itemCount: _packageFilteredList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  child: Column(
-                    children: [
-                      Divider(height: 1,color: Colors.grey,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
+        ListView.builder(
+            shrinkWrap: true,
+            padding: const EdgeInsets.all(8),
+            itemCount: _packageFilteredList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Container(
+                child: Column(
+                  children: [
+                    Divider(height: 1,color: Colors.grey,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
 
-                          InkWell(
-                              onTap: (){
-                                setState(() {
-                                  if(selectOrder.contains(index)){
-                                    selectOrder.remove(index);
-                                  }
-                                  else {
-                                    selectOrder.add(index);
-                                  }
-                                });
-                              },
-                              child: selectOrder.contains(index)? Icon(Icons.check_box_outlined):Icon(Icons.check_box_outline_blank)),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(_packageFilteredList[index].userName!,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                  Text(_packageFilteredList[index].userAddress!,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                  Text(_packageFilteredList[index].userPhone!,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                ],
-                              ),
+                        InkWell(
+                            onTap: (){
+                              setState(() {
+                                if(selectOrder.contains(index)){
+                                  selectOrder.remove(index);
+                                }
+                                else {
+                                  selectOrder.add(index);
+                                }
+                              });
+                            },
+                            child: selectOrder.contains(index)? Icon(Icons.check_box_outlined):Icon(Icons.check_box_outline_blank)),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(_packageFilteredList[index].userName!,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                Text(_packageFilteredList[index].userAddress!,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                Text(_packageFilteredList[index].userPhone!,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                              ],
                             ),
                           ),
-                          Expanded(
-                              child: Text(_packageFilteredList[index].date!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),)),
-                          Expanded(
-                            child: Text(_packageFilteredList[index].productName!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.green ,),),
-                          ),
-                          Expanded(
-                            child: Text(_packageFilteredList[index].productPrice!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
-                          ),
-                          Expanded(
-                            child: Text(_packageFilteredList[index].discount!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
-                          ),
-                          Expanded(
-                            child: Text(_packageFilteredList[index].quantity!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
-                          ),
+                        ),
+                        Expanded(
+                            child: Text(_packageFilteredList[index].date!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),)),
+                        Expanded(
+                          child: Text(_packageFilteredList[index].productName!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.green ,),),
+                        ),
+                        Expanded(
+                          child: Text(_packageFilteredList[index].productPrice!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
+                        ),
+                        Expanded(
+                          child: Text(_packageFilteredList[index].discount!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
+                        ),
+                        Expanded(
+                          child: Text(_packageFilteredList[index].quantity!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
+                        ),
 
-                          Expanded(
-                            child: Text(_packageFilteredList[index].status!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
-                          ),
+                        Expanded(
+                          child: Text(_packageFilteredList[index].status!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
+                        ),
 
-                          DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: packageStatusValue,
-                              elevation: 0,
-                              dropdownColor: Colors.white,
-                              style: TextStyle(color: Colors.black),
-                              items: packageStatus.map((itemValue) {
-                                return DropdownMenuItem<String>(
-                                  value: itemValue,
-                                  child: Text(itemValue),
-                                );
-                              }).toList(),
-                              onChanged: (newValue) {
-                                setState(() {
-                                  packageStatusValue = newValue!;
-                                });
-                                showLoaderDialog(context);
-                             updatePackageStateValue(firebaseProvider,index,packageStatusValue).then((value) => Navigator.pop(context));
-                              },
-                            ),
+                        DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: packageStatusValue,
+                            elevation: 0,
+                            dropdownColor: Colors.white,
+                            style: TextStyle(color: Colors.black),
+                            items: packageStatus.map((itemValue) {
+                              return DropdownMenuItem<String>(
+                                value: itemValue,
+                                child: Text(itemValue),
+                              );
+                            }).toList(),
+                            onChanged: (newValue) {
+                              setState(() {
+                                packageStatusValue = newValue!;
+                              });
+                              showLoaderDialog(context);
+                           updatePackageStateValue(firebaseProvider,index,packageStatusValue).then((value) => Navigator.pop(context));
+                            },
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              }
-          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }
         )
 
       ],
