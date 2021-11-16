@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:makb_admin_pannel/data_model/dart/customer_data_model.dart';
+import 'package:makb_admin_pannel/pages/pdf_all_customer.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
 import 'package:makb_admin_pannel/widgets/fading_circle.dart';
@@ -109,85 +110,122 @@ class _CustomerPageState extends State<CustomerPage> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                      onPressed: (){
-                        showDialog(context: context, builder: (_){
-                          return   AlertDialog(
-                            title: Text('Alert'),
-                            content: Container(
-                              height: publicProvider.isWindows?size.height*.2:size.width*.2,
-                              child:Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.warning_amber_outlined,color: Colors.yellow,size: 40,),
+                  Row(
+                    children: [
+                      IconButton(
+                          onPressed: (){
+                            showDialog(context: context, builder: (_){
+                              return   AlertDialog(
+                                title: Text('Alert'),
+                                content: Container(
+                                  height: publicProvider.isWindows?size.height*.2:size.width*.2,
+                                  child:Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.warning_amber_outlined,color: Colors.yellow,size: 40,),
 
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 5.0),
-                                    child: Text('Are you confirm to delete this customer ?',style: TextStyle(fontSize: 14,color: Colors.black),),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                                        child: Text('Are you confirm to delete this customer ?',style: TextStyle(fontSize: 14,color: Colors.black),),
+                                      ),
+                                    ],),
+
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
                                   ),
-                                ],),
+                                  TextButton(
+                                    child: Text('Ok'),
+                                    onPressed: () {
+                                      var db = FirebaseFirestore.instance;
+                                      WriteBatch batch = db.batch();
+                                      for (String id in selectedCustomerID) {
+                                        DocumentReference ref =
+                                        db.collection("Users").doc(id);
+                                        batch.delete(ref);
+                                      }
+                                      batch.commit().then((value) {
+                                        customInit(firebaseProvider);
+                                        deleteList.clear();
+                                        selectedCustomerID.clear();
+                                      });
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            }) ;
+                          },
+                          icon: Icon(
+                        Icons.delete_outline,size: 20,
+                        color: Colors.red,
+                      )),
+                      TextButton(
+                        style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.green)),
+                        onPressed: (){
 
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                child: Text('Cancel'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                              TextButton(
-                                child: Text('Ok'),
-                                onPressed: () {
-                                  var db = FirebaseFirestore.instance;
-                                  WriteBatch batch = db.batch();
-                                  for (String id in selectedCustomerID) {
-                                    DocumentReference ref =
-                                    db.collection("Users").doc(id);
-                                    batch.delete(ref);
-                                  }
-                                  batch.commit().then((value) {
-                                    customInit(firebaseProvider);
-                                    deleteList.clear();
-                                    selectedCustomerID.clear();
-                                  });
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          );
-                        }) ;
-                      },
-                      icon: Icon(
-                    Icons.delete_outline,size: 20,
-                    color: Colors.red,
-                  )),
-                  TextButton(
-                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.green)),
-                    onPressed: (){
+                          setState(() {
+                            deleteList.clear();
+                            selectedCustomerID.clear();
 
-                      setState(() {
-                           deleteList.clear();
-                      selectedCustomerID.clear();
+                          });
 
-                      });
+                        }, child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Text('Clear All Selection ',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontStyle: FontStyle.normal,
+                              fontSize: publicProvider.isWindows
+                                  ? size.height * .02
+                                  : size.width * .02,
+                            )),
+                      ),
 
-                  }, child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                    child: Text('Clear All Selection ',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontStyle: FontStyle.normal,
-                          fontSize: publicProvider.isWindows
-                              ? size.height * .02
-                              : size.width * .02,
-                        )),
+
+                      ),
+                      IconButton(onPressed: (){
+
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        firebaseProvider.getUser().then((value) {
+
+                          setState(() {
+                            publicProvider.subCategory =
+                            'Customer';
+                            publicProvider.category = '';
+                            _isLoading = false;
+                          });
+                           // _isLoading = false;
+                        });
+                      }, icon: Icon(Icons.refresh_outlined,color: Colors.green,))
+                    ],
                   ),
 
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Colors.green,
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        ),
+                      onPressed: (){
 
-                  ),
+                        AllCustomerPDF.allCustomerPdf(_filteredList, 'Customer Details', context, publicProvider);
+
+                  }, child: Text('Print',style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white,
+                      fontWeight: FontWeight.normal
+
+                  ),))
+
 
                 ],
               ),
@@ -347,12 +385,7 @@ class _CustomerPageState extends State<CustomerPage> {
 
                                 child:_filteredList[index].imageUrl != null? Image.network(
                                   _filteredList[index].imageUrl!,fit:BoxFit.fill,
-                                  // height: publicProvider.isWindows
-                                  //   ? size.height * .2
-                                  //   : size.width * .2,
-                                  // width: publicProvider.isWindows
-                                  //     ? size.height * .1
-                                  //     : size.width * .1,
+
 
                                 ):Container(),
                               ),
@@ -496,52 +529,48 @@ class _CustomerPageState extends State<CustomerPage> {
                                                 ],
                                               ),
                                             ),
+                                            ListView.builder(
+                                            shrinkWrap: true,
+                                            padding: const EdgeInsets.all(8),
+                                            itemCount: firebaseProvider.referList.length,
+                                            itemBuilder: (BuildContext context, int index) {
+                                              return Container(
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(child: Text(firebaseProvider.referList[index].id,textAlign: TextAlign.center,style: TextStyle(
+                                                      fontSize: publicProvider.isWindows
+                                                          ? size.height * .02
+                                                          : size.width * .02,
+                                                    ),)),
+                                                    Expanded(child: Text(firebaseProvider.referList[index].name,textAlign: TextAlign.center,style: TextStyle(
+                                                      fontSize: publicProvider.isWindows
+                                                          ? size.height * .02
+                                                          : size.width * .02,
+                                                    ),)),
+                                                    Expanded(child: Text(firebaseProvider.referList[index].phone,textAlign: TextAlign.center,style: TextStyle(
+                                                      fontSize: publicProvider.isWindows
+                                                          ? size.height * .02
+                                                          : size.width * .02,
+                                                    ),)),
+                                                    Expanded(child: Text(firebaseProvider.referList[index].referCode,textAlign: TextAlign.center,style: TextStyle(
+                                                      fontSize: publicProvider.isWindows
+                                                          ? size.height * .02
+                                                          : size.width * .02,
+                                                    ),)),
+                                                    Expanded(child: Text(firebaseProvider.referList[index].date,textAlign: TextAlign.center,style: TextStyle(
+                                                      fontSize: publicProvider.isWindows
+                                                          ? size.height * .02
+                                                          : size.width * .02,
+                                                    ),)),
+                                                    Expanded(child: Text(firebaseProvider.referList[index].profit,textAlign: TextAlign.center,style: TextStyle(
+                                                      fontSize: publicProvider.isWindows
+                                                          ? size.height * .02
+                                                          : size.width * .02,
+                                                    ),)),
 
-                                            Expanded(
-                                              child: ListView.builder(
-                                              shrinkWrap: true,
-                                              padding: const EdgeInsets.all(8),
-                                              itemCount: firebaseProvider.referList.length,
-                                              itemBuilder: (BuildContext context, int index) {
-                                                return Container(
-                                                  child: Row(
-                                                    children: [
-
-                                                      Expanded(child: Text(firebaseProvider.referList[index].id,textAlign: TextAlign.center,style: TextStyle(
-                                                        fontSize: publicProvider.isWindows
-                                                            ? size.height * .02
-                                                            : size.width * .02,
-                                                      ),)),
-                                                      Expanded(child: Text(firebaseProvider.referList[index].name,textAlign: TextAlign.center,style: TextStyle(
-                                                        fontSize: publicProvider.isWindows
-                                                            ? size.height * .02
-                                                            : size.width * .02,
-                                                      ),)),
-                                                      Expanded(child: Text(firebaseProvider.referList[index].phone,textAlign: TextAlign.center,style: TextStyle(
-                                                        fontSize: publicProvider.isWindows
-                                                            ? size.height * .02
-                                                            : size.width * .02,
-                                                      ),)),
-                                                      Expanded(child: Text(firebaseProvider.referList[index].referCode,textAlign: TextAlign.center,style: TextStyle(
-                                                        fontSize: publicProvider.isWindows
-                                                            ? size.height * .02
-                                                            : size.width * .02,
-                                                      ),)),
-                                                      Expanded(child: Text(firebaseProvider.referList[index].date,textAlign: TextAlign.center,style: TextStyle(
-                                                        fontSize: publicProvider.isWindows
-                                                            ? size.height * .02
-                                                            : size.width * .02,
-                                                      ),)),
-                                                      Expanded(child: Text(firebaseProvider.referList[index].profit,textAlign: TextAlign.center,style: TextStyle(
-                                                        fontSize: publicProvider.isWindows
-                                                            ? size.height * .02
-                                                            : size.width * .02,
-                                                      ),)),
-
-                                                  ],),
-                                                );
-                                              }
-                                              ),
+                                                ],),
+                                              );
+                                            }
                                             ),
 
                                           ],

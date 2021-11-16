@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:makb_admin_pannel/data_model/dart/customer_data_model.dart';
 import 'package:makb_admin_pannel/provider/firebase_provider.dart';
 import 'package:makb_admin_pannel/provider/public_provider.dart';
+import 'package:makb_admin_pannel/widgets/fading_circle.dart';
 import 'package:provider/provider.dart';
 
 class DashBoardPage extends StatefulWidget {
@@ -34,23 +35,33 @@ class _DashBoardPageState extends State<DashBoardPage> {
       counter++;
     });
 
+    setState(() {
+      _isLoading = true;
+    });
+    await firebaseProvider.getRate();
+    await firebaseProvider.getUser();
+    await firebaseProvider.getCategory();
+    await firebaseProvider.getSubCategory();
+    await firebaseProvider.getProducts();
+    await firebaseProvider.getPackage();
+    await firebaseProvider.getAreaHub();
+    await firebaseProvider.getWithdrawRequest();
+    await firebaseProvider.getDepositRequest();
+    await firebaseProvider.getInsurancePendingRequest();
+    await firebaseProvider.getInsuranceTransferredRequest();
+    await firebaseProvider.getSoldPackage();
+    await firebaseProvider.getProductOrder();
+    await firebaseProvider.getPackageRequest();
+    await  firebaseProvider.getVideo().then((value) => _isLoading = false);
 
 
     DateTime date = DateTime.now();
     String dateData = '${date.day}-${date.month}-${date.year}';
-
     print(' Date From Device Instance: $dateData');
-
-
     setState(() {
       _totalUserList = firebaseProvider.userList;
       for (int i = 0; i < _totalUserList.length; i++) {
-        //
-        // print(' Date From ssss Instance: ${_totalUserList.length}');
-        // print('_totalUserList[i].timeStamp');
-
         DateTime dateFromList = DateTime.fromMillisecondsSinceEpoch(int.parse('${_totalUserList[i].timeStamp}'));
-
         String dateFromDatabase = '${dateFromList.day}-${dateFromList.month}-${dateFromList.year}';
         print('Date Database: $dateFromDatabase');
         print(' Date From Device: $dateData');
@@ -73,8 +84,9 @@ class _DashBoardPageState extends State<DashBoardPage> {
       }
 
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+      scrollDirection: Axis.vertical,
       child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
         child: Container(
           width: publicProvider.pageWidth(size),
 
@@ -82,32 +94,39 @@ class _DashBoardPageState extends State<DashBoardPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SingleChildScrollView(
-                child: GridView(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: publicProvider.isWindows ?4:1,
-                    childAspectRatio: 3.5/2
+             _isLoading? Padding(
+               padding:  EdgeInsets.only(top: size.height*.4),
+               child: fadingCircle,
+             ): SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Align(
+                  alignment: publicProvider.isWindows?Alignment.topLeft:Alignment.center,
+                  child: GridView(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: publicProvider.isWindows ?4:1,
+                      childAspectRatio: 3.5/2
+                    ),
+                    children: [
+                      _gridViewTile(size,'Product',Color(0xff9D7CFD),
+                          'Total Product','Soled ','${firebaseProvider.productList.length}','${firebaseProvider.productOrderList.length}'),
+
+                      _gridViewTile(size,'Package',Color(0xff00B5C9),
+                          'Total Package','Soled Package', '${firebaseProvider.packageList.length}','${firebaseProvider.soldPackageList.length}'),
+
+                      _gridViewTile(size,'Order',Color(0xffFF8C00),
+                          'Product Order','Package Order','${firebaseProvider.productOrderList.length}','${firebaseProvider.packageOrderList.length}'),
+                      _gridViewTile(size,'Customer',Color(0xffFF8C00),
+                          'Total Customer','New Customer','${firebaseProvider.userList.length}','${_todayUserList.length}'),
+                      _gridViewTile(size,'Insurance',Color(0xffFF8C00),
+                          'Pending','Transferred','${firebaseProvider.insuranceRequestList.length}','${firebaseProvider.insuranceTransferredRequestList.length}'),
+                      _gridViewTile(size,'Deposit',Color(0xff00A958),
+                          'Request ','Total','${firebaseProvider.depositRequestList.length}','${firebaseProvider.userList.length}'),
+                      _gridViewTile(size,'Advertisement',Color(0xff00C4FE),
+                          'Total Video','Rate','${firebaseProvider.advertisementList.length}','5'),
+                    ],
                   ),
-                  children: [
-                    _gridViewTile(size,'Product',Color(0xff9D7CFD),
-                        'Total Product','Soled ','${firebaseProvider.productList.length}','${firebaseProvider.productOrderList.length}'),
-
-                    _gridViewTile(size,'Package',Color(0xff00B5C9),
-                        'Total Package','Soled Package', '${firebaseProvider.packageList.length}','${firebaseProvider.soldPackageList.length}'),
-
-                    _gridViewTile(size,'Order',Color(0xffFF8C00),
-                        'Product Order','Package Order','${firebaseProvider.productOrderList.length}','${firebaseProvider.packageOrderList.length}'),
-                    _gridViewTile(size,'Customer',Color(0xffFF8C00),
-                        'Total Customer','New Customer','${firebaseProvider.userList.length}','${_todayUserList.length}'),
-                    _gridViewTile(size,'Insurance',Color(0xffFF8C00),
-                        'Pending','Transferred','${firebaseProvider.insuranceRequestList.length}','${firebaseProvider.insuranceTransferredRequestList.length}'),
-                    _gridViewTile(size,'Deposit',Color(0xff00A958),
-                        'Request ','Total','${firebaseProvider.depositRequestList.length}','${firebaseProvider.userList.length}'),
-                    _gridViewTile(size,'Advertisement',Color(0xff00C4FE),
-                        'Total Video','Rate','${firebaseProvider.advertisementList.length}','5'),
-                  ],
                 ),
               ),
 

@@ -183,6 +183,17 @@ class _AllPackagePageState extends State<AllPackagePage> {
                         )),
                   ),
                 ),
+
+                IconButton(onPressed: (){
+
+                  setState(() {
+                    _isLoading = true;
+                  });
+
+                  firebaseProvider.getPackage().then((value) => _isLoading = false);
+
+                }, icon: Icon(Icons.refresh_outlined,color: Colors.green,))
+
               ],
             ),
           ),

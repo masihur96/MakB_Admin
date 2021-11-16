@@ -206,7 +206,7 @@ String? DateFromDatabase;
           SubCategoryModel subCategory= SubCategoryModel(
             subCategory: element.doc['subCategory'],
             id: element.doc['id'],
-
+            category: element.doc['category'],
           );
           _subCategoryList.add(subCategory);
         });
@@ -236,6 +236,7 @@ String? DateFromDatabase;
             colors: element.doc['colors'],
             image: element.doc['image'],
             date: element.doc['date'],
+            thumbnail: element.doc['thumbnail'],
           );
           _productList.add(productModel) ;
         });
@@ -262,7 +263,8 @@ String? DateFromDatabase;
             colors: element.doc['colors'],
             image: element.doc['image'],
             date: element.doc['date'],
-            discountAmount: element.doc['discountAmount']
+            discountAmount: element.doc['discountAmount'],
+            thumbnail: element.doc['thumbnail']
 
           );
           _packageList.add(packageModel) ;
@@ -616,7 +618,6 @@ String? DateFromDatabase;
             phone: element.doc['phone'],
             status: element.doc['status'],
             userId: element.doc['userId'],
-
           );
           _insuranceTransferredRequestList.add(insuranceModel) ;
         });
@@ -930,8 +931,10 @@ String? DateFromDatabase;
       await FirebaseFirestore.instance
           .collection("Category")
           .doc(map['id'])
-          .set(map);
+          .set(map).then((value) => getCategory());
       notifyListeners();
+
+
       return true;
     } catch (err) {
 
@@ -946,7 +949,7 @@ String? DateFromDatabase;
       await FirebaseFirestore.instance
           .collection("SubCategory")
           .doc(map['id'])
-          .set(map);
+          .set(map).then((value) => getSubCategory());
       notifyListeners();
       return true;
     } catch (err) {
@@ -1183,4 +1186,210 @@ String? DateFromDatabase;
     }
   }
 
+  Future<void> batchUpdateCategory(Map<String, String> map,
+      String oldSubtext, String newSubText) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    // print('Batch Category: $collectionName');
+    print('Batch Old Text : $oldSubtext');
+    print('Batch New Text : $newSubText');
+    // print('Batch New Text : $newSubText');
+    print('Batch Map : $map');
+    try {
+      print('Updating...');
+        await FirebaseFirestore.instance
+            .collection('Products')
+            .where('category', isEqualTo: oldSubtext)
+            .get()
+            .then((snapshot) {
+          snapshot.docChanges.forEach((element) {
+            batch.update(
+                FirebaseFirestore.instance
+                    .collection('Products')
+                    .doc(element.doc.id),
+                {'category': newSubText});
+          });
+          return batch.commit();
+        }).then((value) async {
+          try {
+            await FirebaseFirestore.instance
+                .collection('Category')
+                .doc(map['id'])
+                .update(map);
+            notifyListeners();
+            return true;
+          } catch (error) {
+            // showToast(error.toString());
+            return false;
+          }
+        });
+
+      print('Update Success');
+      }catch (error) {
+      print((error.toString()));
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> batchDeleteCategory(String id,
+      String oldSubtext) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    // print('Batch Category: $collectionName');
+    // print('Batch Old Text : $oldSubtext');
+    // print('Batch New Text : $newSubText');
+    // print('Batch New Text : $newSubText');
+   // print('Batch Map : $map');
+    try {
+      print('Updating...');
+      await FirebaseFirestore.instance
+          .collection('Products')
+          .where('category', isEqualTo: oldSubtext)
+          .get()
+          .then((snapshot) {
+        snapshot.docChanges.forEach((element) {
+          batch.delete(
+              FirebaseFirestore.instance
+                  .collection('Products')
+                  .doc(element.doc.id),
+             );
+        });
+        notifyListeners();
+        return batch.commit();
+      }).then((value) async {
+        print('Batch Old Text : $oldSubtext');
+        WriteBatch batch = FirebaseFirestore.instance.batch();
+        try{
+          await FirebaseFirestore.instance
+              .collection('SubCategory')
+              .where('category', isEqualTo: oldSubtext)
+              .get()
+              .then((snapshot) {
+            snapshot.docChanges.forEach((element) {
+              batch.delete(
+                FirebaseFirestore.instance
+                    .collection('SubCategory')
+                    .doc(element.doc.id),
+              );
+            });
+            notifyListeners();
+            return batch.commit();
+          });
+        }catch (error) {
+           showToast(error.toString());
+           print(error.toString());
+          return false;
+        }
+      }).then((value) async{
+        try {
+          await FirebaseFirestore.instance
+              .collection('Category')
+              .doc(id)
+              .delete().then((value) =>   getCategory());
+
+          notifyListeners();
+          return true;
+        } catch (error) {
+           showToast(error.toString());
+          return false;
+        }
+      });
+
+      print('Update Success');
+    }catch (error) {
+      print((error.toString()));
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> batchUpdateSubcategory(Map<String, String> map,
+      String oldSubtext, String newSubText) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    // print('Batch Category: $collectionName');
+    print('Batch Old Text : $oldSubtext');
+    print('Batch New Text : $newSubText');
+    // print('Batch New Text : $newSubText');
+    print('Batch Map : $map');
+    try {
+      print('Updating...');
+      await FirebaseFirestore.instance
+          .collection('Products')
+          .where('subCategory', isEqualTo: oldSubtext)
+          .get()
+          .then((snapshot) {
+        snapshot.docChanges.forEach((element) {
+          batch.update(
+              FirebaseFirestore.instance
+                  .collection('Products')
+                  .doc(element.doc.id),
+              {'subCategory': newSubText});
+        });
+        return batch.commit();
+      }).then((value) async {
+        try {
+          await FirebaseFirestore.instance
+              .collection('SubCategory')
+              .doc(map['id'])
+              .update(map);
+          notifyListeners();
+          return true;
+        } catch (error) {
+          // showToast(error.toString());
+          return false;
+        }
+      });
+
+      print('Update Success');
+    }catch (error) {
+      print((error.toString()));
+    }
+
+    notifyListeners();
+  }
+  Future<void> batchDeleteSubcategory(String id,
+      String oldSubtext) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    // print('Batch Category: $collectionName');
+    // print('Batch Old Text : $oldSubtext');
+    // print('Batch New Text : $newSubText');
+    // print('Batch New Text : $newSubText');
+    // print('Batch Map : $map');
+    try {
+      print('Updating...');
+      await FirebaseFirestore.instance
+          .collection('Products')
+          .where('subCategory', isEqualTo: oldSubtext)
+          .get()
+          .then((snapshot) {
+        snapshot.docChanges.forEach((element) {
+          batch.delete(
+            FirebaseFirestore.instance
+                .collection('Products')
+                .doc(element.doc.id),
+          );
+        });
+        notifyListeners();
+        return batch.commit();
+      }).then((value) async{
+        try {
+          await FirebaseFirestore.instance
+              .collection('SubCategory')
+              .doc(id)
+              .delete().then((value) =>   getSubCategory());
+
+          notifyListeners();
+          return true;
+        } catch (error) {
+          showToast(error.toString());
+          return false;
+        }
+      });
+
+      print('Update Success');
+    }catch (error) {
+      print((error.toString()));
+    }
+
+    notifyListeners();
+  }
 }

@@ -42,7 +42,6 @@ class _AdvertisementState extends State<Advertisement> {
     });
 
     if(firebaseProvider.advertisementList.isEmpty){
-
       firebaseProvider.getVideo();
     }
 
@@ -73,108 +72,111 @@ class _AdvertisementState extends State<Advertisement> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            width: publicProvider.pageWidth(size) * .5,
-            child:ListView(
-              children: [
-                fileBytes == null?
-                _controller !=null?
-                Center(
-                  child: Stack(
-                    children: [
-                      Container(
-                        height: 400,
-                        width: 500,
-                        child: Center(
-                          child: _controller!.value.isInitialized
-                              ? AspectRatio(
-                            aspectRatio: _controller!.value.aspectRatio,
-                            child: VideoPlayer(_controller!),
-                          )
-                              : Container(),
-                        ),
-                      ),
+          Padding(
+            padding: const EdgeInsets.only(top: 18.0),
+            child: Container(
+              width: publicProvider.pageWidth(size) * .5,
+              child:ListView(
+                children: [
 
-                      Positioned.fill(child: _controller !=null? Align(
-                        alignment: Alignment.center,
-                        child: FloatingActionButton(
-                          onPressed: () {
-                            setState(() {
-                              _controller!.value.isPlaying
-                                  ? _controller!.pause()
-                                  : _controller!.play();
-                            });
-                          },
+                  fileBytes == null?
+                  _controller !=null?
+                  Center(
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: 400,
+                          width: 500,
                           child: Center(
-                            child: Icon(
-                              _controller!.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                            ),
+                            child: _controller!.value.isInitialized
+                                ? AspectRatio(
+                              aspectRatio: _controller!.value.aspectRatio,
+                              child: VideoPlayer(_controller!),
+                            )
+                                : Container(),
                           ),
-
-
                         ),
-                      ):Container())
+
+                        Positioned.fill(child: _controller !=null? Align(
+                          alignment: Alignment.center,
+                          child: FloatingActionButton(
+                            onPressed: () {
+                              setState(() {
+                                _controller!.value.isPlaying
+                                    ? _controller!.pause()
+                                    : _controller!.play();
+                              });
+                            },
+                            child: Center(
+                              child: Icon(
+                                _controller!.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                              ),
+                            ),
+
+
+                          ),
+                        ):Container())
 
 
 
-                    ],
+                      ],
+                    ),
+                  ):Container():Container(
+                    height: 400,
+                    width: 500,
+                    child: Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                        Container(
+                            width: 300,
+                            child: Text('Video Name: $videoName')),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text('Video Size: $video_size MB '),
+                        ),
+                      ],),
+                    ),
                   ),
-                ):Container():Container(
-                  height: 400,
-                  width: 500,
-                  child: Center(
+
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                      Container(
-                          width: 300,
-                          child: Text('Video Name: $videoName')),
 
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text('Video Size: $video_size MB '),
-                      ),
-                    ],),
-                  ),
-                ),
+                        SizedBox(
+                          height: 20,
+                        ),
 
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-
-                      SizedBox(
-                        height: 20,
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: publicProvider.pageWidth(size) * .45,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 8.0, bottom: 8.0),
-                                child: TextField(
-                                  controller: titleTextController,
-                                  decoration:
-                                      textFieldFormDecoration(size)
-                                          .copyWith(
-                                    labelText: 'Title',
-                                    hintText: 'Video Title',
-                                    hintStyle: TextStyle(fontSize: 15),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: publicProvider.pageWidth(size) * .45,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 8.0, bottom: 8.0),
+                                  child: TextField(
+                                    controller: titleTextController,
+                                    decoration:
+                                        textFieldFormDecoration(size)
+                                            .copyWith(
+                                      labelText: 'Title',
+                                      hintText: 'Video Title',
+                                      hintStyle: TextStyle(fontSize: 15),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: _isLoading? fadingCircle: TextButton(
-                                  onPressed: () {
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: _isLoading? fadingCircle: TextButton(
+                                    onPressed: () {
 
     if(firebaseProvider.advertisementList.length<5){
 
@@ -184,21 +186,21 @@ class _AdvertisementState extends State<Advertisement> {
 
       final String uuid = Uuid().v1();
       firebase_storage.Reference storageReference = firebase_storage
-          .FirebaseStorage.instance
-          .ref()
-          .child('Advertisement')
-          .child(uuid);
+            .FirebaseStorage.instance
+            .ref()
+            .child('Advertisement')
+            .child(uuid);
       firebase_storage.UploadTask storageUploadTask =
       storageReference.putData(fileBytes!);
       firebase_storage.TaskSnapshot taskSnapshot;
       storageUploadTask.then((value) {
         taskSnapshot = value;
         taskSnapshot.ref.getDownloadURL().then((newImageDownloadUrl) {
-          final downloadUrl = newImageDownloadUrl;
-          setState(() {
-            videoUrl=downloadUrl;
-          });
-          _submitData(firebaseProvider,uuid);
+            final downloadUrl = newImageDownloadUrl;
+            setState(() {
+              videoUrl=downloadUrl;
+            });
+            _submitData(firebaseProvider,uuid);
         });
       });
     }
@@ -209,35 +211,36 @@ class _AdvertisementState extends State<Advertisement> {
 
 
 
-                                  },
-                                  child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.green,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(5)),
-                                          border: Border.all(
-                                              width: 1, color: Colors.green)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 50.0,
-                                          vertical: 5,
-                                        ),
-                                        child: Text(
-                                          'Upload',
-                                          style:
-                                              TextStyle(color: Colors.white),
-                                        ),
-                                      ))),
-                            )
-                          ],
+                                    },
+                                    child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.green,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5)),
+                                            border: Border.all(
+                                                width: 1, color: Colors.green)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 50.0,
+                                            vertical: 5,
+                                          ),
+                                          child: Text(
+                                            'Upload',
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ))),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-            ),
+                ],
+              ),
+              ),
+          ),
           Container(
             width: publicProvider.pageWidth(size) * .5,
             child: Padding(
@@ -272,13 +275,8 @@ class _AdvertisementState extends State<Advertisement> {
                                     videoName = file.name;
                                     video_size = (file.size/ (1024 * 1024)).toStringAsFixed(3);
                                   });
-
-
-
                                 }
                               }, icon: Icon(Icons.add,color: Colors.white,))
-
-
                           ),
 
                         ],
@@ -294,7 +292,6 @@ class _AdvertisementState extends State<Advertisement> {
                         itemBuilder: (BuildContext context, int index) {
                           return Column(
                             children: [
-
                               Divider(
                                 height: 2,
                               ),
@@ -303,7 +300,6 @@ class _AdvertisementState extends State<Advertisement> {
                                   setState(() {
                                     fileBytes = null;
                                   });
-
                                   _customInit(firebaseProvider,firebaseProvider.advertisementList[index].videoUrl);
                                 },
                                 child: Padding(

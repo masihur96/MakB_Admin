@@ -59,7 +59,9 @@ class _UpdatePackageState extends State<UpdatePackage> {
   String? error;
   Uint8List? data;
   List <dynamic> convertedImages =[];
+  List <dynamic> convertedThumbnail =[];
   List imageUrl =[];
+  String thumbnailURL='';
   var file;
   String name = '';
   int? imageIndex=0;
@@ -172,17 +174,50 @@ class _UpdatePackageState extends State<UpdatePackage> {
                   ),
                   child:  convertedImages.isNotEmpty? Container(
                     child: Image.memory(convertedImages[imageIndex!],fit: BoxFit.cover,) ,
+                  ):convertedThumbnail.isNotEmpty?Container(
+                    child: Image.memory(convertedThumbnail[0],fit: BoxFit.cover,),
+
                   ):imageUrl.isNotEmpty?Image.network(imageUrl[imageIndex!]):fadingCircle,
                 ),
 
                 Positioned.fill(
-                    child: IconButton(onPressed: (){
-                      imageUrl.clear();
-                      convertedImages.clear();
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                                onTap: (){
+                                  convertedImages.clear();
+                                  convertedThumbnail.clear();
+                                  imageUrl.clear();
+                                  pickedImage();
+                                },
+                                child: Icon(Icons.camera)),
+                            Text('Products',style: TextStyle(fontSize: 10),)
+                          ],
+                        ) ,
 
-                      pickedImage();
+                        SizedBox(width: 50,),
 
-                    }, icon: Icon(Icons.camera) ))]
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                                onTap: (){
+                                  convertedImages.clear();
+                                  convertedThumbnail.clear();
+                                  imageUrl.clear();
+                                  pickedThumbnailImage();
+                                },
+                                child: Icon(Icons.filter_b_and_w_outlined)),
+                            Text('Thumbnail',style: TextStyle(fontSize: 10),)
+                          ],
+                        ) ,
+                      ],
+                    ))]
 
           ),
            Container(
@@ -219,7 +254,6 @@ class _UpdatePackageState extends State<UpdatePackage> {
                             border: Border.all(width: 1,color: Colors.grey)
                         ),
                         child:imageUrl.isNotEmpty? Image.network(firebaseProvider.packageList[firebaseProvider.packageIndex].image[index]):Container() ,
-
                         height: 200,),
                     ),
                   );
@@ -648,6 +682,44 @@ class _UpdatePackageState extends State<UpdatePackage> {
     });
   }
 
+  pickedThumbnailImage() async {
+
+    FileUploadInputElement input = FileUploadInputElement()..accept = 'image/*';
+    FirebaseStorage fs = FirebaseStorage.instance;
+    input.multiple = false;
+    input.click();
+
+    input.onChange.listen((event) {
+
+      for(var image in input.files!){
+        final reader = FileReader();
+        reader.readAsDataUrl(image);
+        reader.onLoadEnd.listen((event) async {
+          var snapshot = await fs.ref().child('PackageThumbnail').child(image.name).putBlob(image);
+          String downloadUrl = await snapshot.ref.getDownloadURL();
+          setState(() {
+            thumbnailURL = downloadUrl;
+
+          });
+
+          print(thumbnailURL);
+        });
+
+        reader.onLoad.first.then((res) {
+          final encoded = reader.result as String;
+          final stripped =
+          encoded.replaceFirst(RegExp(r'data:image/[^;]+;base64,'), '');
+          setState(() {
+            data = base64.decode(stripped);
+            convertedThumbnail.add(data);
+            error = null;
+          });
+        });
+      }
+    });
+  }
+
+
   Future<void> _submitData(
       FirebaseProvider firebaseProvider,PublicProvider publicProvider) async {
 
@@ -663,6 +735,7 @@ class _UpdatePackageState extends State<UpdatePackage> {
       'quantity': quantityTextController.text,
       'colors': FieldValue.arrayUnion(colorList),
       'image': imageUrl,
+      'thumbnail': thumbnailURL,
       'date': dateData,
     };
 

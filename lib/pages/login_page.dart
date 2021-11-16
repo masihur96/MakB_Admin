@@ -24,23 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   _customInit(FirebaseProvider firebaseProvider)async{
       counter++;
     await  firebaseProvider.getAdminData();
-    await firebaseProvider.getRate();
-    await firebaseProvider.getUser();
-    await firebaseProvider.getCategory();
-    await firebaseProvider.getSubCategory();
-    await firebaseProvider.getProducts();
-    await firebaseProvider.getPackage();
-    await firebaseProvider.getAreaHub();
-    await firebaseProvider.getWithdrawRequest();
-    await firebaseProvider.getDepositRequest();
-    await firebaseProvider.getInsurancePendingRequest();
-    await firebaseProvider.getInsuranceTransferredRequest();
-    await firebaseProvider.getSoldPackage();
-    await firebaseProvider.getProductOrder();
-    await firebaseProvider.getPackageRequest();
-    // firebaseProvider.getDepositHistory('01929444532');
-    await  firebaseProvider.getVideo();
-    await firebaseProvider.getAdminData();
+
 
   }
 
@@ -87,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
                   Text(
                     'SIGN IN WITH',textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize:publicProvider.isWindows? size.height*.05:size.width*.04,
+                      fontSize: size.height*.05,
                       fontWeight: FontWeight.normal,
                     ),
                   ),
@@ -98,8 +82,8 @@ class _LoginPageState extends State<LoginPage> {
 
                   publicProvider.isWindows? Image.asset(
                     'assets/images/deub.gif',fit: BoxFit.fill,
-                    width:publicProvider.isWindows? size.width*.15:size.width*.1,
-                    height: publicProvider.isWindows?size.width*.15:size.width*.1,
+                    width: size.width*.15,
+                    height:size.width*.15,
                   ):Container(),
                 ],
               ):Container(),
@@ -115,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                         Text(
                           'Login to \nMy Application',textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: publicProvider.isWindows? size.height*.04:size.width*.04,
+                            fontSize:size.height*.04,
                             fontWeight: FontWeight.normal,
                           ),
                         ),
@@ -128,8 +112,8 @@ class _LoginPageState extends State<LoginPage> {
 
 
                     Container(
-                      width: publicProvider.isWindows? size.height*.5:size.width*.4,
-                      height: publicProvider.isWindows? size.height*.5:size.width*.4,
+                      width: size.height*.5,
+                      height:size.height*.5,
 
                       child: _formLogin(context),
                     ),
@@ -147,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                   Text(
                     'Login to \nMy Application',textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: publicProvider.isWindows? size.height*.04:size.width*.04,
+                      fontSize: size.width*.04,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -155,20 +139,18 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(
                     height: 10,
                   ),
-
-                  publicProvider.isWindows? Image.asset(
-                    'assets/icons/logo.PNG',fit: BoxFit.fill,
-                    width:publicProvider.isWindows? size.height*.1:size.width*.1,
-                    height: publicProvider.isWindows? size.height*.1:size.width*.1,
-                  ):Container(),
+                  Image.asset(
+                    'assets/images/deub.gif',fit: BoxFit.fill,
+                    width:size.width*.1,
+                    height:size.width*.1,
+                  ),
                 ],
               ),
-
               Padding(
                 padding: EdgeInsets.symmetric(
                     vertical: MediaQuery.of(context).size.height / 6),
                 child: Container(
-                  width: publicProvider.isWindows? size.height*.1:size.width*.1,
+                  width:size.width*.1,
                   child: _formLogin(context),
                 ),
               )
@@ -197,33 +179,39 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-              child: TextField(
-                controller: userNameTextController,
-                decoration: textFieldFormDecorationLogin(size,publicProvider).copyWith(
-                  labelText: 'User Name',
-                  hintText: 'User Name',
+              child: Container(
+                width: publicProvider.isWindows? size.height*.5:size.width*.6,
+                child: TextField(
+                  controller: userNameTextController,
+                  decoration: textFieldFormDecorationLogin(size,publicProvider).copyWith(
+                    labelText: 'User Name',
+                    hintText: 'User Name',
+                  ),
                 ),
               ),
             ),
             SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-              child: TextField(
-                controller: passwordTextController,
-                decoration: textFieldFormDecorationLogin(size,publicProvider).copyWith(
-                  labelText: 'Password',
-                  hintText: 'Password',
+              child: Container(
+                width: publicProvider.isWindows? size.height*.5:size.width*.6,
+                child: TextField(
+                  controller: passwordTextController,
+                  decoration: textFieldFormDecorationLogin(size,publicProvider).copyWith(
+                    labelText: 'Password',
+                    hintText: 'Password',
 
+                  ),
                 ),
               ),
             ),
             SizedBox(height: 20),
             ElevatedButton(
 
+
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Container(
-                  width: double.infinity,
+                child: Container(width: publicProvider.isWindows? size.height*.4:size.width*.5,
                     child: Text("Sign In",textAlign: TextAlign.center,)),
               ),
               onPressed: ()async {

@@ -77,28 +77,41 @@ class _WithdrowPageState extends State<WithdrowPage> {
                 child: Text('Withdraw Request',
                     style: TextStyle(
                       color: Colors.black,
+                      fontSize: 20,
                       fontStyle: FontStyle.normal,
 
                     )),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: size.height*.4,
-                child: TextField(
-                  controller: searchTextController,
-                  decoration: textFieldFormDecoration(size).copyWith(
-                    hintText: 'Search Customer By ID',
-                    hintStyle: TextStyle(
-                      fontSize: publicProvider.isWindows
-                          ? size.height * .02
-                          : size.width * .02,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    width: size.height*.4,
+                    child: TextField(
+                      controller: searchTextController,
+                      decoration: textFieldFormDecoration(size).copyWith(
+                        hintText: 'Search Customer By ID',
+                        hintStyle: TextStyle(
+                          fontSize: publicProvider.isWindows
+                              ? size.height * .02
+                              : size.width * .02,
+                        ),
+                      ),
+                      onChanged: _filterList,
                     ),
                   ),
-                  onChanged: _filterList,
                 ),
-              ),
+                IconButton(onPressed: (){
+
+                  setState(() {
+                    _isLoading = true;
+                  });
+                  firebaseProvider.getWithdrawRequest().then((value) => _isLoading = false);
+                }, icon: Icon(Icons.refresh_outlined,color: Colors.green,))
+              ],
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -152,6 +165,7 @@ class _WithdrowPageState extends State<WithdrowPage> {
                 ],
               ),
             ),
+            _isLoading? fadingCircle:
             ListView.builder(
                 shrinkWrap: true,
                 physics: ClampingScrollPhysics(),

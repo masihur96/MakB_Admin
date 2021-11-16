@@ -82,28 +82,46 @@ class _DepositePageState extends State<DepositePage> {
               child: Text('Depositor List ',
                   style: TextStyle(
                     color: Colors.black,
+                    fontSize: 20,
                     fontStyle: FontStyle.normal,
 
                   )),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              width: size.height*.4,
-              child: TextField(
-                controller: searchTextController,
-                decoration: textFieldFormDecoration(size).copyWith(
-                  hintText: 'Search Depositor By ID',
-                  hintStyle: TextStyle(
-                    fontSize: publicProvider.isWindows
-                        ? size.height * .02
-                        : size.width * .02,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+
+              Container(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  width: size.height*.4,
+                  child: TextField(
+                    controller: searchTextController,
+                    decoration: textFieldFormDecoration(size).copyWith(
+                      hintText: 'Search Depositor By ID',
+                      hintStyle: TextStyle(
+                        fontSize: publicProvider.isWindows
+                            ? size.height * .02
+                            : size.width * .02,
+                      ),
+                    ),
+                    onChanged: _filterList,
                   ),
                 ),
-                onChanged: _filterList,
               ),
-            ),
+
+              IconButton(onPressed: (){
+
+                setState(() {
+                  _isLoading = true;
+                });
+
+                firebaseProvider.getDepositRequest().then((value) => _isLoading = false);
+
+              }, icon: Icon(Icons.refresh_outlined,color: Colors.green,))
+            ],
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),

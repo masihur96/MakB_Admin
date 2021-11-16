@@ -20,8 +20,7 @@ class _AllProductPageState extends State<AllProductPage> {
   var searchTextController = TextEditingController();
   bool _isLoading = false;
   //Category Variable
-  String categorysValue='';
-  String subCategorysValue = '';
+
   List <CategoryModel> caterorys = [];
   List <SubCategoryModel> subCategorys = [];
 
@@ -30,58 +29,15 @@ class _AllProductPageState extends State<AllProductPage> {
  List selectedProductID=[]; //selected product ID for Delete
 
   final List<String> imgList = [];
-
   int _currentIndex = 0;
-
   int counter = 0;
   List<ProductModel> _subList = [];
   List<ProductModel> _filteredList = [];
   _customInit(FirebaseProvider firebaseProvider) async{
     setState(() {
       counter++;
-
-    });
-    setState(() {
       _isLoading =true;
     });
-
-    if(firebaseProvider.categoryList.isEmpty){
-
-      await firebaseProvider.getCategory().then((value) {
-        setState(() {
-          caterorys = firebaseProvider.categoryList;
-          categorysValue = caterorys[0].category!;
-
-          _isLoading =false;
-        });
-      });
-
-
-    }else{
-      setState(() {
-        caterorys = firebaseProvider.categoryList;
-        categorysValue = caterorys[0].category!;
-
-        _isLoading =false;
-      });
-
-    }
-
-    if(firebaseProvider.subCategoryList.isEmpty){
-      await firebaseProvider.getSubCategory().then((value) {
-        setState(() {
-          subCategorys = firebaseProvider.subCategoryList;
-          subCategorysValue = subCategorys[0].subCategory!;
-          _isLoading =false;
-        });
-      });
-    }else {
-      setState(() {
-        subCategorys = firebaseProvider.subCategoryList;
-        subCategorysValue = subCategorys[0].subCategory!;
-        _isLoading =false;
-      });
-    }
 
    if(firebaseProvider.productList.isEmpty){
      await firebaseProvider.getProducts().then((value) {
@@ -89,6 +45,8 @@ class _AllProductPageState extends State<AllProductPage> {
          _subList = firebaseProvider.productList;
          _filteredList = _subList;
          _isLoading =false;
+
+
        });
      });
    }else{
@@ -234,6 +192,17 @@ class _AllProductPageState extends State<AllProductPage> {
 
                 ),
 
+                IconButton(onPressed: (){
+
+                  setState(() {
+                    _isLoading = true;
+                  });
+
+                  firebaseProvider.getProducts().then((value) => _isLoading = false);
+
+                }, icon: Icon(Icons.refresh_outlined,color: Colors.green,))
+
+
               ],
             ),
           ),
@@ -328,6 +297,7 @@ class _AllProductPageState extends State<AllProductPage> {
               padding: const EdgeInsets.all(8),
               itemCount:_filteredList.length,
               itemBuilder: (BuildContext context, int index) {
+             print(_filteredList.length);
                 return Container(
                   child: Column(
                     children: [
@@ -344,9 +314,6 @@ class _AllProductPageState extends State<AllProductPage> {
                           InkWell(
                               onTap: (){
                                 setState(() {
-
-
-
                                   if(selectedProduct.contains(index)){
                                     selectedProductID.remove(_filteredList[index].id);
                                     selectedProduct.remove(index);
@@ -355,7 +322,7 @@ class _AllProductPageState extends State<AllProductPage> {
                                     selectedProductID.add(_filteredList[index].id);
                                     selectedProduct.add(index);
 
-                                    print(selectedProductID);
+
                                   }
 
 
@@ -363,7 +330,8 @@ class _AllProductPageState extends State<AllProductPage> {
                               },
                               child: selectedProduct. contains(index)?Icon(Icons.check_box_outlined):Icon(Icons.check_box_outline_blank_outlined)),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                            padding:
+                            const EdgeInsets.symmetric(horizontal: 28.0),
                             child: Container(
                                 height: publicProvider.isWindows
                                     ? size.height * .04
@@ -371,10 +339,10 @@ class _AllProductPageState extends State<AllProductPage> {
                                 width: publicProvider.isWindows
                                     ? size.height * .03
                                     : size.width * .03,
-                                child: Image.network(
+                                child: _filteredList[index].image != null && _filteredList[index].image!.isNotEmpty? Image.network(
                                   _filteredList[index].image![0],
                                   fit: BoxFit.fill,
-                                )),
+                                ):Container()),
                           ),
 
                           Expanded(
@@ -431,21 +399,18 @@ class _AllProductPageState extends State<AllProductPage> {
                                             child:ListView(
                                               children: [
 
-                                                publicProvider.isWindows? SingleChildScrollView(
-                                                  scrollDirection: Axis.horizontal,
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Container(
-                                                          width:publicProvider.isWindows?size.height/2:size.width*.8/2,
-                                                          child: productImageList(publicProvider,size,index,firebaseProvider)
-                                                      ),
-                                                      Container(
-                                                          width:publicProvider.isWindows?size.height/2:size.width*.8/2,
-                                                          child: productDetailsData(publicProvider,firebaseProvider,index,size))
-                                                    ],
-                                                  ),
+                                                publicProvider.isWindows? Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                        width:publicProvider.isWindows?size.height/2:size.width*.8/2,
+                                                        child: productImageList(publicProvider,size,index,firebaseProvider)
+                                                    ),
+                                                    Container(
+                                                        width:publicProvider.isWindows?size.height/2:size.width*.8/2,
+                                                        child: productDetailsData(publicProvider,firebaseProvider,index,size))
+                                                  ],
                                                 ): Column(
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -540,17 +505,17 @@ class _AllProductPageState extends State<AllProductPage> {
                         });
                       },
                       child: firebaseProvider.productList[index].image.isNotEmpty?  Container(
-                          width: publicProvider.pageWidth(size)*.07,
+                          width: publicProvider.isWindows?size.height*.2:size.width*.2,
                           height: publicProvider.isWindows?size.height*.2:size.width*.2,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.all(Radius.circular(10)),
                               border: Border.all(width: 1,color: Colors.grey)
                           ),
                           alignment: Alignment.center,
-                          child:Image.network(firebaseProvider.productList[index].image[indx],fit: BoxFit.cover,)
+                          child:Image.network(firebaseProvider.productList[index].image[indx],fit: BoxFit.fill,)
 
                       ):Container(
-                        width:publicProvider.pageWidth(size)*.1,
+                        width:publicProvider.isWindows?size.height*.2:size.width*.2,
                         decoration: BoxDecoration(
 
                             borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -577,12 +542,11 @@ class _AllProductPageState extends State<AllProductPage> {
             child: Text('Product Details',style: TextStyle(fontSize: 20),),
           ),
           Container(
-            width:publicProvider.isWindows?size.height/2:size.width*.8/2,
+            width:publicProvider.isWindows?size.height/2:size.width*.2,
 
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                 border: Border.all(width: 1,color: Colors.grey)
-
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),

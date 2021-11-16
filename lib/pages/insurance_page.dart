@@ -150,149 +150,7 @@ class _InsurancePageState extends State<InsurancePage> {
                 ),
               ),
             ),
-            //
-            //
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     children: [
-            //       Expanded(
-            //         child: Text(
-            //           'Name',textAlign: TextAlign.center,
-            //
-            //         ),
-            //       ),
-            //       Expanded(
-            //         child: Text(
-            //           'Customer ID',textAlign: TextAlign.center,
-            //         ),
-            //       ),
-            //       Expanded(
-            //         child: Text(
-            //           'Info',textAlign: TextAlign.center,
-            //         ),
-            //       ),
-            //       Expanded(
-            //         child: Text(
-            //           'Insurance Amount',textAlign: TextAlign.center
-            //         ),
-            //       ),
-            //
-            //       Expanded(
-            //         child: Text(
-            //           'Action',textAlign: TextAlign.center
-            //         ),
-            //       ),
-            //
-            //     ],
-            //   ),
-            // ),
-            // Expanded(
-            //   child: ListView.builder(
-            //       shrinkWrap: true,
-            //       padding: const EdgeInsets.all(8),
-            //       itemCount: _filteredList.length,
-            //       itemBuilder: (BuildContext context, int index) {
-            //         return Column(
-            //           children: [
-            //             Padding(
-            //               padding: const EdgeInsets.symmetric(vertical: 8.0),
-            //               child: Divider(
-            //                 height: 1,
-            //                 color: Colors.grey,
-            //               ),
-            //             ),
-            //             Row(
-            //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //               children: [
-            //                 Expanded(
-            //                   child: Text(
-            //                     '${_filteredList[index].name}',textAlign: TextAlign.center,
-            //                     style: TextStyle(
-            //                       fontSize: publicProvider.isWindows
-            //                           ? size.height * .02
-            //                           : size.width * .02,
-            //                     ),
-            //                   ),
-            //                 ),
-            //
-            //                 Expanded(
-            //                   child: Text(
-            //                     '${_filteredList[index].id}',textAlign: TextAlign.center,
-            //                     style: TextStyle(
-            //                       fontSize: publicProvider.isWindows
-            //                           ? size.height * .02
-            //                           : size.width * .02,
-            //                     ),
-            //                   ),
-            //                 ),
-            //
-            //                 Expanded(child: Text('${_filteredList[index].address}',textAlign: TextAlign.center,)),
-            //                 Expanded(child: Text('${_filteredList[index].insuranceBalance}',textAlign: TextAlign.center)),
-            //
-            //                 Expanded(
-            //                   child: ElevatedButton(
-            //
-            //                       onPressed: (){
-            //                         showDialog(context: context, builder: (_){
-            //                           return   AlertDialog(
-            //                             title: Text('Alert'),
-            //                             content: Container(
-            //                               height: publicProvider.isWindows?size.height*.2:size.width*.2,
-            //
-            //                               child:SingleChildScrollView(
-            //                                 child: Column(
-            //                                   mainAxisAlignment: MainAxisAlignment.center,
-            //                                   crossAxisAlignment: CrossAxisAlignment.center,
-            //                                   children: [
-            //                                     Icon(Icons.warning_amber_outlined,color: Colors.yellow,size: 40,),
-            //
-            //                                     Padding(
-            //                                       padding: const EdgeInsets.symmetric(vertical: 5.0),
-            //                                       child: Text('Are you confirm to delete this Insurance Info ?',style: TextStyle(fontSize: 14,color: Colors.black),),
-            //                                     ),
-            //                                   ],),
-            //                               ),
-            //
-            //                             ),
-            //                             actions: <Widget>[
-            //                               TextButton(
-            //                                 child: Text('Cancel'),
-            //                                 onPressed: () {
-            //                                   Navigator.of(context).pop();
-            //                                 },
-            //                               ),
-            //                               TextButton(
-            //                                 child: Text('Ok'),
-            //                                 onPressed: () {
-            //
-            //                                   // var db = FirebaseFirestore.instance;
-            //                                   // WriteBatch batch = db.batch();
-            //                                   //
-            //                                   // DocumentReference ref = db.collection("Area&Hub").doc(firebaseProvider.areaHubList[index1].id);
-            //                                   // batch.delete(ref);
-            //                                   //
-            //                                   // batch.commit();
-            //                                   //
-            //                                   //
-            //
-            //                                   Navigator.of(context).pop();
-            //                                 },
-            //                               ),
-            //                             ],
-            //                           );
-            //                         }) ;
-            //
-            //
-            //                       }, child: Text('Accept')),
-            //                 ),
-            //               ],
-            //             ),
-            //           ],
-            //         );
-            //       }),
-            // )
+
           ],
         )
     );
@@ -302,23 +160,39 @@ class _InsurancePageState extends State<InsurancePage> {
 
     return ListView(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            width: size.height*.4,
-            child: TextField(
-              controller: searchTextController,
-              decoration: textFieldFormDecoration(size).copyWith(
-                hintText: 'Search Customer By Name',
-                hintStyle: TextStyle(
-                  fontSize: publicProvider.isWindows
-                      ? size.height * .02
-                      : size.width * .02,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: size.height*.4,
+                child: TextField(
+                  controller: searchTextController,
+                  decoration: textFieldFormDecoration(size).copyWith(
+                    hintText: 'Search Customer By Name',
+                    hintStyle: TextStyle(
+                      fontSize: publicProvider.isWindows
+                          ? size.height * .02
+                          : size.width * .02,
+                    ),
+                  ),
+                  onChanged: _filterList,
                 ),
               ),
-              onChanged: _filterList,
             ),
-          ),
+            SizedBox(width: 50,),
+
+            IconButton(onPressed: (){
+
+              setState(() {
+                _isLoading = true;
+              });
+
+              firebaseProvider.getInsurancePendingRequest().then((value) => _isLoading = false);
+
+            }, icon: Icon(Icons.refresh_outlined,color: Colors.green,))
+          ],
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -484,23 +358,40 @@ class _InsurancePageState extends State<InsurancePage> {
   _transferredRequest(PublicProvider publicProvider,Size size,FirebaseProvider firebaseProvider){
     return ListView(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            width: size.height*.4,
-            child: TextField(
-              controller: searchTextControllerForTransferred,
-              decoration: textFieldFormDecoration(size).copyWith(
-                hintText: 'Search Customer By Nmae',
-                hintStyle: TextStyle(
-                  fontSize: publicProvider.isWindows
-                      ? size.height * .02
-                      : size.width * .02,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: size.height*.4,
+                child: TextField(
+                  controller: searchTextControllerForTransferred,
+                  decoration: textFieldFormDecoration(size).copyWith(
+                    hintText: 'Search Customer By Nmae',
+                    hintStyle: TextStyle(
+                      fontSize: publicProvider.isWindows
+                          ? size.height * .02
+                          : size.width * .02,
+                    ),
+                  ),
+                  onChanged: _transferredfilterList,
                 ),
               ),
-              onChanged: _transferredfilterList,
             ),
-          ),
+
+            SizedBox(width: 50,),
+
+            IconButton(onPressed: (){
+
+              setState(() {
+                _isLoading = true;
+              });
+
+              firebaseProvider.getInsuranceTransferredRequest().then((value) => _isLoading = false);
+
+            }, icon: Icon(Icons.refresh_outlined,color: Colors.green,))
+          ],
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),

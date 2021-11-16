@@ -11,6 +11,7 @@ class ProductModel{
   List<dynamic>? image;
   String? date;
   String? id;
+  String? thumbnail;
 
   ProductModel({
     this.title,
@@ -24,6 +25,7 @@ class ProductModel{
     this.image,
     this.date,
     this.id,
+    this.thumbnail,
 
 
   });

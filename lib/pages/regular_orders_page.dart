@@ -137,7 +137,7 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                       backgroundColor: Colors.white54,
                       bottom: TabBar(
                           labelStyle: TextStyle(
-                            fontSize: size.height * .03,
+                            fontSize: publicProvider.isWindows? size.height * .03:size.width * .03,
                           ),
                           tabs: _ktabs,
                           indicatorColor: Colors.black,
@@ -146,6 +146,7 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                     ),
                   ),
                   body: TabBarView(children: [
+
                     _productOrder(publicProvider,size,firebaseProvider),
                     _packageOrder(publicProvider,size,firebaseProvider),
                   ]),
@@ -247,27 +248,37 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
               TextButton(
                 style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.green)),
                 onPressed: (){
-
                   setState(() {
                     selectOrder.clear();
                     selectOrderID.clear();
                   });
-
                 }, child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                child: Text('Clear All Selection ',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontStyle: FontStyle.normal,
-                      fontSize: publicProvider.isWindows
-                          ? size.height * .02
-                          : size.width * .02,
-                    )),
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Text('Clear All Selection ',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontStyle: FontStyle.normal,
+                              fontSize: publicProvider.isWindows
+                                  ? size.height * .02
+                                  : size.width * .02,
+                            )
+                        ),
               ),
 
 
               ),
 
+
+
+              IconButton(onPressed: (){
+
+                setState(() {
+                  _isLoading = true;
+                });
+
+                firebaseProvider.getProductOrder().then((value) => _isLoading = false);
+
+              }, icon: Icon(Icons.refresh_outlined,color: Colors.green,))
             ],
           ),
         ),
@@ -353,7 +364,6 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                             children: [
                               InkWell(
                                 onTap: (){
-
                                   showDialog(context: context, builder: (_){
                                     return   StatefulBuilder(
                                       builder: (context,setState){
@@ -363,69 +373,104 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                             height: publicProvider.isWindows?size.height*.7:size.width*.7,
                                             width: publicProvider.isWindows?size.height*.8:size.width*.5,
                                             child: ListView(
-
-
                                               children: <Widget>[
-
                                                 Text('Payment Information',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.03:size.width*.03,),),
 
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                  children: [
-                                                    Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text('Order ID',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        //   Text('Transaction Id',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        Text('Payment Date',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        Text('Area',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        Text('Hub',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        Text('Quantity',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        Text('Amount Receive',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        Text('Status',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                Container(
+                                                  width: publicProvider.isWindows? size.height*.2:size.width*.2,
+                                                  child: Column(
+
+                                                    children: [
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Text('Order ID :',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+
+                                                         SizedBox(width: 15),
+                                                          Text(_productFilteredList[index1].orderNumber!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+
+                                                        ],
+                                                      ),
+                                                      //   Text('Transaction Id',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Text('Payment Date :',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+                                                          SizedBox(width: 15),
+                                                          Text(_productFilteredList[index1].orderDate!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Text('Area :',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+                                                          SizedBox(width: 15),
+                                                          Text(_productFilteredList[index1].Area!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Text('Hub :',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+                                                          SizedBox(width: 15),
+                                                          Text(_productFilteredList[index1].hub!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Text('Quantity :',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+                                                          SizedBox(width: 15),
+                                                          Text(_productFilteredList[index1].quantity!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Text('Amount Receive :',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+                                                          SizedBox(width: 15),
+                                                          Text(_productFilteredList[index1].totalAmount!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Text('Status :',style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.width*.025,),),
+                                                          SizedBox(width: 15),
+                                                          DropdownButtonHideUnderline(
+                                                            child: DropdownButton<String>(
+                                                              value: statusValue,
+                                                              elevation: 0,
+                                                              dropdownColor: Colors.white,
+                                                              style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.height*.025),
+                                                              items: status.map((itemValue) {
+                                                                return DropdownMenuItem<String>(
+                                                                  value: itemValue,
+                                                                  child: Text(itemValue),
+                                                                );
+                                                              }).toList(),
+                                                              onChanged: (newValue) {
+                                                                setState(() {
+                                                                  statusValue = newValue!;
+                                                                });
+
+                                                                updateStateValue(firebaseProvider,index1,statusValue).then((value) => Navigator.pop(context));
 
 
-                                                      ],),
-                                                    Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text(_productFilteredList[index1].orderNumber!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        // Text(firebaseProvider.productOrderList[index].orderNumber,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        Text(_productFilteredList[index1].orderDate!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        Text(_productFilteredList[index1].Area!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        Text(_productFilteredList[index1].hub!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        Text(_productFilteredList[index1].quantity!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        Text(_productFilteredList[index1].totalAmount!,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                        DropdownButtonHideUnderline(
-                                                          child: DropdownButton<String>(
-                                                            value: statusValue,
-                                                            elevation: 0,
-                                                            dropdownColor: Colors.white,
-                                                            style: TextStyle(color: Colors.black),
-                                                            items: status.map((itemValue) {
-                                                              return DropdownMenuItem<String>(
-                                                                value: itemValue,
-                                                                child: Text(itemValue),
-                                                              );
-                                                            }).toList(),
-                                                            onChanged: (newValue) {
-                                                              setState(() {
-                                                                statusValue = newValue!;
-                                                              });
-
-                                                              updateStateValue(firebaseProvider,index1,statusValue).then((value) => Navigator.pop(context));
-
-
-                                                            },
+                                                              },
+                                                            ),
                                                           ),
-                                                        ),
+
+                                                        ],
+                                                      ),
 
 
-                                                      ],)
-
-
-
-                                                  ],),
+                                                    ],),
+                                                ),
 
                                                 Center(child: Padding(
                                                   padding: const EdgeInsets.all(8.0),
@@ -442,47 +487,45 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                                  ],),
 
 
-                                                Expanded(
-                                                  child: ListView.builder(
-                                                      shrinkWrap: true,
-                                                      padding: const EdgeInsets.all(8),
-                                                      itemCount: _productFilteredList[index1].products!.length,
-                                                      itemBuilder: (BuildContext context, int index) {
-                                                        return Column(
-                                                          children: [
-                                                            Padding(
-                                                              padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                                              child: Divider(height: 1,color: Colors.grey,),
-                                                            ),
-                                                            Row(
-                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                children: [
+                                                ListView.builder(
+                                                    shrinkWrap: true,
+                                                    padding: const EdgeInsets.all(8),
+                                                    itemCount: _productFilteredList[index1].products!.length,
+                                                    itemBuilder: (BuildContext context, int index) {
+                                                      return Column(
+                                                        children: [
+                                                          Padding(
+                                                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                                            child: Divider(height: 1,color: Colors.grey,),
+                                                          ),
+                                                          Row(
+                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                              children: [
 
-                                                             Container(
-                                                               width: 50,
-                                                               height: 50,
+                                                           Container(
+                                                             width: 50,
+                                                             height: 50,
 
-                                                                 child: Image.network('${_productFilteredList[index1].products![index]['productImage']}',height: 30,width: 25,)),
+                                                               child: Image.network('${_productFilteredList[index1].products![index]['productImage']}',height: 30,width: 25,)),
 
-                                                                  Expanded(
-                                                                    child: Column(
-                                                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                                      children: [
+                                                                Expanded(
+                                                                  child: Column(
+                                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                    children: [
 
-                                                                        Text('Title: ${_productFilteredList[index1].products![index]['productName']}',textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                                        Text('Quantity: ${_productFilteredList[index1].products![index]['quantity']}',textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                                      Text('Title: ${_productFilteredList[index1].products![index]['productName']}',textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                                      Text('Quantity: ${_productFilteredList[index1].products![index]['quantity']}',textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
 
-                                                                      ],),
-                                                                  ),
-                                                                  Text('${_productFilteredList[index1].products![index]['price']}',textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
-                                                                  Expanded(child: Text('${_productFilteredList[index1].products![index]['profitAmount']}',textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),)),
-                                                              ]
-                                                            ),
-                                                          ],
-                                                        );
-                                                      }
-                                                  ),
+                                                                    ],),
+                                                                ),
+                                                                Text('${_productFilteredList[index1].products![index]['price']}',textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),),
+                                                                Expanded(child: Text('${_productFilteredList[index1].products![index]['profitAmount']}',textAlign: TextAlign.center,style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,),)),
+                                                            ]
+                                                          ),
+                                                        ],
+                                                      );
+                                                    }
                                                 ),
                                               ],
                                             ),
@@ -502,7 +545,10 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                     );
                                   }) ;
                                 },
-                                child: Icon(Icons.visibility,size: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.green ,),
+                                child: Padding(
+                                  padding:  EdgeInsets.all(publicProvider.isWindows?size.height*.01:size.width*.01),
+                                  child: Icon(Icons.visibility,size: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.green ,),
+                                ),
                               ),
 
                               SizedBox(width: 15,),
@@ -519,7 +565,7 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                           child: Column(
                                             children: [
                                               Icon(Icons.warning_amber_outlined,size: 50,color: Colors.red,),
-                                              Text('Are You Sure To Delete This Order ??'),
+                                              Text('Are You Confirm To Delete This Order ??'),
                                             ],
                                           ),
                                         ),
@@ -545,7 +591,10 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                     }) ;
                                   },
 
-                                  child: Icon(Icons.cancel,color: Colors.red,size: publicProvider.isWindows?size.height*.03:size.width*.03,)),
+                                  child: Padding(
+                                    padding:  EdgeInsets.all(publicProvider.isWindows?size.height*.01:size.width*.01),
+                                    child: Icon(Icons.cancel,color: Colors.red,size: publicProvider.isWindows?size.height*.03:size.width*.03,),
+                                  )),
                             ],
                           ),
                         ),
@@ -689,6 +738,16 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
 
               ),
+              IconButton(onPressed: (){
+
+                setState(() {
+                  _isLoading = true;
+                });
+
+                firebaseProvider.getPackageRequest().then((value) => _isLoading = false);
+
+              }, icon: Icon(Icons.refresh_outlined,color: Colors.green,))
+
 
             ],
           ),

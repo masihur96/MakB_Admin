@@ -50,7 +50,9 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
   String? error;
   Uint8List? data;
   var pickedImages=[];
+
   List <dynamic> convertedImages =[];
+  List <dynamic> convertedThumbnail =[];
   List colorList = [];
   List colors=[];
   bool _isLoading = false;
@@ -68,6 +70,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
 
   int? imageIndex=0;
   List imageUrl =[];
+  String thumbnailURL='';
   int counter=0;
 
 
@@ -130,10 +133,11 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
   }
 
   Widget productPickWidget(PublicProvider publicProvider,Size size){
+    ScrollController scrollController = ScrollController();
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: ListView(
-
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(height: 20,),
           Stack(
@@ -147,58 +151,105 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
                   ),
                   child:convertedImages.isNotEmpty? Container(
                     child: Image.memory(convertedImages[imageIndex!],fit: BoxFit.cover,) ,
+                  ):convertedThumbnail.isNotEmpty?Container(
+                    child: Image.memory(convertedThumbnail[0],fit: BoxFit.cover,) ,
                   ):Container(),
-
-
                 ),
 
                 Positioned.fill(
-                    child: IconButton(onPressed: (){
+                    child:Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                                onTap: (){
+                                  convertedThumbnail.clear();
+                                  convertedImages.clear();
+                                  // imageUrl.clear();
+                                  // setState(() {
+                                  //   thumbnailURL='';
+                                  // });
+                                  pickedImage();
+                                },
+                                child: Icon(Icons.camera)),
+                            Text('Products',style: TextStyle(fontSize: 10),)
+                          ],
+                        ) ,
 
-                      convertedImages.clear();
-                      pickedImage();
+                        SizedBox(width: 50,),
 
-                    }, icon: Icon(Icons.camera) ))]
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                                onTap: (){
+                                  convertedImages.clear();
+                                  convertedThumbnail.clear();
+                                  // imageUrl.clear();
+                                  // setState(() {
+                                  //   thumbnailURL='';
+                                  // });
+                                  pickedThumbnailImage();
+                                },
+                                child: Icon(Icons.filter_b_and_w_outlined)),
+                            Text('Thumbnail',style: TextStyle(fontSize: 10),)
+                          ],
+                        ) ,
+                      ],
+                    ))]
 
           ),
           Container(
             height:  publicProvider.isWindows?size.height*.2:size.width*.2,
-            width:publicProvider.pageWidth(size)*.5,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemCount:convertedImages.isEmpty?3:convertedImages.length,
-                itemBuilder: (BuildContext ctx, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: InkWell(
-                      onTap: (){
-                        setState(() {
-                          imageIndex = index;
-                        });
-                      },
-                      child: convertedImages.isNotEmpty?  Container(
-                          width: publicProvider.pageWidth(size)*.1,
-                          height: 200,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                              border: Border.all(width: 1,color: Colors.grey)
-                          ),
-                          alignment: Alignment.center,
-                          child:Image.memory(convertedImages[index],fit: BoxFit.cover,)
 
-                      ):Container(
-                        width:publicProvider.pageWidth(size)*.1,
-                        decoration: BoxDecoration(
+            child: Scrollbar(
+              isAlwaysShown: true,
 
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            border: Border.all(width: 1,color: Colors.grey)
+              controller: scrollController,
+
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: ListView.builder(
+                  controller: scrollController,
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount:convertedImages.isEmpty?3:convertedImages.length,
+                    itemBuilder: (BuildContext ctx, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: InkWell(
+                          onTap: (){
+                            setState(() {
+                              imageIndex = index;
+                            });
+                          },
+                          child: convertedImages.isNotEmpty?  Container(
+                              width: publicProvider.pageWidth(size)*.1,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  border: Border.all(width: 1,color: Colors.grey)
+                              ),
+                              alignment: Alignment.center,
+                              child:Image.memory(convertedImages[index],fit: BoxFit.cover,)
+
+                          ):Container(
+                            width: publicProvider.isWindows?size.height*.2:size.width*.2,
+                            decoration: BoxDecoration(
+
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                border: Border.all(width: 1,color: Colors.grey)
+                            ),
+
+                            height: 200,),
                         ),
-
-                        height: 200,),
-                    ),
-                  );
-                }),
+                      );
+                    }),
+              ),
+            ),
           ),
         ],
       ),
@@ -579,7 +630,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
 
                     String uuid = Uuid().v4();
 
-                    if(convertedImages.isNotEmpty){
+                    if(imageUrl.isNotEmpty && thumbnailURL.isNotEmpty){
                       setState(() {
                         _isLoading = true;
                       });
@@ -588,7 +639,7 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
 
                     }else {
 
-                      showToast('Product Photo is Required');
+                      showToast('Package Photo & Thumbnail  is Required');
 
 
                     }
@@ -646,7 +697,42 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
     });
   }
 
+  pickedThumbnailImage() async {
 
+    FileUploadInputElement input = FileUploadInputElement()..accept = 'image/*';
+    FirebaseStorage fs = FirebaseStorage.instance;
+    input.multiple = false;
+    input.click();
+
+    input.onChange.listen((event) {
+
+      for(var image in input.files!){
+        final reader = FileReader();
+        reader.readAsDataUrl(image);
+        reader.onLoadEnd.listen((event) async {
+          var snapshot = await fs.ref().child('PackageThumbnail').child(image.name).putBlob(image);
+          String downloadUrl = await snapshot.ref.getDownloadURL();
+          setState(() {
+            thumbnailURL = downloadUrl;
+
+          });
+
+          print(thumbnailURL);
+        });
+
+        reader.onLoad.first.then((res) {
+          final encoded = reader.result as String;
+          final stripped =
+          encoded.replaceFirst(RegExp(r'data:image/[^;]+;base64,'), '');
+          setState(() {
+            data = base64.decode(stripped);
+            convertedThumbnail.add(data);
+            error = null;
+          });
+        });
+      }
+    });
+  }
 
 
   Future<void> _submitData(
@@ -663,8 +749,10 @@ class _UploadPackagePageState extends State<UploadPackagePage> {
       'quantity': quantityTextController.text,
       'colors': FieldValue.arrayUnion(colorList),
       'image': imageUrl,
+      'thumbnail': thumbnailURL,
       'date': dateData,
       'id': id,
+
     };
 
 

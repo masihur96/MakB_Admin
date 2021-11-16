@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
-import 'dart:math';
 import 'dart:typed_data';
-import 'dart:html' as html;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
@@ -56,23 +54,17 @@ class _UploadProductPageState extends State<UploadProductPage>  {
     dialogPickerColor = Colors.red;   // Material red.
     dialogSelectColor = const Color(0xFFA239CA); // A purple color.
   }
-  String categorysValue='';
-  String subCategorysValue = '';
+
+
 
   List sizes=[];
 
-
-
-  List <CategoryModel> categorys = [];
-  List <SubCategoryModel> subCategorys = [];
   var titleTextController = TextEditingController();
   var descriptionTextController = TextEditingController();
   var priceTextController = TextEditingController();
   var profitTextController = TextEditingController();
   var categoryTextController = TextEditingController();
   var subCategoryTextController = TextEditingController();
-
-
 
       //color Variable
   List<String> colorList = [];
@@ -82,7 +74,11 @@ class _UploadProductPageState extends State<UploadProductPage>  {
   String? error;
   Uint8List? data;
   List <dynamic> convertedImages =[];
+  List <dynamic> convertedThumbnail =[];
   List imageUrl =[];
+
+  String thumbnailURL='';
+
 
   var selectedfiles=[];
   var file;
@@ -91,36 +87,72 @@ class _UploadProductPageState extends State<UploadProductPage>  {
 
   //custom init
   int counter=0;
+  List _categoryList = [];
+  List filterSubcategory=[];
+  String categoryDropdownValue = "";
+  String subCategoryDropdownValue = "";
 
-
-
+  List<SubCategoryModel> _filteredList = [];
+  List<SubCategoryModel> _subCategoryModelList = [];
   customInt(FirebaseProvider firebaseProvider) async {
 
     setState(() {
       counter++;
     });
+    if(firebaseProvider.categoryList.isEmpty){
+     await firebaseProvider.getCategory().then((value) {
+        for(var i = 0;i<firebaseProvider.categoryList.length;i++){
+          _categoryList.add(firebaseProvider.categoryList[i].category);
+        }
 
-      await firebaseProvider.getCategory().then((value) {
         setState(() {
-          categorys = firebaseProvider.categoryList;
-          categorysValue = categorys[1].category!;
+          categoryDropdownValue = _categoryList[0];
 
-          print('Category List From Add: $categorys');
-          print('Category of index 0 From Add: $categorysValue');
         });
       });
-
-    await firebaseProvider.getSubCategory().then((value) {
+    }
+    else {
+      for(var i = 0;i<firebaseProvider.categoryList.length;i++){
+        _categoryList.add(firebaseProvider.categoryList[i].category);
+      }
       setState(() {
-        subCategorys = firebaseProvider.subCategoryList;
-        subCategorysValue = subCategorys[1].subCategory!;
-
-        print('SubCategory List From Add: $subCategorys');
-        print('SubCategory of index 0 From Add: $subCategorysValue');
-
+        categoryDropdownValue = _categoryList[0];
+        _subCategoryModelList = firebaseProvider.subCategoryList;
       });
+
+      _filterSubCategoryList(categoryDropdownValue);
+
+    }
+
+  }
+
+
+
+  _filterSubCategoryList(String searchItem) {
+    setState(() {
+      filterSubcategory.clear();
+      _filteredList = _subCategoryModelList
+          .where((element) => (element.category!
+          .toLowerCase()
+          .contains(searchItem.toLowerCase())))
+          .toList();
+      if(_filteredList.isNotEmpty){
+        for(var i = 0;i<_filteredList.length;i++){
+          filterSubcategory.add(_filteredList[i].subCategory!);
+        }
+        setState(() {
+          subCategoryDropdownValue = filterSubcategory[0];
+        });
+      }else {
+        setState(() {
+          subCategoryDropdownValue = '';
+        });
+      }
+
+
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -158,6 +190,7 @@ class _UploadProductPageState extends State<UploadProductPage>  {
   }
 
   Widget productPickWidget(FirebaseProvider firebaseProvider,PublicProvider publicProvider,Size size){
+    ScrollController scrollController = ScrollController();
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -175,57 +208,102 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                   ),
                   child:  convertedImages.isNotEmpty? Container(
                     child: Image.memory(convertedImages[imageIndex!],fit: BoxFit.cover,) ,
-                  ):Container(),
+                  ): convertedThumbnail.isNotEmpty? Image.memory(convertedThumbnail[0],fit: BoxFit.cover,):Container(),
                 ),
-
                 Positioned.fill(
-                    child: IconButton(onPressed: (){
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                     Column(
+                       mainAxisAlignment: MainAxisAlignment.center,
+                       children: [
+                         InkWell(
+                           onTap: (){
+                             convertedImages.clear();
+                              convertedThumbnail.clear();
+                            // // imageUrl.clear();
+                            //  setState(() {
+                            //    thumbnailURL='';
+                            //  });
 
-                      convertedImages.clear();
-                      imageUrl.clear();
-                      pickedImage();
+                             pickedImage();
+                           },
+                             child: Icon(Icons.camera)),
+                         Text('Products',style: TextStyle(fontSize: 10),)
+                       ],
+                     ) ,
 
-                    }, icon: Icon(Icons.camera) ))]
+                        SizedBox(width: 50,),
+
+                       Column(
+                         mainAxisAlignment: MainAxisAlignment.center,
+                         children: [
+                           InkWell(
+                               onTap: (){
+                                 convertedImages.clear();
+                                convertedThumbnail.clear();
+                                //  imageUrl.clear();
+                                //  setState(() {
+                                //    thumbnailURL='';
+                                //  });
+
+                                 pickedThumbnailImage();
+                               },
+                               child: Icon(Icons.filter_b_and_w_outlined)),
+                           Text('Thumbnail',style: TextStyle(fontSize: 10),)
+                         ],
+                       ) ,
+                      ],
+                    ))]
 
           ),
           Container(
             height:  publicProvider.isWindows?size.height*.2:size.width*.2,
-            width:publicProvider.pageWidth(size)*.5,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemCount: convertedImages.isEmpty?3:convertedImages.length,
-                itemBuilder: (BuildContext ctx, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: InkWell(
-                      onTap: (){
-                        setState(() {
-                          imageIndex = index;
-                        });
-                      },
-                      child: convertedImages.isNotEmpty?  Container(
-                          width: publicProvider.pageWidth(size)*.1,
-                          height: 200,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                              border: Border.all(width: 1,color: Colors.grey)
-                          ),
-                          alignment: Alignment.center,
-                          child: Image.memory(convertedImages[index],fit: BoxFit.fill,)
 
-                      ):Container(
-                        width:publicProvider.pageWidth(size)*.1,
-                        decoration: BoxDecoration(
+            child: Scrollbar(
+              isAlwaysShown: true,
+              controller: scrollController,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: ListView.builder(
+                  controller:scrollController ,
+                    scrollDirection: Axis.horizontal,
 
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            border: Border.all(width: 1,color: Colors.grey)
+                    shrinkWrap: true,
+                    itemCount: convertedImages.isEmpty?3:convertedImages.length,
+                    itemBuilder: (BuildContext ctx, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: InkWell(
+                          onTap: (){
+                            setState(() {
+                              imageIndex = index;
+                            });
+                          },
+                          child: convertedImages.isNotEmpty?  Container(
+                              width: publicProvider.pageWidth(size)*.1,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                                  border: Border.all(width: 1,color: Colors.grey)
+                              ),
+                              alignment: Alignment.center,
+                              child: Image.memory(convertedImages[index],fit: BoxFit.fill,)
+
+                          ):Container(
+                            width:publicProvider.pageWidth(size)*.1,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                border: Border.all(width: 1,color: Colors.grey)
+                            ),
+
+                            height: 200,),
                         ),
-
-                        height: 200,),
-                    ),
-                  );
-                }),
+                      );
+                    }),
+              ),
+            ),
           ),
         ],
       ),
@@ -260,52 +338,65 @@ class _UploadProductPageState extends State<UploadProductPage>  {
 
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                    child: TextField(
-                      controller: titleTextController,
-                      decoration: textFieldFormDecoration(size).copyWith(
-                        labelText: 'Title',
-                        hintText: 'Product Name',
-                        hintStyle: TextStyle(fontSize: 15),
+                    child: Container(
+                      width:publicProvider.isWindows?size.height*.8:size.width*.8,
 
+                      child: TextField(
+                        controller: titleTextController,
+                        decoration: textFieldFormDecoration(size).copyWith(
+                          labelText: 'Title',
+                          hintText: 'Product Name',
+                          hintStyle: TextStyle(fontSize: 15),
+
+                        ),
                       ),
                     ),
                   ),
 
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                    child: TextField(
-                      controller: priceTextController,
-                      decoration: textFieldFormDecoration(size).copyWith(
-                        labelText: 'Price',
-                        hintText: 'Price',
-                        hintStyle: TextStyle(fontSize: 15),
+                    child: Container(
+                      width:publicProvider.isWindows?size.height*.8:size.width*.8,
+                      child: TextField(
+                        controller: priceTextController,
+                        decoration: textFieldFormDecoration(size).copyWith(
+                          labelText: 'Price',
+                          hintText: 'Price',
+                          hintStyle: TextStyle(fontSize: 15),
 
+                        ),
                       ),
                     ),
                   ),
                 Padding(
                     padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                    child: TextField(
+                    child: Container(
+                      width:publicProvider.isWindows?size.height*.8:size.width*.8,
+                      child: TextField(
 
-                      controller: profitTextController,
-                      decoration: textFieldFormDecoration(size).copyWith(
-                        labelText: 'Profit Amount',
-                        hintText: 'Profit Amount',
-                        hintStyle: TextStyle(fontSize: 15),
+                        controller: profitTextController,
+                        decoration: textFieldFormDecoration(size).copyWith(
+                          labelText: 'Profit Amount',
+                          hintText: 'Profit Amount',
+                          hintStyle: TextStyle(fontSize: 15),
 
+                        ),
                       ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                    child: TextField(
-                      controller: descriptionTextController,
-                      decoration: textFieldFormDecoration(size).copyWith(
-                        labelText: 'Description',
-                        hintText: 'Description',
-                        hintStyle: TextStyle(fontSize: 15),
+                    child: Container(
+                      width:publicProvider.isWindows?size.height*.8:size.width*.8,
+                      child: TextField(
+                        controller: descriptionTextController,
+                        decoration: textFieldFormDecoration(size).copyWith(
+                          labelText: 'Description',
+                          hintText: 'Description',
+                          hintStyle: TextStyle(fontSize: 15),
+                        ),
+                        maxLines: 5,
                       ),
-                      maxLines: 5,
                     ),
                   ),
 
@@ -456,147 +547,31 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                                       color: Colors.black,
                                       fontStyle: FontStyle.normal,
                                       fontSize: 15)),
+
                               DropdownButtonHideUnderline(
                                 child: DropdownButton<String>(
-                                  value: categorysValue,
+                                  value: categoryDropdownValue,
                                   elevation: 0,
                                   dropdownColor: Colors.white,
                                   style: TextStyle(color: Colors.black),
-                                  items: categorys.map((itemValue) {
+                                  items: _categoryList.map((itemValue) {
                                     return DropdownMenuItem<String>(
-                                      value: itemValue.category,
-                                      child: Text(itemValue.category!),
+                                      value: itemValue,
+                                      child: Text(itemValue),
                                     );
                                   }).toList(),
                                   onChanged: (newValue) {
                                     setState(() {
-                                      categorysValue = newValue!;
+                                      categoryDropdownValue = newValue!;
                                     });
-
+                                _filterSubCategoryList(categoryDropdownValue);
                                   },
                                 ),
                               ),
+
                             ],
                           ),
-                          InkWell(
-                              onTap: (){
-                                showDialog(context: context, builder: (_){
-                                  return  StatefulBuilder(builder: (BuildContext context, StateSetter setState){
-                                    return  AlertDialog(
-                                      title: Text('Add Category'),
-                                      content: Container(
-                                        height: publicProvider.isWindows?size.height*.5:size.width*.5,
-                                        child: SingleChildScrollView(
-                                          child: Column(
-                                            children: <Widget>[
-                                              Padding(
-                                                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                                child: TextField(
-                                                  controller: categoryTextController,
-                                                  decoration: textFieldFormDecoration(size).copyWith(
-                                                    labelText: 'Category Name',
-                                                    hintText: 'Category Name',
-                                                    hintStyle: TextStyle(fontSize: 15),
 
-                                                  ),
-                                                ),
-                                              ),
-
-                                              _isLoading
-                                                  ? fadingCircle
-                                                  :ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                  primary: Colors.green,
-                                                ),
-                                                onPressed: () {
-
-
-                                                  if(firebaseProvider.categoryList.contains(categoryTextController.text))
-                                                 {
-                                                   showToast('This Category is Already Exist');
-
-                                                  } else {
-                                                    setState(() {
-                                                      _isLoading=true;
-                                                    });
-                                                    _submitCategoryData(firebaseProvider).then((value) {
-                                                      setState(() {
-                                                        _isLoading=false;
-                                                      });
-                                                    });
-                                                  }
-
-
-
-                                                },
-                                                child: Text('Add Category',style: TextStyle(color: Colors.white),),
-                                              ),
-
-                                              Container(
-                                                height: publicProvider.isWindows?size.height*.35:size.width*.35,
-                                                width: publicProvider.isWindows?size.height*.4:size.width*.4,
-                                                child: ListView.builder(
-                                                    shrinkWrap: true,
-                                                    padding: const EdgeInsets.all(8),
-                                                    itemCount: firebaseProvider.categoryList.length,
-                                                    itemBuilder: (BuildContext context, int index) {
-                                                      return Column(
-                                                        mainAxisAlignment: MainAxisAlignment.start,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children:[
-
-                                                          Padding(
-                                                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                                            child: Divider(
-                                                              height: 1,
-                                                              color: Colors.grey,
-                                                            ),
-                                                          ),
-
-                                                          Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                            children: [
-                                                              Text(firebaseProvider.categoryList[index].category,style: TextStyle(fontSize: 15,color: Colors.black),),
-
-                                                              InkWell(
-                                                                  onTap: (){
-                                                                    FirebaseFirestore.instance.collection('Category').doc(firebaseProvider.categoryList[index].id).delete().then((value) {
-                                                                     showToast('Success');
-                                                                     customInt(firebaseProvider);
-                                                                     Navigator.pop(context);
-                                                                    });
-                                                                  },
-                                                                  child: Icon(Icons.cancel_outlined))
-
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      );
-                                                    }
-                                                ),
-                                              ),
-
-
-
-
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          child: Text('Cancel'),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  });
-                                }) ;
-
-                              },
-                              child: Text('Add Category',style: TextStyle(color: Colors.green,fontSize: 14),))
                         ],
                       ),
                     ),
@@ -617,154 +592,29 @@ class _UploadProductPageState extends State<UploadProductPage>  {
                                       fontStyle: FontStyle.normal,
                                       fontSize: 15)),
                               DropdownButtonHideUnderline(
-                                child: Row(
-                                  children: [
-                                    DropdownButton<String>(
+                                child: DropdownButton<String>(
+                                  value: subCategoryDropdownValue,
+                                  elevation: 0,
+                                  dropdownColor: Colors.white,
+                                  style: TextStyle(color: Colors.black),
+                                  items: filterSubcategory.map((itemValue) {
+                                    return DropdownMenuItem<String>(
+                                      value: itemValue,
+                                      child: Text(itemValue),
+                                    );
+                                  }).toList(),
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      subCategoryDropdownValue = newValue!;
+                                    });
 
-                                      value: subCategorysValue,
-                                      elevation: 0,
-                                      dropdownColor: Colors.white,
-                                      style: TextStyle(color: Colors.black),
-                                      items: subCategorys.map((itemValue) {
-                                        return DropdownMenuItem<String>(
-
-                                          value: itemValue.subCategory,
-                                          child: Text(itemValue.subCategory!),
-                                        );
-                                      }).toList(),
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          subCategorysValue = newValue!;
-                                        });
-                                      },
-                                    ),
-                                  ],
+                                  },
                                 ),
                               ),
+
                             ],
                           ),
-                          InkWell(
-                              onTap: (){
-                                showDialog(context: context, builder: (_){
-                                  return  StatefulBuilder(builder: (BuildContext context, StateSetter setState){
-                                    return  AlertDialog(
-                                      title: Text('Add Subcategory'),
-                                      content: Container(
-                                        height: publicProvider.isWindows?size.height*.5:size.width*.5,
-                                        child: SingleChildScrollView(
-                                          child: Column(
-                                            children: <Widget>[
 
-                                              Padding(
-                                                padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
-                                                child: TextField(
-                                                  controller: subCategoryTextController,
-                                                  decoration: textFieldFormDecoration(size).copyWith(
-                                                    labelText: 'Subcategory Name',
-                                                    hintText: 'Subcategory Name',
-                                                    hintStyle: TextStyle(fontSize: 15),
-
-                                                  ),
-                                                ),
-                                              ),
-
-                                              _isLoading
-                                                  ? fadingCircle
-                                                  :ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                  primary: Colors.green,
-                                                ),
-                                                onPressed: () {
-
-                                                  if(firebaseProvider.subCategoryList.contains(subCategoryTextController.text)){
-
-                                                    showToast('This SubCategory is Already Exist');
-                                                  }else {
-                                                    setState(() {
-                                                      _isLoading=true;
-                                                    });
-                                                    _submitSubCategoryData(firebaseProvider).then((value) {
-                                                      setState(() {
-                                                        _isLoading=false;
-                                                      });
-                                                    });
-                                                  }
-
-
-                                                },
-                                                child: Text('Add Subcategory',style: TextStyle(color: Colors.white),),
-                                              ),
-
-                                              Container(
-                                                height: publicProvider.isWindows?size.height*.35:size.width*.35,
-                                                width: publicProvider.isWindows?size.height*.4:size.width*.4,
-                                                child: ListView.builder(
-                                                    shrinkWrap: true,
-                                                    padding: const EdgeInsets.all(8),
-                                                    itemCount: firebaseProvider.subCategoryList.length,
-                                                    itemBuilder: (BuildContext context, int index) {
-                                                      return Column(
-                                                        mainAxisAlignment: MainAxisAlignment.start,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children:[
-
-                                                          Padding(
-                                                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                                            child: Divider(
-                                                              height: 1,
-                                                              color: Colors.grey,
-                                                            ),
-                                                          ),
-
-                                                          Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                            children: [
-                                                              Text(firebaseProvider.subCategoryList[index].subCategory,style: TextStyle(fontSize: 15,color: Colors.black),),
-
-                                                              InkWell(
-                                                                onTap: (){
-
-
-                                                                  FirebaseFirestore.instance.collection('SubCategory').doc(firebaseProvider.subCategoryList[index].id).delete().then((value) {
-                                                                   showToast('Success');
-                                                                   customInt(firebaseProvider);
-                                                                   Navigator.pop(context);
-                                                                  });
-
-
-                                                                },
-                                                                  child: Icon(Icons.cancel_outlined))
-
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      );
-                                                    }
-                                                ),
-                                              ),
-
-
-
-
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          child: Text('Cancel'),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  });
-                                }) ;
-
-                              },
-
-                              child: Text('Add Subcategory',style: TextStyle(color: Colors.green),))
                         ],
                       ),
                     ),
@@ -918,19 +768,15 @@ class _UploadProductPageState extends State<UploadProductPage>  {
 
                   String uuid = Uuid().v4();
 
-
-                  if(convertedImages.isNotEmpty){
+                  if(imageUrl.isNotEmpty && categoryDropdownValue!=''&& subCategoryDropdownValue!=''&& thumbnailURL.isNotEmpty){
                     setState(() {
                       _isLoading = true;
-
                     });
                   _submitData(publicProvider,firebaseProvider, uuid);
 
                   }else {
-                    showToast('Product Photo is Required');
+                    showToast('Product Photo ,Thumbnail, Category & Subcategory is Required');
                   }
-
-
                 }, child: Container(
                 decoration: BoxDecoration(
                     color: Colors.green,
@@ -983,6 +829,43 @@ class _UploadProductPageState extends State<UploadProductPage>  {
     });
   }
 
+  pickedThumbnailImage() async {
+
+    FileUploadInputElement input = FileUploadInputElement()..accept = 'image/*';
+    FirebaseStorage fs = FirebaseStorage.instance;
+    input.multiple = false;
+    input.click();
+
+    input.onChange.listen((event) {
+
+      for(var image in input.files!){
+        final reader = FileReader();
+        reader.readAsDataUrl(image);
+        reader.onLoadEnd.listen((event) async {
+          var snapshot = await fs.ref().child('ProductThumbnail').child(image.name).putBlob(image);
+          String downloadUrl = await snapshot.ref.getDownloadURL();
+          setState(() {
+            thumbnailURL = downloadUrl;
+
+          });
+
+          print(thumbnailURL);
+        });
+
+        reader.onLoad.first.then((res) {
+          final encoded = reader.result as String;
+          final stripped =
+          encoded.replaceFirst(RegExp(r'data:image/[^;]+;base64,'), '');
+          setState(() {
+            data = base64.decode(stripped);
+            convertedThumbnail.add(data);
+            error = null;
+          });
+        });
+      }
+    });
+  }
+
   Future<void> _submitData( PublicProvider publicProvider,
       FirebaseProvider firebaseProvider,String id) async {
 
@@ -996,10 +879,11 @@ class _UploadProductPageState extends State<UploadProductPage>  {
         'price': priceTextController.text,
         'profitAmount': profitTextController.text,
         'size':sizes,
-        'category': categorysValue,
-        'subCategory': subCategorysValue,
+        'category': categoryDropdownValue,
+        'subCategory': subCategoryDropdownValue,
         'colors': FieldValue.arrayUnion(colorList),
         'image': imageUrl,
+        'thumbnail': thumbnailURL,
         'date': dateData,
         'id': id,
 
@@ -1036,118 +920,6 @@ class _UploadProductPageState extends State<UploadProductPage>  {
     descriptionTextController.clear();
     priceTextController.clear();
     profitTextController.clear();
-  }
-
-
-  Future<void> _submitCategoryData(
-      FirebaseProvider firebaseProvider) async {
-
-    final snapshot1 = await FirebaseFirestore.instance.collection('Category').doc(categoryTextController.text).get();
-
-    if(snapshot1.exists){
-      Map<String, dynamic> map = {
-
-        'id': categoryTextController.text,
-        'category': categoryTextController.text,
-      };
-      await firebaseProvider.updateCategoryData(map).then((value) {
-        if (value) {
-           showToast('Successfully Updated');
-           customInt(firebaseProvider);
-          _emptyFildCreator();
-          setState(() {
-            _isLoading = false;
-          });
-        } else {
-          setState(() => _isLoading = false);
-          showToast('Failed to Update');
-        }
-      });
-
-    }else{
-
-      Map<String, dynamic> map = {
-
-        'id': categoryTextController.text,
-        'category': categoryTextController.text,
-      };
-      await firebaseProvider.addCategoryData(map).then((value) {
-        if (value) {
-          showToast('Successfully Added');
-          _emptyFildCreator();
-          customInt(firebaseProvider);
-
-          setState(() {
-            _isLoading = false;
-            setState(() {
-
-            });
-
-          });
-        } else {
-          setState(() => _isLoading = false);
-          showToast('Failed to Added');
-        }
-      });
-
-    }
-
-  }
-
-
-  Future<void> _submitSubCategoryData(
-      FirebaseProvider firebaseProvider) async {
-
-    final snapshot1 = await FirebaseFirestore.instance.collection('SubCategory').doc(subCategoryTextController.text).get();
-
-    if(snapshot1.exists){
-      Map<String, dynamic> map = {
-
-        'id': subCategoryTextController.text,
-        'subCategory': subCategoryTextController.text,
-      };
-      await firebaseProvider.updateSubCategoryData(map).then((value) {
-        if (value) {
-          showToast('Successfully Updated');
-          customInt(firebaseProvider);
-          _emptyFildCreator();
-          setState(() {
-            _isLoading = false;
-          });
-        } else {
-          setState(() => _isLoading = false);
-          showToast('Failed to Update');
-        }
-      });
-
-    }else{
-
-      Map<String, dynamic> map = {
-
-        'id': subCategoryTextController.text,
-        'subCategory': subCategoryTextController.text,
-      };
-      await firebaseProvider.addSubCategoryData(map).then((value) {
-        if (value) {
-          showToast('Successfully Added');
-          customInt(firebaseProvider);
-          _emptyFildCreator();
-
-          setState(() {
-            _isLoading = false;
-            setState(() {
-
-            });
-
-          });
-        } else {
-          setState(() => _isLoading = false);
-          showToast('Failed to Added');
-        }
-      });
-
-    }
-
   }
 
 

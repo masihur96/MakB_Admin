@@ -99,23 +99,34 @@ class _MainPageState extends State<MainPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              size.width < 1300 || publicProvider.isWindows
+              size.width < 1300
                   ? IconButton(
                       onPressed: () => _scaffoldKey.currentState!.openDrawer(),
                       icon: Icon(
                         Icons.menu,
                         color: Colors.white,
                       ))
-                  : InkWell(
-                      onTap: () {
-                        publicProvider.subCategory = 'Dashboard';
-                        publicProvider.category = '';
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 40.0),
-                        child: Text('DEUB',style: TextStyle(fontSize: 35,color: Colors.white,fontWeight: FontWeight.bold),),
-                      ),
-                    ),
+                  : Row(
+                    children: [
+                      InkWell(
+                          onTap: () {
+                            publicProvider.subCategory = 'Dashboard';
+                            publicProvider.category = '';
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 40.0),
+                            child: Image.asset('assets/images/deub.png'),
+                          ),
+                        ),
+                      Text('DEUB',
+                          style: TextStyle(
+                              fontSize:publicProvider.isWindows? size.height * .04:size.width*.04,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white,
+                              fontFamily: 'OpenSans')),
+
+                    ],
+                  ),
               Text(publicProvider.pageHeader(),
                   style: TextStyle(
                       fontSize:publicProvider.isWindows? size.height * .03:size.width*.03,
@@ -163,7 +174,6 @@ class _MainPageState extends State<MainPage> {
                                 Icons.notifications,
                                 size: 20,
                                 color: Colors.white,
-
                               ),
                               Positioned(
                                 top: 0,

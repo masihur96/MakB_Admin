@@ -9,6 +9,7 @@ class PackageModel{
   String? date;
   String? id;
   String? quantity;
+  String? thumbnail;
   PackageModel({
     this.title,
     this.description,
@@ -20,5 +21,6 @@ class PackageModel{
     this.date,
     this.id,
     this.quantity,
+    this.thumbnail,
   });
 }
