@@ -7,6 +7,7 @@ import 'package:makb_admin_pannel/data_model/dart/area_hub_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/category_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/customer_data_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/depositeRequestModel.dart';
+import 'package:makb_admin_pannel/data_model/dart/info_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/insurance_request_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/package_model.dart';
 import 'package:makb_admin_pannel/data_model/dart/package_order_request_model.dart';
@@ -90,6 +91,9 @@ class FirebaseProvider extends ChangeNotifier {
 
   List<AdminModel> _adminList = [];
   get adminList => _adminList;
+
+  List<ContactInfoModel> _infoList = [];
+  get infoList => _infoList;
 
   // List<ProductIdModel> _productID = [];
   // get productID => _productID;
@@ -671,6 +675,32 @@ String? DateFromDatabase;
       print(error);
     }
   }
+
+  Future<void> getContactInfo()async{
+    try{
+      await FirebaseFirestore.instance.collection('ContactInfo').get().then((snapShot){
+        _infoList.clear();
+        snapShot.docChanges.forEach((element) {
+          ContactInfoModel contactInfoModel = ContactInfoModel(
+            email: element.doc['email'],
+            phone: element.doc['phone'],
+            address: element.doc['address'],
+            fbLink: element.doc['fbLink'],
+            youtubeLink: element.doc['youtubeLink'],
+            twitterLink: element.doc['twitterLink'],
+            instagram: element.doc['instagram'],
+            linkedIn: element.doc['linkedIn'],
+            date: element.doc['date'],
+          );
+          _infoList.add(contactInfoModel) ;
+        });
+        print('Contact Info: ${_infoList.length}');
+        notifyListeners();
+      });
+    }catch(error){
+      print(error);
+    }
+  }
   //
   // Future<bool> addCategoryData(Map<String, String> map) async {
   //   try {
@@ -898,6 +928,21 @@ String? DateFromDatabase;
           .collection("SetRate")
           .doc('MakB-Rate')
           .set(map);
+      notifyListeners();
+      return true;
+    } catch (err) {
+
+      print(err);
+      // showToast(err.toString());
+      return false;
+    }
+  }
+  Future<bool> addContactInfo(Map<String, dynamic> map) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("ContactInfo")
+          .doc('MakB-Rate')
+          .set(map).then((value) => getContactInfo());
       notifyListeners();
       return true;
     } catch (err) {

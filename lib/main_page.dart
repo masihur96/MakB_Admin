@@ -115,12 +115,12 @@ class _MainPageState extends State<MainPage> {
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(left: 40.0),
-                            child: Image.asset('assets/images/deub.png'),
+                            child: Image.asset('assets/images/deub.png',height: 48,width: 48,),
                           ),
                         ),
                       Text('DEUB',
                           style: TextStyle(
-                              fontSize:publicProvider.isWindows? size.height * .04:size.width*.04,
+                              fontSize:publicProvider.isWindows? size.height * .035:size.width*.035,
                               fontWeight: FontWeight.w400,
                               color: Colors.white,
                               fontFamily: 'OpenSans')),
@@ -286,8 +286,8 @@ class SideBar extends StatelessWidget {
           ),
           SidebarContentBuilder(title: 'Area & Hub'),
           SidebarContentBuilder(title: 'Customer'),
-
           SidebarContentBuilder(title: 'Advertisement'),
+          SidebarContentBuilder(title: 'Contact Info'),
           SidebarContentBuilder(title: 'Settings'),
         ],
       ),
@@ -365,6 +365,7 @@ class NavigationDrawer extends StatelessWidget {
                 SidebarContentBuilder(title: 'Area & Hub'),
                 SidebarContentBuilder(title: 'Customer'),
                 SidebarContentBuilder(title: 'Advertisement'),
+                SidebarContentBuilder(title: 'Contact Info'),
                 SidebarContentBuilder(title: 'Settings'),
               ],
             ),

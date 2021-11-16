@@ -4,6 +4,7 @@ import 'package:makb_admin_pannel/pages/advertisement_page.dart';
 import 'package:makb_admin_pannel/pages/all_product_page.dart';
 import 'package:makb_admin_pannel/pages/area_hub_page.dart';
 import 'package:makb_admin_pannel/pages/category.dart';
+import 'package:makb_admin_pannel/pages/contact_info.dart';
 import 'package:makb_admin_pannel/pages/customer_page.dart';
 import 'package:makb_admin_pannel/pages/depositedetails_page.dart';
 import 'package:makb_admin_pannel/pages/insurance_details_page.dart';
@@ -74,6 +75,7 @@ class PublicProvider extends ChangeNotifier{
     else if(_subCategory=='Add Amount') return AddBalance();
     else if(_subCategory=='Customer') return CustomerPage();
     else if(_subCategory=='Advertisement') return Advertisement();
+    else if(_subCategory=='Contact Info') return ContactInfo();
     else if(_subCategory=='Settings') return SettingsPage();
     else if(_subCategory=='ProductDetails') return ProductDetails();
     else if(_subCategory=='PackageDetails') return PackageDetailsPage();

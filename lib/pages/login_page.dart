@@ -68,29 +68,35 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'SIGN IN WITH',textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: size.height*.05,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-
-                  SizedBox(
-                    height: 10,
-                  ),
-
                   publicProvider.isWindows? Image.asset(
-                    'assets/images/deub.gif',fit: BoxFit.fill,
+                    'assets/images/deub.png',fit: BoxFit.fill,
                     width: size.width*.15,
                     height:size.width*.15,
                   ):Container(),
+                  Text(
+                    'DEUB',textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: size.height*.05,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.white
+                    ),
+                  ),
+                  Text(
+                    'Digital Elimination of Unemployment in Bangladesh',textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: size.height*.03,
+                      fontWeight: FontWeight.normal,
+                        color: Colors.yellow
+                    ),
+                  ),
                 ],
               ):Container(),
               Padding(
                 padding: EdgeInsets.symmetric(
                     vertical: MediaQuery.of(context).size.height / 6),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     size.width<700?  Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -110,7 +116,6 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ):Container(),
 
-
                     Container(
                       width: size.height*.5,
                       height:size.height*.5,
@@ -122,7 +127,8 @@ class _LoginPageState extends State<LoginPage> {
               )
             ],
           ):Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -176,7 +182,15 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Text(
+              'Welcome to DEUB\n Login',textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: publicProvider.isWindows? size.height*.03:size.width*.03,
+
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.only(top: 8.0,bottom: 8.0),
               child: Container(
@@ -207,17 +221,13 @@ class _LoginPageState extends State<LoginPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-
-
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Container(width: publicProvider.isWindows? size.height*.4:size.width*.5,
+                    padding: const EdgeInsets.symmetric(horizontal:10.0,vertical: 10.0),
                     child: Text("Sign In",textAlign: TextAlign.center,)),
               ),
               onPressed: ()async {
-
-                print(firebaseProvider.adminList[0].userName);
-                print(firebaseProvider.adminList[0].password);
 
                 if(firebaseProvider.adminList[0].userName == userNameTextController.text && firebaseProvider.adminList[0].password == passwordTextController.text){
                   SharedPreferences pref = await SharedPreferences.getInstance();
@@ -236,6 +246,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
+
+
           ],
         ),
       ),

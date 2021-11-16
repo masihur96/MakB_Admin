@@ -39,6 +39,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
       _isLoading = true;
     });
     await firebaseProvider.getRate();
+    await firebaseProvider.getContactInfo();
     await firebaseProvider.getUser();
     await firebaseProvider.getCategory();
     await firebaseProvider.getSubCategory();
