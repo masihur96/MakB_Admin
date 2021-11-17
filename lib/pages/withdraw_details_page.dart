@@ -76,89 +76,87 @@ class _WithdrawDetailsState extends State<WithdrawDetails> {
               ),
             ),
 
-            Expanded(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(8),
-                  itemCount: firebaseProvider.withdrawHistoryList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(firebaseProvider
-                        .withdrawHistoryList[index].date));
-                    var format = new DateFormat("yMMMd").add_jm();
-                    String withdrawDate = format.format(date);
-                    return Column(
-                      children: [
-                        Divider(
-                          height: 1,
-                          color: Colors.grey,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
+            ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(8),
+                itemCount: firebaseProvider.withdrawHistoryList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(firebaseProvider
+                      .withdrawHistoryList[index].date));
+                  var format = new DateFormat("yMMMd").add_jm();
+                  String withdrawDate = format.format(date);
+                  return Column(
+                    children: [
+                      Divider(
+                        height: 1,
+                        color: Colors.grey,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
 
-                              Expanded(
-                                child: Text('${firebaseProvider.withdrawHistoryList[index].id}',textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: publicProvider.isWindows
-                                        ? size.height * .02
-                                        : size.width * .02,
-                                  ),),
-                              ),
+                            Expanded(
+                              child: Text('${firebaseProvider.withdrawHistoryList[index].id}',textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: publicProvider.isWindows
+                                      ? size.height * .02
+                                      : size.width * .02,
+                                ),),
+                            ),
 
-                              Expanded(
-                                child: Text(
-                                  withdrawDate,textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: publicProvider.isWindows
-                                        ? size.height * .02
-                                        : size.width * .02,
-                                  ),
+                            Expanded(
+                              child: Text(
+                                withdrawDate,textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: publicProvider.isWindows
+                                      ? size.height * .02
+                                      : size.width * .02,
                                 ),
                               ),
-                              Expanded(
-                                child: Text(
-                                  '${firebaseProvider.withdrawHistoryList[index].transactionMobileNo}',textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: publicProvider.isWindows
-                                        ? size.height * .02
-                                        : size.width * .02,
-                                  ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                '${firebaseProvider.withdrawHistoryList[index].transactionMobileNo}',textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: publicProvider.isWindows
+                                      ? size.height * .02
+                                      : size.width * .02,
                                 ),
                               ),
-                              Expanded(
-                                child: Text('${firebaseProvider.withdrawHistoryList[index].transactionSystem}',textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: publicProvider.isWindows
-                                        ? size.height * .02
-                                        : size.width * .02,
-                                  ),),
-                              ),
+                            ),
+                            Expanded(
+                              child: Text('${firebaseProvider.withdrawHistoryList[index].transactionSystem}',textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: publicProvider.isWindows
+                                      ? size.height * .02
+                                      : size.width * .02,
+                                ),),
+                            ),
 
-                              Expanded(
-                                child: Text('${firebaseProvider.withdrawHistoryList[index].amount}',textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: publicProvider.isWindows
-                                        ? size.height * .02
-                                        : size.width * .02,
-                                  ),),
-                              ),
-                              Expanded(
-                                child: Text('${firebaseProvider.withdrawHistoryList[index].status}',textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: publicProvider.isWindows
-                                        ? size.height * .02
-                                        : size.width * .02,
-                                  ),),
-                              ),
-                            ],
-                          ),
+                            Expanded(
+                              child: Text('${firebaseProvider.withdrawHistoryList[index].amount}',textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: publicProvider.isWindows
+                                      ? size.height * .02
+                                      : size.width * .02,
+                                ),),
+                            ),
+                            Expanded(
+                              child: Text('${firebaseProvider.withdrawHistoryList[index].status}',textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: publicProvider.isWindows
+                                      ? size.height * .02
+                                      : size.width * .02,
+                                ),),
+                            ),
+                          ],
                         ),
-                      ],
-                    );
-                  }),
-            ),
+                      ),
+                    ],
+                  );
+                }),
           ],
         )
     );

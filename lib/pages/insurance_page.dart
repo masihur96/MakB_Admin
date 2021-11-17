@@ -438,120 +438,118 @@ class _InsurancePageState extends State<InsurancePage> {
           padding: const EdgeInsets.only(top: 200.0),
           child: fadingCircle,
         ):
-        Expanded(
-          child: ListView.builder(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(8),
-              itemCount: _transferredFilteredList.length,
-              itemBuilder: (BuildContext context, int index) {
-                DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(firebaseProvider
-                    .insuranceTransferredRequestList[index].date));
-                var format = new DateFormat("yMMMd").add_jm();
-                String withdrawDate = format.format(date);
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Divider(
-                        height: 1,
-                        color: Colors.grey,
+        ListView.builder(
+            shrinkWrap: true,
+            padding: const EdgeInsets.all(8),
+            itemCount: _transferredFilteredList.length,
+            itemBuilder: (BuildContext context, int index) {
+              DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(firebaseProvider
+                  .insuranceTransferredRequestList[index].date));
+              var format = new DateFormat("yMMMd").add_jm();
+              String withdrawDate = format.format(date);
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Divider(
+                      height: 1,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '${_transferredFilteredList[index].userId}',textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: publicProvider.isWindows
+                                ? size.height * .02
+                                : size.width * .02,
+                          ),
+                        ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${_transferredFilteredList[index].userId}',textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: publicProvider.isWindows
-                                  ? size.height * .02
-                                  : size.width * .02,
-                            ),
+
+                      Expanded(
+                        child: Text(
+                          '${_transferredFilteredList[index].name}',textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: publicProvider.isWindows
+                                ? size.height * .02
+                                : size.width * .02,
                           ),
                         ),
+                      ),
 
-                        Expanded(
-                          child: Text(
-                            '${_transferredFilteredList[index].name}',textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: publicProvider.isWindows
-                                  ? size.height * .02
-                                  : size.width * .02,
-                            ),
-                          ),
-                        ),
+                      Expanded(child: Text('${_transferredFilteredList[index].phone}',textAlign: TextAlign.center,)),
+                      Expanded(child: Text(withdrawDate,textAlign: TextAlign.center)),
+                      Expanded(child: Text('${_transferredFilteredList[index].status}',textAlign: TextAlign.center)),
+                      Expanded(child: Text('${_transferredFilteredList[index].amount}',textAlign: TextAlign.center)),
 
-                        Expanded(child: Text('${_transferredFilteredList[index].phone}',textAlign: TextAlign.center,)),
-                        Expanded(child: Text(withdrawDate,textAlign: TextAlign.center)),
-                        Expanded(child: Text('${_transferredFilteredList[index].status}',textAlign: TextAlign.center)),
-                        Expanded(child: Text('${_transferredFilteredList[index].amount}',textAlign: TextAlign.center)),
-
-                        // Expanded(
-                        //   child: ElevatedButton(
-                        //
-                        //       onPressed: (){
-                        //         showDialog(context: context, builder: (_){
-                        //           return   AlertDialog(
-                        //             title: Text('Alert'),
-                        //             content: Container(
-                        //               height: publicProvider.isWindows?size.height*.2:size.width*.2,
-                        //
-                        //               child:SingleChildScrollView(
-                        //                 child: Column(
-                        //                   mainAxisAlignment: MainAxisAlignment.center,
-                        //                   crossAxisAlignment: CrossAxisAlignment.center,
-                        //                   children: [
-                        //                     Icon(Icons.warning_amber_outlined,color: Colors.yellow,size: 40,),
-                        //
-                        //                     Padding(
-                        //                       padding: const EdgeInsets.symmetric(vertical: 5.0),
-                        //                       child: Text('Are you confirm to delete this Insurance Info ?',style: TextStyle(fontSize: 14,color: Colors.black),),
-                        //                     ),
-                        //                   ],),
-                        //               ),
-                        //
-                        //             ),
-                        //             actions: <Widget>[
-                        //               TextButton(
-                        //                 child: Text('Cancel'),
-                        //                 onPressed: () {
-                        //                   Navigator.of(context).pop();
-                        //                 },
-                        //               ),
-                        //               TextButton(
-                        //                 child: Text('Ok'),
-                        //                 onPressed: () {
-                        //
-                        //               //    _addDepositRequestBalance(firebaseProvider, updatableAmount, index);
-                        //
-                        //
-                        //                   // var db = FirebaseFirestore.instance;
-                        //                   // WriteBatch batch = db.batch();
-                        //                   //
-                        //                   // DocumentReference ref = db.collection("Area&Hub").doc(firebaseProvider.areaHubList[index1].id);
-                        //                   // batch.delete(ref);
-                        //                   //
-                        //                   // batch.commit();
-                        //                   //
-                        //                   //
-                        //
-                        //                   Navigator.of(context).pop();
-                        //                 },
-                        //               ),
-                        //             ],
-                        //           );
-                        //         }) ;
-                        //
-                        //
-                        //       }, child: Text('Accept')),
-                        // ),
-                      ],
-                    ),
-                  ],
-                );
-              }),
-        )
+                      // Expanded(
+                      //   child: ElevatedButton(
+                      //
+                      //       onPressed: (){
+                      //         showDialog(context: context, builder: (_){
+                      //           return   AlertDialog(
+                      //             title: Text('Alert'),
+                      //             content: Container(
+                      //               height: publicProvider.isWindows?size.height*.2:size.width*.2,
+                      //
+                      //               child:SingleChildScrollView(
+                      //                 child: Column(
+                      //                   mainAxisAlignment: MainAxisAlignment.center,
+                      //                   crossAxisAlignment: CrossAxisAlignment.center,
+                      //                   children: [
+                      //                     Icon(Icons.warning_amber_outlined,color: Colors.yellow,size: 40,),
+                      //
+                      //                     Padding(
+                      //                       padding: const EdgeInsets.symmetric(vertical: 5.0),
+                      //                       child: Text('Are you confirm to delete this Insurance Info ?',style: TextStyle(fontSize: 14,color: Colors.black),),
+                      //                     ),
+                      //                   ],),
+                      //               ),
+                      //
+                      //             ),
+                      //             actions: <Widget>[
+                      //               TextButton(
+                      //                 child: Text('Cancel'),
+                      //                 onPressed: () {
+                      //                   Navigator.of(context).pop();
+                      //                 },
+                      //               ),
+                      //               TextButton(
+                      //                 child: Text('Ok'),
+                      //                 onPressed: () {
+                      //
+                      //               //    _addDepositRequestBalance(firebaseProvider, updatableAmount, index);
+                      //
+                      //
+                      //                   // var db = FirebaseFirestore.instance;
+                      //                   // WriteBatch batch = db.batch();
+                      //                   //
+                      //                   // DocumentReference ref = db.collection("Area&Hub").doc(firebaseProvider.areaHubList[index1].id);
+                      //                   // batch.delete(ref);
+                      //                   //
+                      //                   // batch.commit();
+                      //                   //
+                      //                   //
+                      //
+                      //                   Navigator.of(context).pop();
+                      //                 },
+                      //               ),
+                      //             ],
+                      //           );
+                      //         }) ;
+                      //
+                      //
+                      //       }, child: Text('Accept')),
+                      // ),
+                    ],
+                  ),
+                ],
+              );
+            })
 
     ],);
   }

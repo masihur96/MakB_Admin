@@ -96,14 +96,17 @@ class _UpdateProductState extends State<UpdateProduct> {
       counter++;
     });
 
+    setState(() {
+      _isLoading =true;
+    });
+
     if(firebaseProvider.categoryList.isEmpty){
       await firebaseProvider.getCategory().then((value) {
         for(var i = 0;i<firebaseProvider.categoryList.length;i++){
           _categoryList.add(firebaseProvider.categoryList[i].category);
         }
-
         setState(() {
-         // categoryDropdownValue = _categoryList[0];
+
 
         });
       });
@@ -122,6 +125,9 @@ class _UpdateProductState extends State<UpdateProduct> {
     }
   //selected Product Data for Update
     setState(() {
+      setState(() {
+        _isLoading =true;
+      });
       titleTextController.text = firebaseProvider.productList[firebaseProvider.productIndex].title;
       descriptionTextController.text = firebaseProvider.productList[firebaseProvider.productIndex].description;
       priceTextController.text = firebaseProvider.productList[firebaseProvider.productIndex].price;
@@ -152,7 +158,9 @@ class _UpdateProductState extends State<UpdateProduct> {
         _isXXXL =true;
       }
       // print(sizes);
-
+      setState(() {
+        _isLoading =false;
+      });
     });
 
     print('Selected ID: $selectedProductID');
@@ -217,7 +225,7 @@ class _UpdateProductState extends State<UpdateProduct> {
           children: [
             Container(
                 width:publicProvider.pageWidth(size)*.5,
-                child: productPickWidget(firebaseProvider,publicProvider,size)),
+                child: _isLoading?fadingCircle: productPickWidget(firebaseProvider,publicProvider,size)),
 
             productDetailsWidget(firebaseProvider,publicProvider,size)
           ],

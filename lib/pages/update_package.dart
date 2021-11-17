@@ -218,7 +218,6 @@ class _UpdatePackageState extends State<UpdatePackage> {
                         ) ,
                       ],
                     ))]
-
           ),
            Row(
              children: [
@@ -244,7 +243,8 @@ class _UpdatePackageState extends State<UpdatePackage> {
                        borderRadius: BorderRadius.all(Radius.circular(10)),
                        border: Border.all(width: 1,color: Colors.grey),
                      ),
-                     child:thumbnailURL.isNotEmpty ? Image.network(firebaseProvider.packageList[firebaseProvider.packageIndex].thumbnail):Container() ,
+                     child:thumbnailURL.isNotEmpty ?
+                     Image.network(firebaseProvider.packageList[firebaseProvider.packageIndex].thumbnail):Container() ,
 
                      height:  publicProvider.isWindows?size.height*.2:size.width*.2,),
                  ),
@@ -255,7 +255,8 @@ class _UpdatePackageState extends State<UpdatePackage> {
                 child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     shrinkWrap: true,
-                    itemCount: firebaseProvider.packageIndex==null? convertedImages.isEmpty?3:convertedImages.length:firebaseProvider.packageList[firebaseProvider.packageIndex].image.length,
+                    itemCount: firebaseProvider.packageIndex==null? convertedImages.isEmpty?3:convertedImages.
+                    length:firebaseProvider.packageList[firebaseProvider.packageIndex].image.length,
                     itemBuilder: (BuildContext ctx, index) {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -282,7 +283,8 @@ class _UpdatePackageState extends State<UpdatePackage> {
                                 borderRadius: BorderRadius.all(Radius.circular(10)),
                                 border: Border.all(width: 1,color: Colors.grey)
                             ),
-                            child:imageUrl.isNotEmpty? Image.network(firebaseProvider.packageList[firebaseProvider.packageIndex].image[index]):Container() ,
+                            child:imageUrl.isNotEmpty?
+                            Image.network(firebaseProvider.packageList[firebaseProvider.packageIndex].image[index]):Container() ,
                             height: 200,),
                         ),
                       );

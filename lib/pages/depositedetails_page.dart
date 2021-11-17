@@ -52,72 +52,69 @@ class _DepositeDetailsState extends State<DepositeDetails> {
 
               ],),
             ),
-
-            Expanded(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(8),
-                  itemCount: firebaseProvider.depositHistoryList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(firebaseProvider
-                        .depositHistoryList[index].date));
-                    var format = new DateFormat("yMMMd").add_jm();
-                    String withdrawDate = format.format(date);
-                    return Column(
-                      children: [
-                        Divider(
-                          height: 1,
-                          color: Colors.grey,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  withdrawDate,textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: publicProvider.isWindows
-                                        ? size.height * .02
-                                        : size.width * .02,
-                                  ),
+            ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(8),
+                itemCount: firebaseProvider.depositHistoryList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(firebaseProvider
+                      .depositHistoryList[index].date));
+                  var format = new DateFormat("yMMMd").add_jm();
+                  String withdrawDate = format.format(date);
+                  return Column(
+                    children: [
+                      Divider(
+                        height: 1,
+                        color: Colors.grey,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                withdrawDate,textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: publicProvider.isWindows
+                                      ? size.height * .02
+                                      : size.width * .02,
                                 ),
                               ),
-                              Expanded(
-                                child: Text(
-                                  firebaseProvider.depositHistoryList[index].phone,textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: publicProvider.isWindows
-                                        ? size.height * .02
-                                        : size.width * .02,
-                                  ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                firebaseProvider.depositHistoryList[index].phone,textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: publicProvider.isWindows
+                                      ? size.height * .02
+                                      : size.width * .02,
                                 ),
                               ),
-                              Expanded(
-                                child: Text( firebaseProvider.depositHistoryList[index].amount,textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: publicProvider.isWindows
-                                        ? size.height * .02
-                                        : size.width * .02,
-                                  ),),
-                              ),
-                              Expanded(
-                                child: Text( firebaseProvider.depositHistoryList[index].status,textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: publicProvider.isWindows
-                                        ? size.height * .02
-                                        : size.width * .02,
-                                  ),),
-                              ),
+                            ),
+                            Expanded(
+                              child: Text( firebaseProvider.depositHistoryList[index].amount,textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: publicProvider.isWindows
+                                      ? size.height * .02
+                                      : size.width * .02,
+                                ),),
+                            ),
+                            Expanded(
+                              child: Text( firebaseProvider.depositHistoryList[index].status,textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: publicProvider.isWindows
+                                      ? size.height * .02
+                                      : size.width * .02,
+                                ),),
+                            ),
 
-                            ],
-                          ),
+                          ],
                         ),
-                      ],
-                    );
-                  }),
-            ),
+                      ),
+                    ],
+                  );
+                }),
           ],
         )
     );

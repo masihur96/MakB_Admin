@@ -42,8 +42,10 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
   List<ProductOrderModel> _productSubList = [];
   List<ProductOrderModel> _productFilteredList = [];
+  List<ProductOrderModel> _productPendungFilteredList = [];
   List<PackageOrderModel> _packageSubList = [];
   List<PackageOrderModel> _packageFilteredList = [];
+  List<PackageOrderModel> _packagePendungFilteredList = [];
   int counter =0;
   customInit(FirebaseProvider firebaseProvider)async{
     setState(() {
@@ -60,6 +62,7 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
           _productSubList = firebaseProvider.productOrderList;
           _productFilteredList = _productSubList;
           _isLoading = false;
+          _productPendingFilterList('pending');
         });
       });
 
@@ -68,6 +71,7 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
         _productSubList = firebaseProvider.productOrderList;
         _productFilteredList = _productSubList;
         _isLoading = false;
+        _productPendingFilterList('pending');
       });
     }
 
@@ -88,22 +92,40 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
       });
     }
 
+  }
 
+  _productPendingFilterList(String searchItem) {
+    setState(() {
+      _productFilteredList = _productSubList
+          .where((element) =>
+      (element.state!.toLowerCase().contains(searchItem.toLowerCase())))
+          .toList();
 
-
-
+      _productPendungFilteredList = _productFilteredList;
+    });
   }
   _productFilterList(String searchItem) {
     setState(() {
-      _productFilteredList = _productSubList
+      _productFilteredList = _productPendungFilteredList
           .where((element) =>
       (element.orderNumber!.toLowerCase().contains(searchItem.toLowerCase())))
           .toList();
     });
   }
-  _packageFilterList(String searchItem) {
+
+  _packagePendingFilterList(String searchItem) {
     setState(() {
       _packageFilteredList = _packageSubList
+          .where((element) =>
+      (element.status!.toLowerCase().contains(searchItem.toLowerCase())))
+          .toList();
+
+      _packagePendungFilteredList = _packageFilteredList;
+    });
+  }
+  _packageFilterList(String searchItem) {
+    setState(() {
+      _packageFilteredList = _packagePendungFilteredList
           .where((element) =>
       (element.productName!.toLowerCase().contains(searchItem.toLowerCase())))
           .toList();
@@ -146,7 +168,6 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                     ),
                   ),
                   body: TabBarView(children: [
-
                     _productOrder(publicProvider,size,firebaseProvider),
                     _packageOrder(publicProvider,size,firebaseProvider),
                   ]),
@@ -176,7 +197,7 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                       : size.width * .02,
                 ),
               ),
-              onChanged: _productFilterList,
+              onChanged: _productFilterList
             ),
           ),
         ),
@@ -220,7 +241,6 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                             onPressed: () {
 
                               showLoaderDialog(context);
-
                               var db = FirebaseFirestore.instance;
                               WriteBatch batch = db.batch();
                               for (String id in selectOrderID) {
@@ -267,9 +287,6 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
 
               ),
-
-
-
               IconButton(onPressed: (){
 
                 setState(() {
@@ -278,7 +295,31 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
                 firebaseProvider.getProductOrder().then((value) => _isLoading = false);
 
-              }, icon: Icon(Icons.refresh_outlined,color: Colors.green,))
+              }, icon: Icon(Icons.refresh_outlined,color: Colors.green,)),
+
+              Text('Ordered Type : ',style: TextStyle(fontSize: 15),),
+
+              DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: statusValue,
+                  elevation: 0,
+                  dropdownColor: Colors.white,
+                  style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.height*.025),
+                  items: status.map((itemValue) {
+                    return DropdownMenuItem<String>(
+                      value: itemValue,
+                      child: Text(itemValue),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      statusValue = newValue!;
+                    });
+                    _productPendingFilterList(statusValue);
+                  },
+                ),
+              ),
+
             ],
           ),
         ),
@@ -746,8 +787,29 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
                 firebaseProvider.getPackageRequest().then((value) => _isLoading = false);
 
-              }, icon: Icon(Icons.refresh_outlined,color: Colors.green,))
+              }, icon: Icon(Icons.refresh_outlined,color: Colors.green,)),
+              Text('Ordered Type : ',style: TextStyle(fontSize: 15),),
 
+              DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: packageStatusValue,
+                  elevation: 0,
+                  dropdownColor: Colors.white,
+                  style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.height*.025),
+                  items: packageStatus.map((itemValue) {
+                    return DropdownMenuItem<String>(
+                      value: itemValue,
+                      child: Text(itemValue),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      packageStatusValue = newValue!;
+                    });
+                    _packagePendingFilterList(packageStatusValue);
+                  },
+                ),
+              ),
 
             ],
           ),
