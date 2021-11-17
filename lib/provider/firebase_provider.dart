@@ -55,7 +55,7 @@ class FirebaseProvider extends ChangeNotifier {
   List<ReferModel> _referList = [];
   get referList => _referList;
 
-  List<PackageModel> _soldPackageList = [];
+  List<PackageOrderModel> _soldPackageList = [];
   get soldPackageList => _soldPackageList;
 
   List<AreaHubModel> _areaHubList = [];
@@ -365,20 +365,24 @@ String? DateFromDatabase;
       await FirebaseFirestore.instance.collection('SoldPackages').get().then((snapShot){
         _soldPackageList.clear();
         snapShot.docChanges.forEach((element) {
-          PackageModel packageModel=PackageModel(
+          PackageOrderModel packageOrderModel=PackageOrderModel(
               id: element.doc['id'],
-              title: element.doc['productName'],
-              description: element.doc['description'],
-              price: element.doc['productPrice'],
+              productName: element.doc['productName'],
+              userAddress: element.doc['userAddress'],
+              userName: element.doc['userName'],
+              userPhone: element.doc['userPhone'],
+           //   description: element.doc['description'],
+              productPrice: element.doc['productPrice'],
               quantity: element.doc['quantity'],
-              size: element.doc['sizes'],
+              sizes: element.doc['sizes'],
               colors: element.doc['colors'],
-              image: element.doc['imageUrl'],
+              imageUrl: element.doc['imageUrl'],
               date: element.doc['date'],
-              discountAmount: element.doc['discount']
+              discount: element.doc['discount'],
+              status: element.doc['status']
 
           );
-          _soldPackageList.add(packageModel) ;
+          _soldPackageList.add(packageOrderModel) ;
         });
         print('Sold Package List: ${_soldPackageList.length}');
         notifyListeners();

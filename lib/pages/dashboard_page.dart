@@ -39,51 +39,54 @@ class _DashBoardPageState extends State<DashBoardPage> {
       _isLoading = true;
     });
 
+
+
+
     if(firebaseProvider.productOrderList.isEmpty){
       await firebaseProvider.getProductOrder();
-    }else
+    }
     if(firebaseProvider.packageOrderList.isEmpty){
       await firebaseProvider.getPackageRequest();
-    }else
+    }
     if(firebaseProvider.soldPackageList.isEmpty){
       await firebaseProvider.getSoldPackage();
-    }else
+    }
     if(firebaseProvider.withdrawRequestList.isEmpty){
       await firebaseProvider.getWithdrawRequest();
-    }else
+    }
     if(firebaseProvider.depositRequestList.isEmpty){
       await firebaseProvider.getDepositRequest();
-    }else
+    }
     if(firebaseProvider.productPendingOrderList.isEmpty){
       await firebaseProvider.getInsurancePendingRequest();
-    }else
+    }
     if(firebaseProvider.insuranceTransferredRequestList.isEmpty){
       await firebaseProvider.getInsuranceTransferredRequest();
-    }else
+    }
     if(firebaseProvider.rateDataList.isEmpty){
       await firebaseProvider.getRate();
-    }else
+    }
     if(firebaseProvider.infoList.isEmpty){
       await firebaseProvider.getContactInfo();
-    }else
+    }
     if(firebaseProvider.advertisementList.isEmpty){
       await  firebaseProvider.getVideo().then((value) => _isLoading = false);
-    }else
+    }
     if(firebaseProvider.userList.isEmpty){
       await firebaseProvider.getUser();
-    }else
+    }
     if(firebaseProvider.categoryList.isEmpty){
       await firebaseProvider.getCategory();
-    }else
+    }
     if(firebaseProvider.infoList.isEmpty){
       await firebaseProvider.subCategoryList();
-    }else
+    }
     if(firebaseProvider.productList.isEmpty){
       await firebaseProvider.getProducts();
-    }else
+    }
     if(firebaseProvider.packageList.isEmpty){
       await firebaseProvider.getPackage();
-    }else
+    }
     if(firebaseProvider.areaHubList.isEmpty){
       await firebaseProvider.getAreaHub();
     }
@@ -156,7 +159,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
                       _gridViewTile(size,'Deposit',Color(0xff00A958),
                           'Request ','Total','${firebaseProvider.depositRequestList.length}','${firebaseProvider.userList.length}'),
                       _gridViewTile(size,'Advertisement',Color(0xff00C4FE),
-                          'Total Video','Rate','${firebaseProvider.advertisementList.length}','5'),
+                          'Total Video','Rate','${firebaseProvider.advertisementList.length}','1'),
                     ],
                   ),
                 ),
@@ -590,7 +593,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
                     fontSize: size.height*.022,
                     fontWeight: FontWeight.w400,
                     fontFamily: 'OpenSans')),
-                SizedBox(height: size.height*.02),
+                SizedBox(height: size.height*.01),
 
                 Text(heading2,style: TextStyle(color: Colors.grey,
                     fontSize: size.height*.016,

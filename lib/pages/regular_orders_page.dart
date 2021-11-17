@@ -854,9 +854,11 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                               setState(() {
                                 if(selectOrder.contains(index)){
                                   selectOrder.remove(index);
+                                  selectOrderID.remove(firebaseProvider.packageOrderList[index].id);
                                 }
                                 else {
                                   selectOrder.add(index);
+                                  selectOrderID.remove(firebaseProvider.packageOrderList[index].id);
                                 }
                               });
                             },

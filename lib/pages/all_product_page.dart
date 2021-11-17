@@ -318,14 +318,9 @@ class _AllProductPageState extends State<AllProductPage> {
                                     selectedProductID.remove(_filteredList[index].id);
                                     selectedProduct.remove(index);
                                   }else {
-
                                     selectedProductID.add(_filteredList[index].id);
                                     selectedProduct.add(index);
-
-
                                   }
-
-
                                 });
                               },
                               child: selectedProduct. contains(index)?Icon(Icons.check_box_outlined):Icon(Icons.check_box_outline_blank_outlined)),
@@ -339,8 +334,8 @@ class _AllProductPageState extends State<AllProductPage> {
                                 width: publicProvider.isWindows
                                     ? size.height * .03
                                     : size.width * .03,
-                                child: _filteredList[index].image != null && _filteredList[index].image!.isNotEmpty? Image.network(
-                                  _filteredList[index].image![0],
+                                child: _filteredList[index].thumbnail != null && _filteredList[index].thumbnail!.isNotEmpty? Image.network(
+                                  _filteredList[index].thumbnail!,
                                   fit: BoxFit.fill,
                                 ):Container()),
                           ),

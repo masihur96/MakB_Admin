@@ -91,7 +91,7 @@ class _UpdateProductState extends State<UpdateProduct> {
   List<SubCategoryModel> _subCategoryModelList = [];
   customInt(FirebaseProvider firebaseProvider) async {
 
-    await firebaseProvider.getProducts();
+   // await firebaseProvider.getProducts();
     setState(() {
       counter++;
     });
@@ -596,7 +596,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                                       fontStyle: FontStyle.normal,
                                       fontSize: 15)),
 
-                              DropdownButtonHideUnderline(
+                              categoryDropdownValue.isEmpty?Container():  DropdownButtonHideUnderline(
                                 child: DropdownButton<String>(
                                   value: categoryDropdownValue,
                                   elevation: 0,
@@ -639,7 +639,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                                       color: Colors.black,
                                       fontStyle: FontStyle.normal,
                                       fontSize: 15)),
-                              DropdownButtonHideUnderline(
+                              subCategoryDropdownValue.isEmpty?Container():   DropdownButtonHideUnderline(
                                 child: DropdownButton<String>(
                                   value: subCategoryDropdownValue,
                                   elevation: 0,

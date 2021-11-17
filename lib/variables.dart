@@ -18,6 +18,7 @@ class Variables{
       Entry('Package',Icons.category_outlined, <Entry>[
         Entry('Add Package'),
         Entry('All Package'),
+        Entry('Sold Package'),
 
       ]),
       Entry('Category Info',Icons.category_outlined, <Entry>[

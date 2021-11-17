@@ -148,7 +148,7 @@ class _MainPageState extends State<MainPage> {
                                     publicProvider.category = '';
                                   });
                                 },
-                                  child: Text('You Have ${firebaseProvider.productOrderList.length+firebaseProvider.packageOrderList.length} new Orders',style: TextStyle(fontSize: publicProvider.isWindows? size.height * .02:size.width*.02,),)),
+                                  child: Text('You Have ${firebaseProvider.productPendingOrderList.length+firebaseProvider.packagePendingOrderList.length} new Orders',style: TextStyle(fontSize: publicProvider.isWindows? size.height * .02:size.width*.02,),)),
                               value: 1,),
                               PopupMenuItem(
                               child: InkWell(
@@ -181,7 +181,9 @@ class _MainPageState extends State<MainPage> {
                                   child: CircleAvatar(
                                     radius: 6,
                                       backgroundColor: Colors.red,
-                                      child: Text('${firebaseProvider.packagePendingOrderList.length+firebaseProvider.productPendingOrderList.length+firebaseProvider.withdrawRequestList.length}',style: TextStyle(color: Colors.white,fontSize: 9),)))
+                                      child: Text('${firebaseProvider.packagePendingOrderList.length+firebaseProvider.
+                                      productPendingOrderList.length+firebaseProvider.withdrawRequestList.length}',
+                                        style: TextStyle(color: Colors.white,fontSize: 7),)))
                             ],
                           ),
                         ),
@@ -191,6 +193,7 @@ class _MainPageState extends State<MainPage> {
                         offset: Offset(0, kToolbarHeight),
                         itemBuilder: (BuildContext context) =>[
                           PopupMenuItem(
+
                             child: InkWell(
                               onTap: (){
 
@@ -200,7 +203,10 @@ class _MainPageState extends State<MainPage> {
                                   publicProvider.category = '';
                                 });
                               },
-                                child: Text('Change Password',style: TextStyle(fontSize: publicProvider.isWindows? size.height * .02:size.width*.02,))),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Text('Change Password',style: TextStyle(fontSize: publicProvider.isWindows? size.height * .02:size.width*.02,)),
+                                )),
                             value: 1,),
                           PopupMenuItem(
                             child: Divider(
@@ -215,7 +221,10 @@ class _MainPageState extends State<MainPage> {
                                 pref.clear();
                                 Navigator.push(context, MaterialPageRoute(builder: (_)=>LoginPage()));
                               },
-                                child: Text('Logout',style: TextStyle(fontSize: publicProvider.isWindows? size.height * .02:size.width*.02,))),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Text('Logout',style: TextStyle(fontSize: publicProvider.isWindows? size.height * .02:size.width*.02,)),
+                                )),
                             value: 1,),
 
                            ],

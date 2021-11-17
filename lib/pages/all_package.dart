@@ -320,7 +320,7 @@ class _AllPackagePageState extends State<AllPackagePage> {
                                     ? size.height * .03
                                     : size.width * .03,
                                 child: Image.network(
-                                  _filteredList[index].image![0],
+                                  _filteredList[index].thumbnail!,
                                   fit: BoxFit.fill,
                                 )),
                           ),
