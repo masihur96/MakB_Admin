@@ -861,7 +861,7 @@ String? DateFromDatabase;
     }
   }
 
-  Future<bool> updatePackageOrderStatus(Map<String, dynamic> map,int index) async {
+  Future<bool> updatePackageOrderStatus(Map<String, dynamic> map1,Map<String, dynamic> map2,int index) async {
     String id = packageOrderList[index].id;
     String userId = packageOrderList[index].userPhone;
 
@@ -869,18 +869,18 @@ String? DateFromDatabase;
       await FirebaseFirestore.instance
           .collection("PackageCollectionRequest")
           .doc(id)
-          .update(map).then((value) async{
+          .update(map2).then((value) async{
         await FirebaseFirestore.instance
             .collection("SoldPackages")
             .doc(id)
-            .update(map);
+            .update(map1);
         await FirebaseFirestore.instance
             .collection("Users")
             .doc(userId).collection('MyStore')
             .doc(id)
-            .update(map);
+            .update(map1);
 
-        getPackageRequest();
+      await  getPackageRequest();
       });
       notifyListeners();
       return true;
