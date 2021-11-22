@@ -25,15 +25,18 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
   static const status = <String> [
     'pending',
+    'processing',
     'delivered',
+
   ];
   String statusValue = 'pending';
 
   static const packageStatus = <String> [
-    'Delivered',
     'pending',
+    'processing',
+    'delivered',
   ];
-  String packageStatusValue = 'Delivered';
+  String packageStatusValue = 'pending';
 
 
   List<dynamic> selectOrder = [];
@@ -893,44 +896,46 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                         Expanded(
                           child: Text(_packageFilteredList[index].status!,textAlign: TextAlign.center,style: TextStyle(fontSize: publicProvider.isWindows?size.height*.02:size.width*.02,color:Colors.grey ,),),
                         ),
-                        Expanded(
-                          child: Container(
-                            child: ElevatedButton(onPressed: (){
-                              showLoaderDialog(context);
-                              updatePackageStateValue(firebaseProvider,index,packageStatusValue).then((value) => Navigator.pop(context));
-
-                            },  style: ElevatedButton.styleFrom(
-                                primary: Colors.green,
-                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                               ),
-                                child: Text('Collected',style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                      ),)),
-                          ),
-                        ),
-                        //
-                        // DropdownButtonHideUnderline(
-                        //   child: DropdownButton<String>(
-                        //     value: packageStatusValue,
-                        //     elevation: 0,
-                        //     dropdownColor: Colors.white,
-                        //     style: TextStyle(color: Colors.black),
-                        //     items: packageStatus.map((itemValue) {
-                        //       return DropdownMenuItem<String>(
-                        //         value: itemValue,
-                        //         child: Text(itemValue),
-                        //       );
-                        //     }).toList(),
-                        //     onChanged: (newValue) {
-                        //       setState(() {
-                        //         packageStatusValue = newValue!;
-                        //       });
+                        // Expanded(
+                        //   child: Container(
+                        //     child: ElevatedButton(onPressed: (){
                         //       showLoaderDialog(context);
-                        //    updatePackageStateValue(firebaseProvider,index,packageStatusValue).then((value) => Navigator.pop(context));
-                        //     },
+                        //       updatePackageStateValue(firebaseProvider,index,packageStatusValue).then((value) => Navigator.pop(context));
+                        //
+                        //     },  style: ElevatedButton.styleFrom(
+                        //         primary: Colors.green,
+                        //         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        //        ),
+                        //         child: Text('Collected',style: TextStyle(
+                        //               color: Colors.white,
+                        //               fontSize: 15,
+                        //               ),)),
                         //   ),
                         // ),
+
+                        Expanded(
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: packageStatusValue,
+                              elevation: 0,
+                              dropdownColor: Colors.white,
+                              style: TextStyle(color: Colors.black),
+                              items: packageStatus.map((itemValue) {
+                                return DropdownMenuItem<String>(
+                                  value: itemValue,
+                                  child: Text(itemValue),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  packageStatusValue = newValue!;
+                                });
+                                showLoaderDialog(context);
+                             updatePackageStateValue(firebaseProvider,index,packageStatusValue).then((value) => Navigator.pop(context));
+                              },
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ],

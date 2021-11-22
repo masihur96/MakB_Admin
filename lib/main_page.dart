@@ -100,12 +100,38 @@ class _MainPageState extends State<MainPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               size.width < 1300
-                  ? IconButton(
-                      onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-                      icon: Icon(
-                        Icons.menu,
-                        color: Colors.white,
-                      ))
+                  ? Row(
+                    children: [
+
+                      IconButton(
+                          onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+                          icon: Icon(
+                            Icons.menu,
+                            color: Colors.white,
+                          )),
+
+                      InkWell(
+                        onTap: (){
+                          publicProvider.subCategory = 'Dashboard';
+                          publicProvider.category = '';
+                        },
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 40.0),
+                              child: Image.asset('assets/images/deub.png',height: 48,width: 48,),
+                            ),
+                            Text('DEUB',
+                                style: TextStyle(
+                                    fontSize:publicProvider.isWindows? size.height * .035:size.width*.035,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white,
+                                    fontFamily: 'OpenSans')),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
                   : InkWell(
                 onTap: (){
                   publicProvider.subCategory = 'Dashboard';
