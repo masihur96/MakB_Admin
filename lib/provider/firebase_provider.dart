@@ -362,7 +362,7 @@ String? DateFromDatabase;
 
   Future<void> getSoldPackage()async{
     try{
-      await FirebaseFirestore.instance.collection('SoldPackages').get().then((snapShot){
+      await FirebaseFirestore.instance.collection('SoldPackages').orderBy('date',descending: true).get().then((snapShot){
         _soldPackageList.clear();
         snapShot.docChanges.forEach((element) {
           PackageOrderModel packageOrderModel=PackageOrderModel(
@@ -394,7 +394,7 @@ String? DateFromDatabase;
 
   Future<void> getProductOrder()async{
     try{
-      await FirebaseFirestore.instance.collection('Orders').get().then((snapShot){
+      await FirebaseFirestore.instance.collection('Orders').orderBy('orderNumber',descending: true).get().then((snapShot){
         _productOrderList.clear();
         snapShot.docChanges.forEach((element) {
           ProductOrderModel productOrderModel =ProductOrderModel(
@@ -841,15 +841,15 @@ String? DateFromDatabase;
     }
   }
 
-  Future<bool> updateOrderStatus(Map<String, dynamic> map,int index) async {
-    String id = productOrderList[index].id;
+  Future<bool> updateOrderStatus(Map<String, dynamic> map,String id) async {
+   // String id = productOrderList[index].id;
 
     try {
       await FirebaseFirestore.instance
           .collection("Orders")
           .doc(id)
-          .update(map).then((value) {
-          getProductOrder();
+          .update(map).then((value)async {
+        await  getProductOrder();
           });
       notifyListeners();
       return true;
@@ -861,7 +861,7 @@ String? DateFromDatabase;
     }
   }
 
-  Future<bool> updatePackageOrderStatus(Map<String, dynamic> map1,Map<String, dynamic> map2,int index) async {
+  Future<bool> updatePackageOrderStatus(Map<String, dynamic> map,int index) async {
     String id = packageOrderList[index].id;
     String userId = packageOrderList[index].userPhone;
 
@@ -869,16 +869,16 @@ String? DateFromDatabase;
       await FirebaseFirestore.instance
           .collection("PackageCollectionRequest")
           .doc(id)
-          .update(map2).then((value) async{
+          .update(map).then((value) async{
         await FirebaseFirestore.instance
             .collection("SoldPackages")
             .doc(id)
-            .update(map1);
+            .update(map);
         await FirebaseFirestore.instance
             .collection("Users")
             .doc(userId).collection('MyStore')
             .doc(id)
-            .update(map1);
+            .update(map);
 
       await  getPackageRequest();
       });
@@ -1197,10 +1197,10 @@ String? DateFromDatabase;
   }
 
   Future<void> deleteProductOrder(
-      FirebaseProvider firebaseProvider, int? index) async {
+      FirebaseProvider firebaseProvider, String id) async {
     await  FirebaseFirestore.instance
         .collection("Orders")
-        .doc(productOrderList[index].id).delete().then((value) => getProductOrder());
+        .doc(id).delete().then((value) => getProductOrder());
 
   }
 

@@ -23,13 +23,21 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
     ),
   ];
 
-  static const status = <String> [
+  static const productSearchstatus = <String> [
     'pending',
     'processing',
     'delivered',
 
   ];
-  String statusValue = 'pending';
+  String productSearchstatusValue = 'pending';
+
+  static const productStatus = <String> [
+    'pending',
+    'processing',
+    'delivered',
+
+  ];
+  String productStatusValue = 'pending';
 
   static const packageStatus = <String> [
     'pending',
@@ -40,6 +48,7 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
 
   List<dynamic> selectOrder = [];
+  List<dynamic> selectUserPhone = [];
   List<dynamic> selectOrderID = [];
 
 
@@ -95,6 +104,9 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
       });
     }
 
+    _productPendingFilterList(productSearchstatusValue);
+    _packagePendingFilterList(packageStatusValue);
+
   }
 
   _productPendingFilterList(String searchItem) {
@@ -149,7 +161,6 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
         width: publicProvider.pageWidth(size),
         child: ListView(
           children: [
-
             Container(
               height: size.height * .913,
               child: DefaultTabController(
@@ -304,11 +315,11 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
               DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: statusValue,
+                  value: productSearchstatusValue,
                   elevation: 0,
                   dropdownColor: Colors.white,
                   style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.height*.025),
-                  items: status.map((itemValue) {
+                  items: productSearchstatus.map((itemValue) {
                     return DropdownMenuItem<String>(
                       value: itemValue,
                       child: Text(itemValue),
@@ -316,9 +327,9 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                   }).toList(),
                   onChanged: (newValue) {
                     setState(() {
-                      statusValue = newValue!;
+                      productSearchstatusValue = newValue!;
                     });
-                    _productPendingFilterList(statusValue);
+                    _productPendingFilterList(productSearchstatusValue);
                   },
                 ),
               ),
@@ -366,11 +377,11 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                               setState(() {
                                 if(selectOrder.contains(index1)){
                                   selectOrder.remove(index1);
-                                  selectOrderID.remove(firebaseProvider.productOrderList[index1].id);
+                                  selectOrderID.remove(_productFilteredList[index1].id);
                                 }
                                 else {
                                   selectOrder.add(index1);
-                                  selectOrderID.add(firebaseProvider.productOrderList[index1].id);
+                                  selectOrderID.add(_productFilteredList[index1].id);
                                 }
                               });
                             },
@@ -487,23 +498,28 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                                           SizedBox(width: 15),
                                                           DropdownButtonHideUnderline(
                                                             child: DropdownButton<String>(
-                                                              value: statusValue,
+                                                              value: productStatusValue,
                                                               elevation: 0,
                                                               dropdownColor: Colors.white,
                                                               style: TextStyle(color: Colors.black,fontSize: publicProvider.isWindows?size.height*.025:size.height*.025),
-                                                              items: status.map((itemValue) {
+                                                              items: productStatus.map((itemValue) {
                                                                 return DropdownMenuItem<String>(
                                                                   value: itemValue,
                                                                   child: Text(itemValue),
                                                                 );
                                                               }).toList(),
-                                                              onChanged: (newValue) {
+                                                              onChanged: (newValue)async {
                                                                 setState(() {
-                                                                  statusValue = newValue!;
+                                                                  productStatusValue = newValue!;
                                                                 });
 
-                                                                updateStateValue(firebaseProvider,index1,statusValue).then((value) => Navigator.pop(context));
+                                                                showLoaderDialog(context);
 
+                                                              await  updateStateValue(firebaseProvider,_productFilteredList[index1].id!,productStatusValue).then((value) {
+                                                                customInit(firebaseProvider);
+                                                                  Navigator.pop(context);
+                                                                });
+                                                                Navigator.pop(context);
 
                                                               },
                                                             ),
@@ -625,7 +641,7 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                             child: Text('OK'),
                                             onPressed: () {
                                               showLoaderDialog(context);
-                                              firebaseProvider.deleteProductOrder(firebaseProvider, index1).then((value) {
+                                              firebaseProvider.deleteProductOrder(firebaseProvider,_productFilteredList[index1].id!).then((value) {
                                                 Navigator.of(context).pop();
                                               });
                                             },
@@ -656,11 +672,11 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
 
   Future<void> updateStateValue(
-      FirebaseProvider firebaseProvider, int? index,String status) async {
+      FirebaseProvider firebaseProvider, String id,String status) async {
     Map<String, dynamic> map = {
       'state': status,
     };
-    await firebaseProvider.updateOrderStatus(map,index!).then((value) {
+    await firebaseProvider.updateOrderStatus(map,id).then((value) {
       if (value) {
         showToast('Success');
 
@@ -736,19 +752,31 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                               showLoaderDialog(context);
                               var db = FirebaseFirestore.instance;
                               WriteBatch batch = db.batch();
-                              for (String id in selectOrderID) {
+
+                              for (int index in selectOrder) {
+
                                 DocumentReference ref =
-                                db.collection("PackageCollectionRequest").doc(id);
+                                db.collection("PackageCollectionRequest").doc(selectOrderID[index]);
                                 batch.delete(ref);
+                                DocumentReference ref1 = db.collection("Users").doc(selectUserPhone[index]).collection('MyStore').doc(selectOrderID[index]);
+                                batch.delete(ref1);
+
                               }
-                              batch.commit().then((value) {
-                                 customInit(firebaseProvider);
+                              batch.commit().then((value) async{
+                                await firebaseProvider.getPackageRequest().then((value) {
+                                  setState(() {
+                                    _packageSubList = firebaseProvider.packageOrderList;
+                                    _packageFilteredList = _packageSubList;
+                                    _isLoading = false;
+                                  });
+                                });
                                 selectOrder.clear();
                                 selectOrderID.clear();
                                  Navigator.of(context).pop();
+                                 Navigator.of(context).pop();
                               });
 
-                              Navigator.of(context).pop();
+                            //  Navigator.of(context).pop();
                             },
                           ),
                         ],
@@ -850,17 +878,24 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-
                         InkWell(
                             onTap: (){
                               setState(() {
                                 if(selectOrder.contains(index)){
                                   selectOrder.remove(index);
-                                  selectOrderID.remove(firebaseProvider.packageOrderList[index].id);
+                                  selectOrderID.remove(_packageFilteredList[index].id);
+                                  selectUserPhone.remove(_packageFilteredList[index].userPhone);
+
+                                  print(selectOrderID);
+                                  print(selectUserPhone);
                                 }
                                 else {
                                   selectOrder.add(index);
-                                  selectOrderID.remove(firebaseProvider.packageOrderList[index].id);
+                                  selectOrderID.add(_packageFilteredList[index].id);
+                                  selectUserPhone.add(_packageFilteredList[index].userPhone);
+                                  print(selectOrderID);
+                                  print(selectUserPhone);
+
                                 }
                               });
                             },
@@ -931,7 +966,10 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
                                   packageStatusValue = newValue!;
                                 });
                                 showLoaderDialog(context);
-                             updatePackageStateValue(firebaseProvider,index,packageStatusValue).then((value) => Navigator.pop(context));
+                             updatePackageStateValue(firebaseProvider,index,packageStatusValue).then((value) {
+                               customInit(firebaseProvider);
+                               Navigator.pop(context);
+                             });
                               },
                             ),
                           ),
@@ -950,21 +988,31 @@ class _RegularOrderPageState extends State<RegularOrderPage> {
 
   Future<void> updatePackageStateValue(
       FirebaseProvider firebaseProvider, int? index,String status) async {
-    Map<String, dynamic> map1 = {
-      'status': 'Collected',
-    };
-    Map<String, dynamic> map2 = {
-      'status': 'Delivered',
+    Map<String, dynamic> map = {
+      'status': packageStatusValue,
     };
 
-    await firebaseProvider.updatePackageOrderStatus(map1,map2,index!).then((value) {
+
+    await firebaseProvider.updatePackageOrderStatus(map,index!).then((value) async{
       if (value) {
         showToast('Success');
 
-        customInit(firebaseProvider);
+        await firebaseProvider.getPackageRequest().then((value) {
+          setState(() {
+            _packageSubList = firebaseProvider.packageOrderList;
+            _packageFilteredList = _packageSubList;
+            _isLoading = false;
+          });
+        });
 
       } else {
-        customInit(firebaseProvider);
+        await firebaseProvider.getPackageRequest().then((value) async{
+          setState(() {
+            _packageSubList = firebaseProvider.packageOrderList;
+            _packageFilteredList = _packageSubList;
+            _isLoading = false;
+          });
+        });
 
       }
     });
