@@ -291,7 +291,7 @@ class _AllProductPageState extends State<AllProductPage> {
             padding: const EdgeInsets.only(top: 200.0),
             child: fadingCircle,
           ):
-          ListView.builder(
+          _filteredList.isNotEmpty? ListView.builder(
             shrinkWrap: true,
               physics: ClampingScrollPhysics(),
               padding: const EdgeInsets.all(8),
@@ -454,7 +454,7 @@ class _AllProductPageState extends State<AllProductPage> {
                     ],
                   ),
                 );
-              })
+              }):Center(child: Text('No Product'))
         ],
       ),
     );
@@ -483,13 +483,15 @@ class _AllProductPageState extends State<AllProductPage> {
               ]
 
           ),
-          Container(
+          firebaseProvider.productList.isNotEmpty
+              ?Container(
             height:publicProvider.isWindows?size.height*.15:size.width*.15,
             width:publicProvider.isWindows?size.height/2:size.width*.8/2,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
-                itemCount:firebaseProvider.productList[index].image.length==0?3:firebaseProvider.productList[index].image.length,
+                itemCount:firebaseProvider.productList[index].image.length==0
+                    ?3:firebaseProvider.productList[index].image.length,
                 itemBuilder: (BuildContext ctx, indx) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -521,7 +523,7 @@ class _AllProductPageState extends State<AllProductPage> {
                     ),
                   );
                 }),
-          ),
+          ):Container(),
         ],
       ),
     );

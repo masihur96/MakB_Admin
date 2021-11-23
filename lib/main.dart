@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
 
-        title: 'Mak-B Admin Panel',
+        title: 'Deub Admin Panel',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           backgroundColor: Colors.blueGrey.shade50,
