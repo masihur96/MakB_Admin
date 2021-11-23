@@ -24,8 +24,6 @@ class _LoginPageState extends State<LoginPage> {
   _customInit(FirebaseProvider firebaseProvider)async{
       counter++;
     await  firebaseProvider.getAdminData();
-
-
   }
 
 
